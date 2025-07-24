@@ -77,8 +77,11 @@ Source of icons, images, and animations for the website.
 ## How to run the application
 
 Change the directory into capstone if not already, and execute the following in-order in the command line:
+
 python manage.py makemigrations
+
 python manage.py migrate
+
 python manage.py runserver
 
 ## Additional Information
