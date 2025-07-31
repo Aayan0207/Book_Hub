@@ -1,7 +1,12 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, HttpResponseNotFound
+from django.http import (
+    HttpResponse,
+    HttpResponseRedirect,
+    JsonResponse,
+    HttpResponseNotFound,
+)
 from django.urls import reverse
 from django.db import IntegrityError
 from django import forms
@@ -12,27 +17,62 @@ from django.db.models import Avg
 from .models import *
 from django.utils import timezone
 from django.core.paginator import Paginator
+from django.views.decorators.csrf import ensure_csrf_cookie
 from re import search, IGNORECASE
+
 
 # Create your views here.
 class ListingSearchForm(forms.Form):
-    select=forms.ChoiceField(choices=[("title","Title"),("author","Author"),("isbn","ISBN"),("publisher","Publisher")],widget=forms.Select, label="")
-    query = forms.CharField(label="", widget=forms.TextInput(attrs={"autocomplete":"off"}))
+    select = forms.ChoiceField(
+        choices=[
+            ("title", "Title"),
+            ("author", "Author"),
+            ("isbn", "ISBN"),
+            ("publisher", "Publisher"),
+        ],
+        widget=forms.Select,
+        label="",
+    )
+    query = forms.CharField(
+        label="", widget=forms.TextInput(attrs={"autocomplete": "off"})
+    )
+
 
 class SearchBookForm(forms.Form):
-    select=forms.ChoiceField(choices=[("title","Title"),("author","Author"),("isbn","ISBN"),("publisher","Publisher"),("subject","Category")],widget=forms.Select, label="")
-    query = forms.CharField(label="", widget=forms.TextInput(attrs={"autocomplete":"off"}))
+    select = forms.ChoiceField(
+        choices=[
+            ("title", "Title"),
+            ("author", "Author"),
+            ("isbn", "ISBN"),
+            ("publisher", "Publisher"),
+            ("subject", "Category"),
+        ],
+        widget=forms.Select,
+        label="",
+    )
+    query = forms.CharField(
+        label="", widget=forms.TextInput(attrs={"autocomplete": "off"})
+    )
+
 
 class ReviewForm(forms.Form):
     content = forms.CharField(label="", widget=forms.Textarea)
 
 
 class ListingFormSearch(forms.Form):
-    book_isbn = forms.CharField(label="ISBN", max_length=13,widget=forms.TextInput(attrs={"autocomplete":"off"}))
+    book_isbn = forms.CharField(
+        label="ISBN",
+        max_length=13,
+        widget=forms.TextInput(attrs={"autocomplete": "off"}),
+    )
 
 
 class DonateFormSearch(forms.Form):
-    book_isbn = forms.CharField(label="ISBN", max_length=13,widget=forms.TextInput(attrs={"autocomplete":"off"}))
+    book_isbn = forms.CharField(
+        label="ISBN",
+        max_length=13,
+        widget=forms.TextInput(attrs={"autocomplete": "off"}),
+    )
 
 
 class ListingForm(forms.Form):
@@ -42,13 +82,19 @@ class ListingForm(forms.Form):
         label="ISBN", max_length=13, widget=forms.TextInput(attrs={"readonly": True})
     )
 
+
 class CreditsForm(forms.Form):
-    credit_amount=forms.IntegerField(label="Add Credits", min_value=1, max_value=10000)
+    credit_amount = forms.IntegerField(
+        label="Add Credits", min_value=1, max_value=10000
+    )
+
 
 class DonateForm(forms.Form):
     quantity = forms.IntegerField(label="Quantity", min_value=1, max_value=100)
     book_isbn = forms.CharField(
-        label="ISBN", max_length=13, widget=forms.TextInput(attrs={"readonly": True,"autocomplete":"off"})
+        label="ISBN",
+        max_length=13,
+        widget=forms.TextInput(attrs={"readonly": True, "autocomplete": "off"}),
     )
 
 
@@ -57,102 +103,131 @@ class PurchaseForm(forms.Form):
         label="Price per book (Credits)",
         min_value=1,
         max_value=100000,
-        widget=forms.TextInput(attrs={"readonly": True,"autocomplete":"off"}),
+        widget=forms.TextInput(attrs={"readonly": True, "autocomplete": "off"}),
     )
     quantity = forms.IntegerField(label="Quantity", min_value=1, max_value=10000)
     book_isbn = forms.CharField(
-        label="ISBN", max_length=13, widget=forms.TextInput(attrs={"readonly": True,"autocomplete":"off"})
+        label="ISBN",
+        max_length=13,
+        widget=forms.TextInput(attrs={"readonly": True, "autocomplete": "off"}),
     )
 
 
 class BookmarkSearch(forms.Form):
     username = forms.CharField(max_length=255)
 
+
 class QuoteForm(forms.Form):
-    quote=forms.CharField(label="",max_length=2000, widget=forms.Textarea)
+    quote = forms.CharField(label="", max_length=2000, widget=forms.Textarea)
 
 
+@ensure_csrf_cookie
+def csrf_token(request):
+    return JsonResponse({"detail": "CSRF cookie set"})
 
 def user(request, profile):
     try:
-        user=User.objects.get(username=profile)
+        user = User.objects.get(username=profile)
         return render(
-        request, "main/user.html", {"profile": profile, "add_review_form": ReviewForm()}
-    )
+            request,
+            "main/user.html",
+            {"profile": profile, "add_review_form": ReviewForm()},
+        )
     except User.DoesNotExist:
-        return HttpResponseNotFound(f'<html lang="en"><body><div align="center"><h1>User {profile} Not Found</h1></div></body></html>')
+        return HttpResponseNotFound(
+            f'<html lang="en"><body><div align="center"><h1>User {profile} Not Found</h1></div></body></html>'
+        )
+
 
 def user_exists(request):
-    if request.method=="POST":
-        data=loads(request.body)
-        username=data["username"].capitalize()
+    if request.method == "POST":
+        data = loads(request.body)
+        username = data["username"].capitalize()
         try:
-            user=list(User.objects.filter(username=username).values("id","username"))
-            return JsonResponse({"user":user})
+            user = list(User.objects.filter(username=username).values("id", "username"))
+            return JsonResponse({"user": user})
         except User.DoesNotExist:
-            return JsonResponse({"user":False})
+            return JsonResponse({"user": False})
+
 
 def add_credits(request):
-    if request.method=="POST":
-        data=loads(request.body)
-        user_id=data["id"]
-        amount=int(data["amount"])
-        user=User.objects.get(id=user_id)
-        user.credits+=amount
+    if request.method == "POST":
+        data = loads(request.body)
+        user_id = data["id"]
+        amount = int(data["amount"])
+        user = User.objects.get(id=user_id)
+        user.credits += amount
         user.save()
         return JsonResponse({"credits": user.credits})
 
 
-
-
 @csrf_exempt
 def get_quote(request):
-    if request.method=="POST":
-        data=loads(request.body)
-        user_id=data["id"]
-        user=User.objects.get(id=user_id)
+    if request.method == "POST":
+        data = loads(request.body)
+        user_id = data["id"]
+        user = User.objects.get(id=user_id)
         return JsonResponse({"quote": user.quote})
 
+
 def update_quote(request):
-    if request.method=="POST":
-        data=loads(request.body)
-        user_id=data["id"]
-        content=data["content"]
-        user=User.objects.get(id=user_id)
-        if user.quote!=content:
-            user.quote=content
+    if request.method == "POST":
+        data = loads(request.body)
+        user_id = data["id"]
+        content = data["content"]
+        user = User.objects.get(id=user_id)
+        if user.quote != content:
+            user.quote = content
             user.save()
-        return JsonResponse({"content":User.objects.get(id=user_id).quote})
+        return JsonResponse({"content": User.objects.get(id=user_id).quote})
+
 
 @csrf_exempt
 def delete_quote(request):
-    if request.method=="POST":
-        data=loads(request.body)
-        user_id=data["id"]
-        user=User.objects.get(id=user_id)
-        user.quote=""
+    if request.method == "POST":
+        data = loads(request.body)
+        user_id = data["id"]
+        user = User.objects.get(id=user_id)
+        user.quote = ""
         user.save()
-        return JsonResponse({"content":"deleted"})
+        return JsonResponse({"content": "deleted"})
+
+
 @csrf_exempt
 def user_activity_info(request):
-    if request.method=="POST":
-        data=loads(request.body)
-        user_id=data["id"]
-        reviews_count=Review.objects.filter(user_id=user_id).exclude(content="").exclude(content=None).count()
-        ratings_count=Review.objects.filter(user_id=user_id).exclude(rating=0).count()
-        bookmarks_count=Bookmark.objects.filter(user_id=user_id).count()
-        bookshelf_all_count=Bookshelf.objects.filter(user_id=user_id).count()
-        bookshelf_read_count=Bookshelf.objects.filter(user_id=user_id,tag="Read").count()
-        bookshelf_currently_reading_count=Bookshelf.objects.filter(user_id=user_id,tag="Currently Reading").count()
-        bookshelf_want_to_read_count=Bookshelf.objects.filter(user_id=user_id,tag="Want To Read").count()
-        activity={"reviews_count":reviews_count,
-                  "ratings_count":ratings_count,
-                  "bookmarks_count":bookmarks_count,
-                  "bookshelf_all_count":bookshelf_all_count,
-                  "bookshelf_read_count":bookshelf_read_count,
-                  "bookshelf_currently_reading_count":bookshelf_currently_reading_count,
-                  "bookshelf_want_to_read_count":bookshelf_want_to_read_count}
-        return JsonResponse({"activity":activity})
+    if request.method == "POST":
+        data = loads(request.body)
+        user_id = data["id"]
+        reviews_count = (
+            Review.objects.filter(user_id=user_id)
+            .exclude(content="")
+            .exclude(content=None)
+            .count()
+        )
+        ratings_count = Review.objects.filter(user_id=user_id).exclude(rating=0).count()
+        bookmarks_count = Bookmark.objects.filter(user_id=user_id).count()
+        bookshelf_all_count = Bookshelf.objects.filter(user_id=user_id).count()
+        bookshelf_read_count = Bookshelf.objects.filter(
+            user_id=user_id, tag="Read"
+        ).count()
+        bookshelf_currently_reading_count = Bookshelf.objects.filter(
+            user_id=user_id, tag="Currently Reading"
+        ).count()
+        bookshelf_want_to_read_count = Bookshelf.objects.filter(
+            user_id=user_id, tag="Want To Read"
+        ).count()
+        activity = {
+            "reviews_count": reviews_count,
+            "ratings_count": ratings_count,
+            "bookmarks_count": bookmarks_count,
+            "bookshelf_all_count": bookshelf_all_count,
+            "bookshelf_read_count": bookshelf_read_count,
+            "bookshelf_currently_reading_count": bookshelf_currently_reading_count,
+            "bookshelf_want_to_read_count": bookshelf_want_to_read_count,
+        }
+        return JsonResponse({"activity": activity})
+
+
 @csrf_exempt
 def random_reviews(request):
     if request.method == "POST":
@@ -161,9 +236,18 @@ def random_reviews(request):
             .exclude(content="")
             .exclude(content=None)
             .order_by("?")
-            .values("id", "book_isbn", "rating","content","timestamp","user_id__username", "user_id")
+            .values(
+                "id",
+                "book_isbn",
+                "rating",
+                "content",
+                "timestamp",
+                "user_id__username",
+                "user_id",
+            )
         )[:30]
         return JsonResponse({"reviews": reviews})
+
 
 @csrf_exempt
 def load_bookmarks(request):
@@ -254,9 +338,9 @@ def load_admin_donations(request):
         data = loads(request.body)
         page = data["page"]
         donations = list(
-            Donate.objects.select_related("user_id").order_by("-timestamp").values(
-                "id", "book_isbn", "quantity", "timestamp","user_id__username"
-            )
+            Donate.objects.select_related("user_id")
+            .order_by("-timestamp")
+            .values("id", "book_isbn", "quantity", "timestamp", "user_id__username")
         )
         donations = Paginator(donations, 10).page(page)
         next_page = donations.has_next()
@@ -453,29 +537,67 @@ def user_status(request):
 def load_listings(request):
     if request.method == "POST":
         data = loads(request.body)
-        query=data["query"]
+        query = data["query"]
         if query:
-            query=query.strip()
-        select=data["select"]
+            query = query.strip()
+        select = data["select"]
         if select:
-            select=select.lower()
+            select = select.lower()
         page = data["page"]
         listings = list(
             Listing.objects.all()
             .exclude(stock=0)
             .order_by("book_isbn")
-            .values("id", "title", "author","publisher","book_isbn", "price", "stock", "timestamp")
+            .values(
+                "id",
+                "title",
+                "author",
+                "publisher",
+                "book_isbn",
+                "price",
+                "stock",
+                "timestamp",
+            )
         )
-        if select=="title":
-            listings=list(filter(lambda x:search(rf"\w*{query}\w*",x["title"],IGNORECASE),listings))
-        elif select=="isbn":
-            listings=list(filter(lambda x:search(rf"^{query}$",x["book_isbn"],IGNORECASE),listings))
-        elif select=="author":
-            listings=list(filter(lambda x:search(rf"\w*{query}\w*"," ".join([author.strip(" \'") for author in x["author"][2:-2].split(",")]),IGNORECASE),listings))
-        elif select=="publisher":
-            listings=list(filter(lambda x:search(rf"\w*{query}\w*",x["publisher"],IGNORECASE),listings))
+        if select == "title":
+            listings = list(
+                filter(
+                    lambda x: search(rf"\w*{query}\w*", x["title"], IGNORECASE),
+                    listings,
+                )
+            )
+        elif select == "isbn":
+            listings = list(
+                filter(
+                    lambda x: search(rf"^{query}$", x["book_isbn"], IGNORECASE),
+                    listings,
+                )
+            )
+        elif select == "author":
+            listings = list(
+                filter(
+                    lambda x: search(
+                        rf"\w*{query}\w*",
+                        " ".join(
+                            [
+                                author.strip(" '")
+                                for author in x["author"][2:-2].split(",")
+                            ]
+                        ),
+                        IGNORECASE,
+                    ),
+                    listings,
+                )
+            )
+        elif select == "publisher":
+            listings = list(
+                filter(
+                    lambda x: search(rf"\w*{query}\w*", x["publisher"], IGNORECASE),
+                    listings,
+                )
+            )
         listings = Paginator(listings, 10)
-        maximum=listings.num_pages
+        maximum = listings.num_pages
         listings = listings.page(page)
         return JsonResponse({"listings": listings.object_list, "maximum": maximum})
 
@@ -498,17 +620,30 @@ def update_listing(request):
                 listing.stock = stock
             listing.save()
         except Listing.DoesNotExist:
-            title=data["title"]
-            author=data["author"]
-            publisher=data["publisher"]
+            title = data["title"]
+            author = data["author"]
+            publisher = data["publisher"]
             librarian = User.objects.get(id=librarian_id)
             if librarian_id:
                 Listing.objects.create(
-                    librarian_id=librarian, book_isbn=isbn, stock=stock, price=price, title=title, author=author, publisher=publisher
+                    librarian_id=librarian,
+                    book_isbn=isbn,
+                    stock=stock,
+                    price=price,
+                    title=title,
+                    author=author,
+                    publisher=publisher,
                 )
         listing = list(
             Listing.objects.filter(book_isbn=isbn).values(
-                "id", "book_isbn", "price", "stock", "timestamp", "title", "author","publisher"
+                "id",
+                "book_isbn",
+                "price",
+                "stock",
+                "timestamp",
+                "title",
+                "author",
+                "publisher",
             )
         )
         return JsonResponse({"listing": listing})
@@ -839,6 +974,7 @@ def book_result(request):
         data = loads(request.body)
         book_isbn = data["isbn"]
         query = rf"https://www.googleapis.com/books/v1/volumes?q=isbn:{book_isbn}&projection=full"
+        print(query)
         result = get(query).json()
         return JsonResponse({"result": result})
 
@@ -847,22 +983,23 @@ def book_results(request):
     if request.method == "POST":
         data = loads(request.body)
         form_result = SearchBookForm(data)
-        query=data["query"]
-        select=data["select"]
+        query = data["query"]
+        select = data["select"]
         if form_result.is_valid():
             query = form_result.cleaned_data["query"].replace(" ", "+")
             select = form_result.cleaned_data["select"].lower().replace(" ", "+")
         page = (int(data["page"]) - 1) * 10
-        if select=="title":
+        if select == "title":
             query = rf"https://www.googleapis.com/books/v1/volumes?q=intitle:{query}&printType=books&startIndex={page}"
-        elif select=="isbn":
+        elif select == "isbn":
             query = rf"https://www.googleapis.com/books/v1/volumes?q=isbn:{query}&printType=books&startIndex={page}"
-        elif select=="author":
+        elif select == "author":
             query = rf"https://www.googleapis.com/books/v1/volumes?q=inauthor:{query}&printType=books&startIndex={page}"
-        elif select=="publisher":
+        elif select == "publisher":
             query = rf"https://www.googleapis.com/books/v1/volumes?q=inpublisher:{query}&printType=books&startIndex={page}"
-        elif select=="subject":
+        elif select == "subject":
             query = rf"https://www.googleapis.com/books/v1/volumes?q=subject:{query}&printType=books&startIndex={page}"
+        print(query)
         results = get(query).json()
         return JsonResponse({"results": results})
 
@@ -888,8 +1025,8 @@ def readers_grove(request):
         {
             "add_review_form": ReviewForm(),
             "search_bookmark_form": BookmarkSearch(),
-            "add_credits_form":CreditsForm(),
-            "quote_form":QuoteForm()
+            "add_credits_form": CreditsForm(),
+            "quote_form": QuoteForm(),
         },
     )
 

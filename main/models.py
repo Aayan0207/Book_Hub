@@ -8,7 +8,8 @@ from django.core.validators import MaxValueValidator
 
 class User(AbstractUser):
     credits = models.IntegerField(default=0)
-    quote=models.CharField(default="", blank=True, null=True, max_length=2000)
+    quote = models.CharField(default="", blank=True, null=True, max_length=2000)
+
 
 class Bookmark(models.Model):
     id = models.AutoField(primary_key=True)
@@ -22,9 +23,9 @@ class Listing(models.Model):
     id = models.AutoField(primary_key=True)
     librarian_id = models.ForeignKey(User, on_delete=models.CASCADE)
     book_isbn = models.CharField(max_length=13)
-    title=models.CharField(max_length=255)
-    author=models.CharField(max_length=255)
-    publisher=models.CharField(max_length=255)
+    title = models.CharField(max_length=255)
+    author = models.CharField(max_length=255)
+    publisher = models.CharField(max_length=255)
     price = models.PositiveIntegerField()
     stock = models.PositiveIntegerField()
     timestamp = models.DateTimeField(default=timezone.localtime())

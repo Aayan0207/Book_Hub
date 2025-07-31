@@ -62,4 +62,5 @@ urlpatterns = [
     path("book_result", views.book_result, name="book_result"),
     path("book_crate/", views.book_crate, name="book_crate"),
     path("readers_grove/", views.readers_grove, name="readers_grove"),
+    path("csrf_token", views.csrf_token,  name="token"),
 ]
