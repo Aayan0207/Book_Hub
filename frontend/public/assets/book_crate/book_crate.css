@@ -1,0 +1,187 @@
+#search_listing_form, #search_result, #no_search_result_alert, #no_donate_result_alert, #donate_book_spinner, #donate_result, #donate_form, #search_book_spinner, #user_cart, .checkout,#donate_search_form, #checkout_button, #no_items, .checkout_listing, #failed_transaction, #user_donations{
+    display:none;
+}
+.active-link {
+  background-color: rgb(0, 51, 255);
+  color: white;
+}
+#pagination_list > li {
+  border-radius:5px;
+  cursor:pointer;
+}
+.check_cart_item{
+  height:30px;
+  width:30px;
+}
+#search_book_form > div{
+  display:inline-block;
+}
+#id_query{
+  border-radius:5px;
+  width:30vw;
+  margin-right:8vw;
+}
+#cart_icon{
+  float:right;
+  right:10px;
+  margin:5px;
+  left:auto;
+  position:fixed;
+  cursor:pointer;
+  width:110px;
+  height:110px;
+  padding:5px;
+  font-size:30px;
+  border-radius:100%;
+  top:110px;
+}
+.listing_book_ratings_stars_div {
+  grid-column: 1;
+  grid-row: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 25px;
+  z-index: 1;
+}
+.listing_book_cover_image_div, .cover_image_div , .result_book_cover_image_div, .donate_cover_image_div{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  cursor: default;
+  padding-bottom:10px;
+}
+.listing_book_cover_image, .cover_image, .result_book_cover_image,.donate_cover_image {
+  width: 150px;
+  height: 200px;
+}
+
+.listing_book_info,.purchase_form{
+  grid-column-start: 2;
+}
+.purchase_form{
+  align-items:center;
+  padding:10px;
+}
+.purchase_form input{
+  border-radius:5px;
+}
+.listing_book_ratings_star{
+  background-image: url('../codex/Star_Image_results.png');
+  height: 25px;
+  width: 25px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}
+.listing_book_result, .listing_load_book_result, .checkout_item,#donate_result,.donate_book_result {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  border: 2px solid black;
+  border-radius: 5px;
+  margin: 5px;
+  padding: 5px;
+  cursor: pointer;
+  margin-right:5vw;
+  margin-left:5vw;
+  background-color: #c4bba3;
+  color:black;
+}
+.listing_book_result{
+  grid-template-columns: 40px 250px auto;
+}
+.listing_book_result > .cart_select_checkbox {
+   grid-column: 1;
+}
+.listing_book_result > .listing_book_cover_image_div {
+  grid-column: 2;
+}
+.listing_book_result > .listing_book_info {
+  grid-column: 3;
+}
+.listing_book_rating_div{
+  display: grid;
+  grid-template-columns: 125px auto;
+  align-items: center;
+  gap: 5px;
+}
+.listing_book_title, .donate_book_title{
+    font-size: 28px;
+    font-weight: bold;
+}
+.listing_book_info, .donat_book_info_div{
+    font-size: 22px;
+}
+.listing_book_info > p, .donate_book_info_div > p{
+    margin:5px;
+    padding:0px;
+}
+.listing_book_ratings_bar_div{
+  grid-column: 1;
+  grid-row: 1;
+  display: inline-block;
+  height: 20px;
+}
+.listing_book_rating_bar{
+  height: 20px;
+}
+.listing_book_ratings_count_div{
+  grid-column: 2;
+}
+.listing_book_rating_info{
+  display: inline-block;
+  align-items: center;
+  justify-content: center;
+}
+.listing_book_ratings_stars_div {
+  grid-column: 1;
+  grid-row: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 25px;
+  z-index: 1;
+}
+#superuser_header{
+    margin:5px;
+    margin-top:10px;
+    margin-bottom:3px;
+}
+#search_listing_form, #listing_form{
+    margin:5px;
+}
+#id_book_isbn{
+    background-color: lightgrey;
+    border-radius:5px;
+    border: 2px solid grey;
+    opacity:0.6;
+}
+#search_listing_form #id_book_isbn, #donate_search_form #id_book_isbn{
+   opacity:1;
+   border: 2px solid black;
+   background-color: white;
+}
+#search_result{
+    display:grid;
+    grid-template-columns: 250px auto;
+    gap:5px;
+    border:2px solid black;
+    border-radius:5px;
+    margin:5px;
+    padding:5px;
+}
+#search_cover_image_div{
+    display:flex;
+    align-items: center;
+    justify-content: center;
+}
+#create_listing{
+    display:inline-block;
+    font-size:16px;
+}
+.bi-plus-square{
+    margin-right:5px;
+    margin-top:5px;
+}

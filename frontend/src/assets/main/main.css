@@ -1,0 +1,32 @@
+p {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+#button_grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  margin: 2vw;
+  padding: 20px;
+  gap: 10px;
+  opacity: 1;
+}
+.app_content {
+  font-size: 22px;
+  color: black;
+}
+.app_header {
+  font-size: 32px;
+  font-weight: bold;
+  color: black;
+}
+#codex_img {
+  margin-right: -15px;
+  margin-bottom: -65px;
+  margin-top: 65px;
+}
+#book_hub_img {
+  width: 100px;
+  height: 100px;
+}

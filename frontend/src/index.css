@@ -1,0 +1,80 @@
+body {
+    font-family: "Jersey 20", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size:22px;
+    background-color: #121212	;
+    color:#e4e6e8;
+}
+p{
+    margin:0px;
+    padding:0px;
+    text-align:left;
+}
+textarea{
+    border:2px solid black;
+    border-radius: 5px;
+    width:100%;
+    margin:5px;
+}
+.navbar{
+    background-color: #ebe3d5;
+    margin-bottom:10px;
+}
+.nav-link{
+    color:#1c1c1c;
+}
+#codex_image,#readers_grove_image, #book_hub_image{
+    width:50px;
+    height:50px;
+    display:block;
+    margin-bottom:-15px;
+}
+#book_hub_image{
+    margin-left:10px;
+    margin-bottom:-15px;
+}
+#readers_grove_image{
+    margin-bottom:-5px;
+    margin-top:-10px;
+}
+#book_crate_link, #codex_link,#readers_grove_link{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+}
+#book_crate_image{
+    width:60px;
+    height:60px;
+    display:block;
+    margin-bottom:-10px;
+    margin-top:-15px;
+}
+#login_wrapper, #register_wrapper{
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction:column;
+    margin:20px;
+}
+#login_body_div, #register_body_div{
+    border:2px solid black;
+    border-radius:5px;
+    display:flex;
+    flex-direction:column;
+    align-items: center;
+    justify-content: center;
+    padding:15px;
+}
+#login_form, #register_form{
+    display:flex;
+    flex-direction:column;
+    align-items: center;
+    justify-content: center;
+}
+#footer{
+  display:flex;
+  align-items:center;
+  justify-content: center;
+}

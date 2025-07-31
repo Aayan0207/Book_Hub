@@ -1,0 +1,264 @@
+#bookshelf_all_div,#update_quote_form, #user_credits_form, #user_search_form, #self_user_alert,#user_found, #no_user_alert, #bookshelf_currently_reading_div, #bookshelf_want_to_read_div, #bookshelf_read_div, #reviews_div, #user_review_form, #user_info {
+    display:none;
+}
+#user_options,#user_activity_info > div, #user_reading_div > div{
+  background-color:#c4bba3;
+  color:black;
+}
+#user_activity_info{
+  display:grid;
+  grid-template-columns: 1.5fr 1fr;
+}
+.add_quote_button, .update_quote, .delete_quote{
+  margin-top:8px;
+}
+#user_ratings_info_div{
+  display:grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  padding:5px;
+  font-weight:bold;
+  border:2px solid black;
+  border-radius:5px;
+  font-size:25px;
+  margin:5px;
+}
+#user_reading_div{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+}
+.user_currently_reading_image, .user_want_to_read_image{
+  cursor:pointer;
+}
+#user_currently_reading, #user_want_to_read{
+  border:2px solid black;
+  border-radius:5px;
+  margin:5px;
+  padding: 5px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction: column;
+}
+#user_ratings_info_div > div{
+  display:flex;
+  align-items:center;
+  justify-content: center;
+  flex-direction:column;
+}
+#user_bookshelf_info_parent{
+  padding:5px;
+  font-size:25px;
+  font-weight:bold;
+  border:2px solid black;
+  border-radius:5px;
+  margin:5px;
+  grid-column-start:1;
+  grid-column-end:2;
+  display:grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+}
+#user_bookshelf_info{
+  grid-column-start:1;
+  grid-column-end:4;
+  grid-row:1;
+}
+.user_sub_bookshelf_info{
+  grid-row:2;
+}
+.update_quote,.delete_quote{
+  margin:5px;
+}
+.update_quote{
+  margin-left:0px;
+}
+#user_info hr{
+  height:5px;
+  background-color:black;
+}
+#user_options > hr{
+    width:100%;
+    height:5px;
+    background-color:black;
+    margin-top:0px;
+    margin-bottom:0px;
+}
+#bookshelf_select{
+  width:200px;
+  margin-top:5px;
+  margin-bottom:5px;
+}
+.bookmark_button{
+  display:block;
+}
+#refresh_bookmarks_button{
+  right:5px;
+  left:auto;
+  position:absolute;
+}
+#invoices_div hr{
+  height:5px;
+  background-color: aqua;
+}
+.book_div{
+  display:grid;
+  grid-template-columns: 250px auto;
+  gap:5px;
+  margin:5px;
+}
+.book_cover_image_div{
+  display:flex;
+  align-items: center;
+  justify-content: center;
+}
+.book_info_div{
+  grid-column-start: 2;
+}
+.book_info_div > p {
+  margin:2px;
+  padding:0;
+}
+.book_result_button{
+  margin-top:5px;
+}
+#reviews_div{
+  grid-column-start: 2;
+}
+.no_review_content{
+  color:darkgray;
+  font-style:oblique;
+}
+.like_button,.liked_button{
+  background-image: url('../codex/Like_Button.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  float:left;
+  width:35px;
+  height:35px;
+}
+.user_review_div{
+  border:2px solid black;
+  border-radius: 5px;
+  margin:5px;
+  padding:20px;
+  background-color:#c4bba3;
+  color:black;
+  margin-right:5vw;
+  margin-left:5vw;
+}
+.liked_button{
+  background-image: url('../codex/Liked_Button.png');
+}
+#user_options{
+    display:flex;
+    margin:5px;
+    border: 2px solid black;
+    border-radius:5px;
+    width:200px;
+    align-items: center;
+    justify-content: center;
+}
+#user_options_div{
+    width:150px;
+    position: sticky;
+    top:0;
+    left:0;
+    height:100vh;
+    color: black;
+}
+.nav-item, .nav-link{
+    color:black;
+    cursor:pointer;
+}
+#user_div{
+    display:grid;
+    grid-template-columns: 200px auto;
+    gap:20px;
+}
+#user_bookshelf{
+    grid-column-start: 2;
+    top:0;
+    margin-top:0px;
+    left:0;
+    float:left;
+    margin-bottom:25px;
+}
+.bookshelf_row{
+    background-image: url('../main/Bookshelf_Image.png');
+    background-size: 100vw 200px;
+    background-repeat:round;
+    padding:10px;
+    padding-left:30px;
+    padding-right:30px;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    margin-right:20px;
+}
+.bookshelf_book_cover_image{
+    margin:5px;
+    padding:10px;
+    width:95px;
+    height:145px;
+    cursor:pointer;
+}
+.review_username_header{
+  font-size:24px;
+  font-weight:bold;
+}
+.review_timestamp_div{
+  text-align: right;
+  font-style: oblique;
+  color: #59564b;
+}
+.user_review_options_dropdown{
+  position: absolute;
+  right: 0;
+  left: auto;
+  top: 100%;
+  display: none;
+}
+.user_review_options{
+  position: relative;
+  float: right;
+  cursor: pointer;
+}
+.review_rating_div {
+  display: grid;
+  grid-template-columns: 125px auto;
+  align-items: center;
+  gap: 5px;
+}
+.review_rating_stars_div {
+  grid-column: 1;
+  grid-row: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 25px;
+  z-index: 1;
+}
+.review_rating_star{
+  background-image: url('../codex/Star_Image_results.png');
+  height: 25px;
+  width: 25px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}
+.review_progress_bar_div {
+  grid-column: 1;
+  grid-row: 1;
+  display: inline-block;
+  height: 20px;
+}
+.review_text_div {
+  grid-column: 2;
+}
+.review_progress_bar {
+  height: 20px;
+}
