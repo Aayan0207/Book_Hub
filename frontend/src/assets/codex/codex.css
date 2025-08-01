@@ -1,6 +1,6 @@
-#pagination_div, #user_review_form, #search_books_spinner, #listing_form, .checkout, #failed_transaction{
+/* #pagination_div, #user_review_form, #search_books_spinner, #listing_form, .checkout, #failed_transaction{
   display: none;
-}
+} */
 textarea{
   width:100%;
 }

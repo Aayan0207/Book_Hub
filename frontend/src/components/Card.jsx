@@ -2,16 +2,32 @@ import React, { useState, useEffect } from "react";
 import Book from "./Book.jsx";
 import "../assets/codex/codex.css";
 function Card({ payload, setPage, setIsbn }) {
-  const [viewBook, setViewBook] = useState(null);
-
-  useEffect(() => {
-    if (viewBook && viewBook.match(/^(?:\d{10}|\d{13})$/)) {
-      setIsbn(viewBook);
-      setPage("book");
-    }
-  }, [viewBook, setIsbn, setPage]);
   if (!payload || !payload.book.image.source) return;
   if (!payload.book.isbn.match(/^(?:\d{10}|\d{13})$/)) return;
+  const urlPrefix = "http://localhost:8000";
+  const isbn = payload.book.isbn;
+  const [viewBook, setViewBook] = useState(false);
+  const [ratingsData, setRatingsData] = useState({});
+
+  useEffect(() => {
+    if (viewBook) {
+      setIsbn(isbn);
+      setPage("book");
+    }
+  }, [viewBook]);
+
+  useEffect(() => {
+    fetch(`${urlPrefix}/get_book_rating`, {
+      method: "POST",
+      body: JSON.stringify({
+        isbn: isbn,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => setRatingsData(data))
+      .catch((error) => console.log(error));
+  }, [isbn]);
+
   return (
     <>
       <div className={payload.book.parentClass}>
@@ -24,7 +40,7 @@ function Card({ payload, setPage, setIsbn }) {
         </div>
         <div
           className={payload.book.info.parentClass}
-          onClick={() => setViewBook(payload.book.isbn)}
+          onClick={() => setViewBook(true)}
         >
           <p className={payload.book.info.title.class}>
             {payload.book.info.title.value}
@@ -36,7 +52,11 @@ function Card({ payload, setPage, setIsbn }) {
             <div className={payload.book.info.ratings.bar.parentClass}>
               <div
                 className={`${payload.book.info.ratings.bar.class} progress progress-bar bg-warning`}
-                style={{ width: `${payload.book.info.ratings.bar.value}%` }}
+                style={{
+                  width: `${
+                    ratingsData?.avg_rating ? ratingsData.avg_rating * 20 : 0
+                  }%`,
+                }}
               ></div>
             </div>
             <div className={payload.book.info.ratings.stars.parentClass}>
@@ -53,7 +73,8 @@ function Card({ payload, setPage, setIsbn }) {
             </div>
             <div className={payload.book.info.ratings.data.parentClass}>
               <p className={payload.book.info.ratings.data.class}>
-                {payload.book.info.ratings.data.value}
+                {ratingsData?.avg_rating ? ratingsData.avg_rating : 0} (
+                {ratingsData ? ratingsData.ratings_count : 0} Ratings)
               </p>
             </div>
           </div>

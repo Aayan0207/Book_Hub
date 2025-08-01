@@ -4,6 +4,7 @@ import Landing from "./Landing";
 import Login from "./Login";
 import Register from "./Register";
 import Book from "./Book";
+
 function Navbar({ page, setPage }) {
   const [isbn, setIsbn] = useState(null);
   function renderPage() {

@@ -11,7 +11,6 @@ function Codex({ setPage, setIsbn }) {
 
   const [data, setData] = useState({});
   const [payload, setPayload] = useState({});
-  const [ratingsMap, setRatingsMap] = useState({});
 
   useEffect(() => {
     if (!payload || !payload.token || !payload.data) return;
@@ -29,41 +28,10 @@ function Codex({ setPage, setIsbn }) {
       .catch((error) => console.log(error));
   }, [payload]);
 
-  useEffect(() => {
-    if (!data?.results?.items) return;
-
-    const books = data.results.items
-      .map((item) => {
-        const isbn = item.volumeInfo.industryIdentifiers?.[0]?.identifier;
-        const match = isbn?.match(/^(\d{10}|\d{13})$/);
-        return match ? match[1] : null;
-      })
-      .filter(Boolean);
-    books.forEach((book) => {
-      fetch(`${urlPrefix}/get_book_rating`, {
-        method: "POST",
-        body: JSON.stringify({ isbn: book }),
-      })
-        .then((response) => response.json())
-        .then((receivedData) => {
-          setRatingsMap((prev) => {
-            return {
-              ...prev,
-              [book]: {
-                avg: receivedData.avg_rating,
-                count: receivedData.ratings_count,
-              },
-            };
-          });
-        })
-        .catch((error) => console.log(error));
-    });
-  }, [data]);
 
   function submitForm(event) {
     event.preventDefault();
     setViewSpinner(true);
-    setRatingsMap({});
     const form = event.target;
     const details = {
       data: {
@@ -148,7 +116,6 @@ function Codex({ setPage, setIsbn }) {
                       bar: {
                         parentClass: "search_ratings_bar_div",
                         class: "search_rating_bar",
-                        value: ratingsMap[isbn] ? ratingsMap[isbn].avg * 20 : 0,
                       },
                       stars: {
                         parentClass: "search_ratings_stars_div",
@@ -157,11 +124,6 @@ function Codex({ setPage, setIsbn }) {
                       data: {
                         parentClass: "search_ratings_count_div",
                         class: "search_rating_info",
-                        value: `${
-                          ratingsMap[isbn] ? ratingsMap[isbn].avg : 0
-                        } (${
-                          ratingsMap[isbn] ? ratingsMap[isbn].count : 0
-                        } ratings)`,
                       },
                     },
                     publishInfo: {
