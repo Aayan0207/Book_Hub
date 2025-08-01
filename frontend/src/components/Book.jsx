@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import "../assets/codex/codex.css";
+import Spinner from "./spinner";
 
 function Book({ isbn }) {
   const urlPrefix = "http://localhost:8000";
   const [bookData, setBookData] = useState({});
 
   useEffect(() => {
-    if (!isbn.match(/^(?:\d{10}|\d{13})$/)) return;
+    if (!isbn.trim().match(/^(?:\d{10}|\d{13})$/)) return;
     fetch(`${urlPrefix}/book_result`, {
       method: "POST",
       body: JSON.stringify({
@@ -20,7 +21,7 @@ function Book({ isbn }) {
 
   return (
     <>
-      <div id="book_result">
+      {bookData?.volumeInfo ? <div id="book_result">
         <div className="result_book_cover_image_div">
           <div className="result_book_cover_image_holder">
             <img
@@ -33,7 +34,7 @@ function Book({ isbn }) {
           <p className="result_book_title">{bookData.volumeInfo.title}</p>
           <p className="result_book_author">by {bookData.volumeInfo.authors}</p>
         </div>
-      </div>
+      </div> : <Spinner/>}
     </>
   );
 }

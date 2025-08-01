@@ -4,7 +4,7 @@ import Spinner from "./spinner.jsx";
 import React, { useEffect, useState } from "react";
 import "../assets/codex/codex.css";
 
-function Codex() {
+function Codex({ setPage, setIsbn }) {
   const urlPrefix = "http://localhost:8000";
   const token = getToken();
   const [viewSpinner, setViewSpinner] = useState(false);
@@ -47,12 +47,13 @@ function Codex() {
         .then((response) => response.json())
         .then((receivedData) => {
           setRatingsMap((prev) => {
-            return({...prev,
-            [book]: {
-              avg: receivedData.avg_rating,
-              count: receivedData.ratings_count,
-            },
-            });
+            return {
+              ...prev,
+              [book]: {
+                avg: receivedData.avg_rating,
+                count: receivedData.ratings_count,
+              },
+            };
           });
         })
         .catch((error) => console.log(error));
@@ -176,7 +177,9 @@ function Codex() {
                   },
                 },
               };
-              return <Card key={item.id} props={cardData} />;
+              return (
+                <Card key={item.id} payload={cardData} setPage={setPage} setIsbn={setIsbn}/>
+              );
             })
           : null}
       </div>

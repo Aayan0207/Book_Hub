@@ -3,17 +3,21 @@ import Codex from "./Codex";
 import Landing from "./Landing";
 import Login from "./Login";
 import Register from "./Register";
+import Book from "./Book";
 function Navbar({ page, setPage }) {
+  const [isbn, setIsbn] = useState(null);
   function renderPage() {
     switch (page) {
       case "codex":
-        return <Codex />;
+        return <Codex setPage={setPage} setIsbn={setIsbn}/>;
       case "login":
         return <Login setPage={setPage} />;
       case "register":
         return <Register setPage={setPage} />;
       case "default":
         return <Landing setPage={setPage} />;
+      case "book":
+        return <Book isbn={isbn}/>;
     }
   }
   return (
