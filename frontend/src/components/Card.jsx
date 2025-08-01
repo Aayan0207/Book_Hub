@@ -1,9 +1,15 @@
-import React from "react";
-
+import React, {useState} from "react";
+import Book from "./Book.jsx";
+import "../assets/codex/codex.css";
 function Card(payload){
+    const [viewBook, setViewBook] = useState(false);
+
+    if (viewBook && viewBook.match(/^(?:\d{10}|\d{13})$/)) {
+        return <Book isbn={viewBook} />;
+    }
     payload=payload.props;
     if (!payload || !payload.book.image.source) return;
-    if (!book.isbn.match(/^(?:\d{10}|\d{13})$/)) return;
+    if (!payload.book.isbn.match(/^(?:\d{10}|\d{13})$/)) return;
     return (
         <>
         <div className={payload.book.parentClass}>
@@ -11,7 +17,7 @@ function Card(payload){
                 <img className={payload.book.image.class} src={payload.book.image.source}></img>
                 {payload.user.isuser ? payload.book.options : null}
             </div>
-            <div className={payload.book.info.parentClass}>
+            <div className={payload.book.info.parentClass} onClick={() => setViewBook(payload.book.isbn)}>
                 <p className={payload.book.info.title.class}>{payload.book.info.title.value}</p>
                 <p className={payload.book.info.author.class}>by {payload.book.info.author.value}</p>
                 <div className={payload.book.info.ratings.parentClass}>

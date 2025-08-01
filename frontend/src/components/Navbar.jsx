@@ -1,15 +1,19 @@
 import React, { useState } from "react";
 import Codex from "./Codex";
 import Landing from "./Landing";
-function Navbar() {
-  const [page, setPage] = useState("default");
-
+import Login from "./Login";
+import Register from "./Register";
+function Navbar({ page, setPage }) {
   function renderPage() {
     switch (page) {
       case "codex":
         return <Codex />;
+      case "login":
+        return <Login setPage={setPage} />;
+      case "register":
+        return <Register setPage={setPage} />;
       case "default":
-        return <Landing />;
+        return <Landing setPage={setPage} />;
     }
   }
   return (
@@ -39,24 +43,26 @@ function Navbar() {
               <img id="codex_image" src="/assets/codex/Codex_base.png" />
               Codex
             </li>
-            {/* {% if user.is_authenticated %}
-                    <li className="nav-item">
-                        <input type="hidden" value="{{user.username}}" id="username">
-                        
-                    </li>
-                {% endif %}
-                {% if user.is_authenticated %}
-                    <li className="nav-item" id="logout">
-                        
-                    </li>
-                {% else %}
-                    <li className="nav-item" id="login">
-                        
-                    </li>
-                    <li className="nav-item" id="register">
-                        
-                    </li>
-                {% endif %} */}
+            <li className="nav-item">
+              <input type="hidden" value="{{user.username}}" id="username" />
+            </li>
+            <li className="nav-item" id="logout">
+              Logout
+            </li>
+            <li
+              className="nav-item"
+              id="login"
+              onClick={() => setPage("login")}
+            >
+              Login
+            </li>
+            <li
+              className="nav-item"
+              id="register"
+              onClick={() => setPage("register")}
+            >
+              Register
+            </li>
           </ul>
         </div>
       </nav>

@@ -1,13 +1,12 @@
 import Card from "./Card.jsx";
 import getToken from "./getToken.jsx";
 import Spinner from "./spinner.jsx";
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../assets/codex/codex.css";
 
-function Codex({ book_isbn = false }) {
+function Codex() {
   const urlPrefix = "http://localhost:8000";
   const token = getToken();
-  const [viewBook, setViewBook] = useState(false);
   const [viewSpinner, setViewSpinner] = useState(false);
 
   const [data, setData] = useState({});
@@ -15,8 +14,8 @@ function Codex({ book_isbn = false }) {
   const [ratingsMap, setRatingsMap] = useState({});
 
   useEffect(() => {
-    if (!payload || !payload.url) return;
-    fetch(urlPrefix + payload.url, {
+    if (!payload || !payload.token || !payload.data) return;
+    fetch(`${urlPrefix}/codex/book_results`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -47,13 +46,14 @@ function Codex({ book_isbn = false }) {
       })
         .then((response) => response.json())
         .then((receivedData) => {
-          setRatingsMap((prev) => ({
-            ...prev,
+          setRatingsMap((prev) => {
+            return({...prev,
             [book]: {
               avg: receivedData.avg_rating,
               count: receivedData.ratings_count,
             },
-          }));
+            });
+          });
         })
         .catch((error) => console.log(error));
     });
@@ -65,7 +65,6 @@ function Codex({ book_isbn = false }) {
     setRatingsMap({});
     const form = event.target;
     const details = {
-      url: "/codex/book_results",
       data: {
         query: form.querySelector("#id_query").value,
         select: form.querySelector("#id_select").value,
@@ -77,8 +76,6 @@ function Codex({ book_isbn = false }) {
     setTimeout(() => {
       setViewSpinner(false);
     }, 2600);
-  }
-  if (viewBook) {
   }
   return (
     <>
@@ -125,7 +122,7 @@ function Codex({ book_isbn = false }) {
               const cardData = {
                 user: { isuser: false, issuper: false },
                 book: {
-                  isbn:isbn,
+                  isbn: isbn,
                   parentClass: "search_book_result",
                   image: {
                     parentClass: "search_book_cover_image_div",
@@ -159,7 +156,11 @@ function Codex({ book_isbn = false }) {
                       data: {
                         parentClass: "search_ratings_count_div",
                         class: "search_rating_info",
-                        value: `${ratingsMap[isbn] ? ratingsMap[isbn].avg : 0} (${ratingsMap[isbn] ? ratingsMap[isbn].count : 0} ratings)`,
+                        value: `${
+                          ratingsMap[isbn] ? ratingsMap[isbn].avg : 0
+                        } (${
+                          ratingsMap[isbn] ? ratingsMap[isbn].count : 0
+                        } ratings)`,
                       },
                     },
                     publishInfo: {

@@ -1,12 +1,8 @@
 import React, {useState} from "react";
 import "../assets/main/main.css";
 import Codex from "./Codex";
-function Landing() {
-    const [showPage, setShowPage] = useState(null);
+function Landing({setPage}) {
 
-    if (showPage=="codex") return <Codex/>;
-    // else if (showPage=="book_crate") return book_crate;
-    // else if (showPage=="reders_grove") return readers_grove;
   return (
     <>
       <div
@@ -26,7 +22,7 @@ function Landing() {
           <img id="book_hub_img" src="/assets/main/BookHub_Icon.png" />
         </h1>
         <div id="button_grid">
-          <button className="btn btn-info">
+          <button className="btn btn-info" onClick={() => setPage("book_crate")}>
             <img src="/assets/book_crate/Book crate final.png" />
             <p className="app_header">Book Crate</p>
             <p className="app_content">
@@ -42,7 +38,7 @@ function Landing() {
             </p>
           </button>
 
-          <button className="btn btn-success">
+          <button className="btn btn-success" onClick={() => setPage("readers_grove")}>
             <img src="/assets/readers_grove/Readers Grove Final.png" />
             <p className="app_header">Reader's Grove</p>
             <p className="app_content">
@@ -58,7 +54,7 @@ function Landing() {
             </p>
           </button>
 
-          <button className="btn btn-warning"onClick={() => setShowPage("codex")}>
+          <button className="btn btn-warning" onClick={() => setPage("codex")}>
             <img id="codex_img" src="/assets/codex/Codex 3.png" />
             <p className="app_header">Codex</p>
             <p className="app_content">
