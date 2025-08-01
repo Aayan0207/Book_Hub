@@ -1,6 +1,10 @@
 /* #pagination_div, #user_review_form, #search_books_spinner, #listing_form, .checkout, #failed_transaction{
   display: none;
 } */
+p{
+  margin-top:5px;
+  margin-bottom: 5px;
+}
 textarea{
   width:100%;
 }
@@ -69,7 +73,7 @@ textarea{
   display:block;
 }
 .like_button,.liked_button{
-  background-image: url('Like_Button.png');
+  background-image: url('/assets/codex/Like_Button.png');
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;

@@ -8,7 +8,8 @@ function Book({ isbn }) {
   const urlPrefix = "http://localhost:8000";
   const [bookData, setBookData] = useState({});
   const [ratingsData, setRatingsData] = useState({});
-
+  const [sortBy, setSortBy] = useState("highest_rated");
+  const [reviewsData, setReviewsData] = useState({});
   useEffect(() => {
     fetch(`${urlPrefix}/book_result`, {
       method: "POST",
@@ -32,6 +33,21 @@ function Book({ isbn }) {
       .then((data) => setRatingsData(data))
       .catch((error) => console.log(error));
   }, [isbn]);
+
+  useEffect(() => {
+    fetch(`${urlPrefix}/get_book_reviews`, {
+      method: "POST",
+      body: JSON.stringify({
+        isbn: isbn,
+        page: 1, //Update this when user system is set up
+        user_id: null,
+        flag: sortBy,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => setReviewsData(data))
+      .then((error) => console.log(error));
+  }, [isbn, sortBy]);
   return (
     <>
       {bookData?.volumeInfo ? (
@@ -49,6 +65,162 @@ function Book({ isbn }) {
             <p className="result_book_author">
               by {bookData.volumeInfo.authors}
             </p>
+            <div className="result_rating_div">
+              <div className="result_ratings_bar_div">
+                <div
+                  className="result_rating_bar progress progress-bar bg-warning"
+                  style={{
+                    width: `${
+                      ratingsData?.avg_rating ? ratingsData.avg_rating * 20 : 0
+                    }%`,
+                  }}
+                ></div>
+              </div>
+              <div className="result_ratings_stars_div">
+                {Array(5)
+                  .fill()
+                  .map((_, index) => {
+                    return (
+                      <div key={index} className="result_ratings_star"></div>
+                    );
+                  })}
+              </div>
+              <div className="result_ratings_count_div">
+                <p className="result_rating_info">
+                  {ratingsData?.avg_rating ? ratingsData.avg_rating : 0} (
+                  {ratingsData?.ratings_count ? ratingsData.ratings_count : 0}{" "}
+                  Ratings)
+                </p>
+              </div>
+            </div>
+            <p className="result_book_snippet">
+              {bookData?.searchInfo?.textSnippet}
+            </p>
+            <p className="result_book_description">
+              {bookData.volumeInfo?.description}
+            </p>
+            <p>Categories: {bookData.volumeInfo.categories}</p>
+            <p>Edition Information</p>
+            <ul>
+              <li>
+                Google Books Sourced Rating:
+                <div className="google_book_ratings">
+                  <div
+                    className="google_ratings_stars_div progress progress-bar bg-warning"
+                    style={{
+                      width: `${
+                        bookData.volumeInfo?.averageRating
+                          ? bookData.volumeInfo.averageRating * 20
+                          : 0
+                      }%`,
+                    }}
+                  ></div>
+                  <div className="ratings_stars">
+                    {Array(5)
+                      .fill()
+                      .map((_, index) => {
+                        return <div key={index} className="ratings_star"></div>;
+                      })}
+                  </div>
+                  <p className="google_ratings_info">
+                    {bookData.volumeInfo?.averageRating
+                      ? bookData.volumeInfo.averageRating
+                      : 0}{" "}
+                    (
+                    {bookData.volumeInfo?.ratingsCount
+                      ? bookData.volumeInfo.ratingsCount
+                      : 0}{" "}
+                    Ratings)
+                  </p>
+                </div>
+              </li>
+              <li className="result_book_publish_info">
+                Published on: {bookData.volumeInfo?.publishedDate} (
+                {bookData.volumeInfo?.publisher})
+              </li>
+              <li>ISBN: {isbn}</li>
+              <li>{bookData.volumeInfo?.pageCount} pages</li>
+            </ul>
+            <div className="reviews_div">
+              <p className="reviews_div_header">Community Reviews</p>
+              <div className="sort_by_div">
+                <select
+                  className="sort_by form-select"
+                  id="review_selector"
+                  value={sortBy}
+                  onChange={(event) => {
+                    setSortBy(event.target.value);
+                  }}
+                >
+                  <option className="sort_by_option" value="highest_rated">
+                    Highest Rated
+                  </option>
+                  <option className="sort_by_option" value="lowest_rated">
+                    Lowest Rated
+                  </option>
+                  <option className="sort_by_option" value="latest">
+                    Latest
+                  </option>
+                  <option className="sort_by_option" value="oldest">
+                    Oldest
+                  </option>
+                  <option className="sort_by_option" value="most_liked">
+                    Most Liked
+                  </option>
+                </select>
+                <button className="refresh_reviews_button btn btn-dark">
+                  <i className="bi bi-arrow-repeat"></i>Refresh Reviews
+                </button>
+              </div>
+              <div className="community_reviews_div">
+                {reviewsData?.reviews.map((item) => {
+                  return (
+                    <div key={item.id} className="book_review">
+                      <div className="review_username_header">
+                        {item.user_id__username}
+                      </div>
+                      <div className="review_rating_div">
+                        <div className="review_progress_bar_div">
+                          <div
+                            className="review_progress_bar progress-bar bg-warning progress"
+                            style={{ width: `${item.rating * 20}%` }}
+                          ></div>
+                        </div>
+                        <div className="review_rating_stars_div">
+                          {Array(5)
+                            .fill()
+                            .map((_, index) => {
+                              return (
+                                <div
+                                  key={index}
+                                  className="review_rating_star"
+                                ></div>
+                              );
+                            })}
+                        </div>
+                        <p className="review_text_div">{item.rating}</p>
+                      </div>
+                      <div className="review_content_div">
+                        <p className="review_content">{item.content}</p>
+                      </div>
+                      <div className="review_like_button_div">
+                        <div className="like_button"></div>
+                        <p className="review_like_count_div">
+                          {/*Add likes stuff here*/}
+                        </p>
+                      </div>
+                      <p className="review_timestamp_div">
+                        {new Date(item.timestamp).toLocaleDateString("en-US", {
+                          month: "short",
+                          year: "numeric",
+                          day: "numeric",
+                        })}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         </div>
       ) : (
