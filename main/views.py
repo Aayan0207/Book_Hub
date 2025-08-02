@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
+from random import shuffle
 from django.http import (
     HttpResponse,
     HttpResponseRedirect,
@@ -503,12 +504,20 @@ def in_cart(request):
 def get_listing(request):
     if request.method == "POST":
         data = loads(request.body)
-        listing_id = data["id"]
-        listing = list(
-            Listing.objects.filter(id=listing_id).values(
-                "id", "book_isbn", "price", "stock", "timestamp"
+        try:
+            listing_id = data["id"]
+            listing = list(
+                Listing.objects.filter(id=listing_id).values(
+                    "id", "book_isbn", "price", "stock", "timestamp"
+                )
             )
-        )
+        except:
+            isbn=data["isbn"]
+            listing = list(
+                Listing.objects.filter(book_isbn=isbn).values(
+                    "id", "book_isbn", "price", "stock", "timestamp"
+                )
+            )
         return JsonResponse({"listing": listing})
 
 
@@ -596,6 +605,8 @@ def load_listings(request):
                     listings,
                 )
             )
+        if not query and not select:
+            shuffle(listings)
         listings = Paginator(listings, 10)
         maximum = listings.num_pages
         listings = listings.page(page)

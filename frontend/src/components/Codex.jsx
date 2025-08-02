@@ -11,7 +11,7 @@ function Codex({ setPage, setIsbn }) {
 
   const [data, setData] = useState({});
   const [payload, setPayload] = useState({});
-
+  const [slide, setSlide] = useState(1);
   useEffect(() => {
     if (!payload || !payload.token || !payload.data) return;
     fetch(`${urlPrefix}/codex/book_results`, {
@@ -28,7 +28,6 @@ function Codex({ setPage, setIsbn }) {
       .catch((error) => console.log(error));
   }, [payload]);
 
-
   function submitForm(event) {
     event.preventDefault();
     setViewSpinner(true);
@@ -37,7 +36,7 @@ function Codex({ setPage, setIsbn }) {
       data: {
         query: form.querySelector("#id_query").value,
         select: form.querySelector("#id_select").value,
-        page: 1,
+        page: slide,
       },
       token: token,
     };
@@ -87,7 +86,12 @@ function Codex({ setPage, setIsbn }) {
       <div id="book_results">
         {!viewSpinner && data?.results?.totalItems > 0
           ? data.results.items.map((item) => {
-              const isbn = item.volumeInfo.industryIdentifiers[0].identifier;
+              let isbn = "";
+              try {
+                isbn = item.volumeInfo.industryIdentifiers[0].identifier;
+              } catch {
+                return;
+              }
               const cardData = {
                 user: { isuser: false, issuper: false },
                 book: {
@@ -140,7 +144,12 @@ function Codex({ setPage, setIsbn }) {
                 },
               };
               return (
-                <Card key={item.id} payload={cardData} setPage={setPage} setIsbn={setIsbn}/>
+                <Card
+                  key={item.id}
+                  payload={cardData}
+                  setPage={setPage}
+                  setIsbn={setIsbn}
+                />
               );
             })
           : null}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import "../assets/book_crate/book_crate.css";
 import getToken from "./getToken.jsx";
 import Spinner from "./spinner.jsx";
@@ -10,6 +10,21 @@ function Book_Crate({ setPage, setIsbn }) {
   const [payload, setPayload] = useState({});
   const [listings, setListings] = useState({});
   const [listingsData, setListingsData] = useState({});
+  const [refreshListings, setRefreshListings] = useState(false);
+
+  useEffect(() => {
+    fetch(`${urlPrefix}/load_listings`, {
+      method: "POST",
+      body: JSON.stringify({ page: 1, query: "", select: "" }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => setListings(data))
+      .catch((error) => console.log(error));
+  }, [refreshListings]);
 
   useEffect(() => {
     if (!listings.listings) return;
@@ -77,6 +92,7 @@ function Book_Crate({ setPage, setIsbn }) {
           method="post"
           id="search_book_form"
           onSubmit={(event) => submitForm(event)}
+          onReset={() => setRefreshListings(!refreshListings)}
         >
           <div>
             <select name="select" id="id_select" className="form-select">
@@ -127,6 +143,7 @@ function Book_Crate({ setPage, setIsbn }) {
               user: { isuser: false },
               book: {
                 isbn: isbn,
+                sale_id: item.id,
                 parentClass: "listing_load_book_result",
                 image: {
                   parentClass: "listing_book_cover_image_div",
@@ -162,7 +179,12 @@ function Book_Crate({ setPage, setIsbn }) {
               },
             };
             return (
-              <Card key={item.id} payload={cardData} setPage={setPage} setIsbn={setIsbn} />
+              <Card
+                key={item.id}
+                payload={cardData}
+                setPage={setPage}
+                setIsbn={setIsbn}
+              />
             );
           })
         ) : (

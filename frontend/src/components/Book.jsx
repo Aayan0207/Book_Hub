@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import "../assets/codex/codex.css";
 import Spinner from "./spinner";
 
@@ -12,6 +12,19 @@ function Book({ isbn }) {
   const [reviewsData, setReviewsData] = useState({});
   const [refreshReviews, setRefreshReviews] = useState(false);
   const [likesData, setLikesData] = useState({});
+  const [saleData, setSaleData] = useState({});
+
+  useEffect(() => {
+    fetch(`${urlPrefix}/get_listing`, {
+      method: "POST",
+      body: JSON.stringify({
+        isbn: isbn,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => setSaleData(data.listing[0]))
+      .catch((error) => console.log(error));
+  }, [isbn]);
 
   useEffect(() => {
     if (!reviewsData?.reviews) return;
@@ -90,7 +103,7 @@ function Book({ isbn }) {
           <div className="result_book_info">
             <p className="result_book_title">{bookData.volumeInfo.title}</p>
             <p className="result_book_author">
-              by {bookData.volumeInfo.authors}
+              by {bookData.volumeInfo.authors.join(", ")}
             </p>
             <div className="result_rating_div">
               <div className="result_ratings_bar_div">
@@ -123,6 +136,12 @@ function Book({ isbn }) {
             <p className="result_book_snippet">
               {bookData?.searchInfo?.textSnippet}
             </p>
+            {saleData?.stock > 0 ? 
+            <div className="result_sale_info">
+              <p className="result_price">Price: {saleData.price} Credits</p>
+              <p className="result_stock">({saleData.stock > 1 ? `${saleData.stock} Copies` : `1 Copy`} Available at the Book Crate)</p>
+            </div>
+            : null}
             <p className="result_book_description">
               {bookData.volumeInfo?.description}
             </p>

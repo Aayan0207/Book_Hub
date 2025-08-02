@@ -1,29 +1,34 @@
 /* #pagination_div, #user_review_form, #search_books_spinner, #listing_form, .checkout, #failed_transaction{
   display: none;
 } */
-p{
-  margin-top:5px;
+.result_sale_info {
+  display: flex;
+  gap: 5px;
+}
+p {
+  margin-top: 5px;
   margin-bottom: 5px;
 }
-textarea{
-  width:100%;
+textarea {
+  width: 100%;
 }
-.update_listing_button, .delete_listing_button{
-  margin:5px;
+.update_listing_button,
+.delete_listing_button {
+  margin: 5px;
 }
-.update_listing_button{
-  margin-left:0px;
+.update_listing_button {
+  margin-left: 0px;
 }
-#search_book_form div{
-  display:inline-block;
+#search_book_form div {
+  display: inline-block;
 }
 .purchase_form {
   grid-column-start: 2;
-  align-items:center;
-  padding:10px;
+  align-items: center;
+  padding: 10px;
 }
-.purchase_form input{
-  border-radius:5px;
+.purchase_form input {
+  border-radius: 5px;
 }
 .cover_image {
   width: 150px;
@@ -36,13 +41,13 @@ textarea{
   align-items: center;
   gap: 10px;
   cursor: default;
-  padding-bottom:10px;
+  padding-bottom: 10px;
 }
-.checkout_item #id_book_isbn{
+.checkout_item #id_book_isbn {
   background-color: lightgrey;
-    border-radius:5px;
-    border: 2px solid grey;
-    opacity:0.6;
+  border-radius: 5px;
+  border: 2px solid grey;
+  opacity: 0.6;
 }
 .checkout_item {
   display: grid;
@@ -52,113 +57,127 @@ textarea{
   margin: 5px;
   padding: 5px;
   cursor: pointer;
-  margin-right:5vw;
-  margin-left:5vw;
+  margin-right: 5vw;
+  margin-left: 5vw;
   background-color: #c4bba3;
-  color:black;
+  color: black;
 }
-.purchase_button, .cart_button{
+.purchase_button,
+.cart_button {
   display: inline-block;
-  margin:5px;
+  margin: 5px;
 }
-.purchase_button{
-  margin-left:0px;
+.purchase_button {
+  margin-left: 0px;
 }
-#id_query{
-  border-radius:5px;
-  width:35vw;
-  margin-right:8vw;
+#id_query {
+  border-radius: 5px;
+  width: 35vw;
+  margin-right: 8vw;
 }
-#book_search_button{
-  display:block;
+#book_search_button {
+  display: block;
 }
-.like_button,.liked_button{
-  background-image: url('/assets/codex/Like_Button.png');
+.like_button,
+.liked_button {
+  background-image: url("/assets/codex/Like_Button.png");
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
   display: flex;
   align-items: center;
   justify-content: center;
-  float:left;
-  width:35px;
-  height:35px;
+  float: left;
+  width: 35px;
+  height: 35px;
 }
-.sort_by_div{
- display:grid;
- grid-template-columns: 250px auto;
- gap:5px;
- margin:5px;
+.sort_by_div {
+  display: grid;
+  grid-template-columns: 250px auto;
+  gap: 5px;
+  margin: 5px;
 }
-.refresh_reviews_button{
-  font-size:16px;
-  border:2px solid black;
-  border-radius:5px;
+.refresh_reviews_button {
+  font-size: 16px;
+  border: 2px solid black;
+  border-radius: 5px;
   padding: 5px;
-  cursor:pointer;
-  width:150px;
+  cursor: pointer;
+  width: 150px;
   text-align: center;
-  margin-left:auto;
-  display:flex;
+  margin-left: auto;
+  display: flex;
   align-items: center;
   justify-content: center;
 }
-.refresh_reviews_button > .bi{
-  margin-top:2.5px;
+.refresh_reviews_button > .bi {
+  margin-top: 2.5px;
   margin-right: 2.5px;
 }
-.liked_button{
-  background-image: url('/assets/codex/Liked_Button.png');
+.liked_button {
+  background-image: url("/assets/codex/Liked_Button.png");
 }
-.result_book_author, .result_book_title{
-  margin:2px;
-  padding:0px;
+.result_book_author,
+.result_book_title {
+  margin: 2px;
+  padding: 0px;
 }
-.book_review,.user_review_div{
-  border:2px solid black;
+.book_review,
+.user_review_div {
+  border: 2px solid black;
   border-radius: 5px;
-  margin:5px;
-  padding:10px;
-  background-color:#c4bba3;
-  color:black;
+  margin: 5px;
+  padding: 10px;
+  background-color: #c4bba3;
+  color: black;
 }
-.review_username_header{
-  font-size:24px;
-  font-weight:bold;
-  cursor:pointer;
+.review_username_header {
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
 }
-.reviews_div_header{
-  font-size:30px;
-  font-weight:bold;
+.reviews_div_header {
+  font-size: 30px;
+  font-weight: bold;
 }
-.review_timestamp_div{
+.review_timestamp_div {
   text-align: right;
   font-style: oblique;
   color: #59564b;
 }
-.user_review_options{
+.user_review_options {
   position: relative;
   float: right;
   cursor: pointer;
 }
-.user_review_button{
-  border-radius:25px;
+.user_review_button {
+  border-radius: 25px;
 }
-.user_review_options_dropdown{
+.user_review_options_dropdown {
   position: absolute;
   right: 0;
   left: auto;
   top: 100%;
   display: none;
 }
-.google_book_ratings, .user_rating_div, .result_rating_div, .search_rating_div, .search_user_rating_div, .review_rating_div {
+.google_book_ratings,
+.user_rating_div,
+.result_rating_div,
+.search_rating_div,
+.search_user_rating_div,
+.review_rating_div {
   display: grid;
   grid-template-columns: 125px auto;
   align-items: center;
   gap: 5px;
 }
 
-.ratings_stars, .user_ratings_stars, .result_ratings_stars_div, .search_ratings_stars_div, .search_user_ratings_stars, .review_rating_stars_div {
+.ratings_stars,
+.user_ratings_stars,
+.result_ratings_stars_div,
+.search_ratings_stars_div,
+.search_user_ratings_stars,
+.review_rating_stars_div {
   grid-column: 1;
   grid-row: 1;
   display: flex;
@@ -168,8 +187,13 @@ textarea{
   z-index: 1;
 }
 
-.ratings_star,.user_ratings_star, .result_ratings_star, .search_ratings_star, .search_user_ratings_star, .review_rating_star{
-  background-image: url('/assets/codex/Star_Image_results.png');
+.ratings_star,
+.user_ratings_star,
+.result_ratings_star,
+.search_ratings_star,
+.search_user_ratings_star,
+.review_rating_star {
+  background-image: url("/assets/codex/Star_Image_results.png");
   height: 25px;
   width: 25px;
   background-repeat: no-repeat;
@@ -177,62 +201,81 @@ textarea{
   background-position: center;
 }
 
-
-.user_ratings_star, .result_ratings_star, .ratings_star{
-background-image: url('/assets/codex/Star_Image_result.png');
+.user_ratings_star,
+.result_ratings_star,
+.ratings_star {
+  background-image: url("/assets/codex/Star_Image_result.png");
 }
 
-.google_ratings_stars_div, .user_rating_bar_div, .result_ratings_bar_div, .search_ratings_bar_div, .search_user_rating_bar_div, .review_progress_bar_div {
+.google_ratings_stars_div,
+.user_rating_bar_div,
+.result_ratings_bar_div,
+.search_ratings_bar_div,
+.search_user_rating_bar_div,
+.review_progress_bar_div {
   grid-column: 1;
   grid-row: 1;
   display: inline-block;
   height: 20px;
 }
 
-.result_rating_info, .search_rating_info{
-  float:left;
+.result_rating_info,
+.search_rating_info {
+  float: left;
 }
 
-.result_ratings_count_div, .search_ratings_count_div, .review_text_div {
+.result_ratings_count_div,
+.search_ratings_count_div,
+.review_text_div {
   grid-column: 2;
 }
 
-.user_rating_div, .search_user_rating_div {
+.user_rating_div,
+.search_user_rating_div {
   justify-content: center;
   grid-template-rows: 40px 20px 20px;
   grid-template-columns: 250px;
   grid-row: 3;
 }
 
-.user_rating_bar_div, .search_user_rating_bar_div {
+.user_rating_bar_div,
+.search_user_rating_bar_div {
   grid-row: 2;
   width: 125px;
   margin-left: 62.5px;
 }
 
-.user_rating_bar, .result_rating_bar, .search_rating_bar, .search_user_rating_bar, .review_progress_bar {
+.user_rating_bar,
+.result_rating_bar,
+.search_rating_bar,
+.search_user_rating_bar,
+.review_progress_bar {
   height: 20px;
 }
 
-.user_ratings_stars, .search_user_ratings_stars {
+.user_ratings_stars,
+.search_user_ratings_stars {
   grid-row: 2;
   cursor: pointer;
 }
 
-.user_rating_content, .search_user_rating_content {
+.user_rating_content,
+.search_user_rating_content {
   text-align: center;
   grid-row: 1;
   margin: 0;
 }
 
-.result_clear_rating_div, .search_clear_rating_div {
+.result_clear_rating_div,
+.search_clear_rating_div {
   grid-row: 3;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.result_clear_rating_button, .search_clear_rating_button {
+.result_clear_rating_button,
+.search_clear_rating_button {
   height: 15px;
 }
 
@@ -254,26 +297,27 @@ background-image: url('/assets/codex/Star_Image_result.png');
   border: 2px solid black;
   border-radius: 5px;
   margin: 5px;
-  margin-right:5vw;
-  margin-left:5vw;
+  margin-right: 5vw;
+  margin-left: 5vw;
   padding: 5px;
   cursor: pointer;
   background-color: #c4bba3;
-  color:black;
+  color: black;
 }
-.search_book_title{
-    font-size: 28px;
-    font-weight: bold;
+.search_book_title {
+  font-size: 28px;
+  font-weight: bold;
 }
-.search_book_info{
-    font-size: 22px;
-    grid-column-start: 2;
+.search_book_info {
+  font-size: 22px;
+  grid-column-start: 2;
 }
-.search_book_info > p{
-    margin:5px;
-    padding:0px;
+.search_book_info > p {
+  margin: 5px;
+  padding: 0px;
 }
-.result_book_snippet, .search_book_snippet {
+.result_book_snippet,
+.search_book_snippet {
   font-style: oblique;
   color: #59564b;
 }
@@ -330,8 +374,8 @@ background-image: url('/assets/codex/Star_Image_result.png');
   background-color: rgb(0, 51, 255);
   color: white;
 }
-.page-link{
-  border-radius:5px;
+.page-link {
+  border-radius: 5px;
 }
 .search_bookshelf_button {
   display: block;
@@ -345,7 +389,7 @@ background-image: url('/assets/codex/Star_Image_result.png');
   align-items: center;
   gap: 10px;
   cursor: default;
-  padding-bottom:10px;
+  padding-bottom: 10px;
 }
 
 .search_book_cover_image {
@@ -353,7 +397,7 @@ background-image: url('/assets/codex/Star_Image_result.png');
   height: 200px;
 }
 
-
-.pagination_list, .page-item {
+.pagination_list,
+.page-item {
   cursor: pointer;
 }

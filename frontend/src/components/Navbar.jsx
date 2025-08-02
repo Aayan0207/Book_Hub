@@ -5,12 +5,13 @@ import Login from "./Login";
 import Register from "./Register";
 import Book from "./Book";
 import Book_Crate from "./Book_Crate";
+
 function Navbar({ page, setPage }) {
   const [isbn, setIsbn] = useState(null);
   function renderPage() {
     switch (page) {
       case "codex":
-        return <Codex setPage={setPage} setIsbn={setIsbn}/>;
+        return <Codex setPage={setPage} setIsbn={setIsbn} />;
       case "login":
         return <Login setPage={setPage} />;
       case "register":
@@ -18,9 +19,9 @@ function Navbar({ page, setPage }) {
       case "default":
         return <Landing setPage={setPage} />;
       case "book":
-        return <Book isbn={isbn}/>;
-      case  "book_crate":
-        return <Book_Crate setPage={setPage} setIsbn={setIsbn}/>;
+        return <Book isbn={isbn} />;
+      case "book_crate":
+        return <Book_Crate setPage={setPage} setIsbn={setIsbn} />;
     }
   }
   return (
@@ -29,46 +30,51 @@ function Navbar({ page, setPage }) {
         <div>
           <ul className="navbar-nav mr-auto">
             <li className="nav-item" onClick={() => setPage("default")}>
-              <img id="book_hub_image" src="/assets/main/BookHub_Icon.png" />
-              Book Hub
+              <span id="main_page_link" className="nav-link">
+                <img id="book_hub_image" src="/assets/main/BookHub_Icon.png" />
+                Book Hub
+              </span>
             </li>
             <li className="nav-item" onClick={() => setPage("book_crate")}>
-              <img
-                id="book_crate_image"
-                src="/assets/book_crate/Book_crate_base.png"
-              />
-              Book Crate
+              <span className="nav-link" id="book_crate_link">
+                <img
+                  id="book_crate_image"
+                  src="/assets/book_crate/Book_crate_base.png"
+                />
+                Book Crate
+              </span>
             </li>
             <li className="nav-item" onClick={() => setPage("readers_grove")}>
-              <img
-                id="readers_grove_image"
-                src="/assets/readers_grove/Readers_Grove_Initial.png"
-              />
-              Reader's Grove
+              <span className="nav-link" id="readers_grove_link">
+                <img
+                  id="readers_grove_image"
+                  src="/assets/readers_grove/Readers_Grove_Initial.png"
+                />
+                Reader's Grove
+              </span>
             </li>
             <li className="nav-item" onClick={() => setPage("codex")}>
-              <img id="codex_image" src="/assets/codex/Codex_base.png" />
-              Codex
-            </li>
-            <li className="nav-item">
-              <input type="hidden" value="{{user.username}}" id="username" />
+              <span className="nav-link" id="codex_link">
+                <img id="codex_image" src="/assets/codex/Codex_base.png" />
+                Codex
+              </span>
             </li>
             <li className="nav-item" id="logout">
-              Logout
+              <span className="nav-link">Logout</span>
             </li>
             <li
               className="nav-item"
               id="login"
               onClick={() => setPage("login")}
             >
-              Login
+              <span className="nav-link">Login</span>
             </li>
             <li
               className="nav-item"
               id="register"
               onClick={() => setPage("register")}
             >
-              Register
+              <span className="nav-link">Register</span>
             </li>
           </ul>
         </div>

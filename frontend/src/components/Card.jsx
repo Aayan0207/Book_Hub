@@ -10,6 +10,7 @@ function Card({ payload, setPage, setIsbn }) {
   const isbn = payload.book.isbn;
   const [viewBook, setViewBook] = useState(false);
   const [ratingsData, setRatingsData] = useState({});
+  const [saleData, setSaleData] = useState({});
 
   useEffect(() => {
     if (viewBook) {
@@ -17,6 +18,19 @@ function Card({ payload, setPage, setIsbn }) {
       setPage("book");
     }
   }, [viewBook]);
+
+  useEffect(() => {
+    if (!payload.book.sale_id) return;
+    fetch(`${urlPrefix}/get_listing`, {
+      method: "POST",
+      body: JSON.stringify({
+        id: payload.book.sale_id,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => setSaleData(data.listing[0]))
+      .catch((error) => console.log(error));
+  }, [isbn]);
 
   useEffect(() => {
     fetch(`${urlPrefix}/get_book_rating`, {
@@ -29,7 +43,7 @@ function Card({ payload, setPage, setIsbn }) {
       .then((data) => setRatingsData(data))
       .catch((error) => console.log(error));
   }, [isbn]);
-
+  if (payload.book.sale_id && saleData?.stock===0) return;
   return (
     <>
       <div className={payload.book.parentClass}>
@@ -48,7 +62,7 @@ function Card({ payload, setPage, setIsbn }) {
             {payload.book.info.title.value}
           </p>
           <p className={payload.book.info.author.class}>
-            by {payload.book.info.author.value}
+            by {payload.book.info.author.value.join(", ")}
           </p>
           <div className={payload.book.info.ratings.parentClass}>
             <div className={payload.book.info.ratings.bar.parentClass}>
@@ -80,14 +94,22 @@ function Card({ payload, setPage, setIsbn }) {
               </p>
             </div>
           </div>
-          <p className={payload.book.info.publishInfo?.class}>
-            Published on: {payload.book.info.publishInfo?.value}
-          </p>
-          <p className={payload.book.info.snippet?.class}>
-            {payload.book.info.snippet?.value
-              ? payload.book.info.snippet.value
-              : "No snippet available."}
-          </p>
+          {payload.book.info.publishInfo ? (
+            <p className={payload.book.info.publishInfo?.class}>
+              Published on: {payload.book.info.publishInfo?.value}
+            </p>
+          ) : null}
+          {payload.book.info.snippet ? (
+            <p className={payload.book.info.snippet?.class}>
+              {payload.book.info.snippet?.value}
+            </p>
+          ) : null}
+          {payload.book.sale_id ?
+          <>
+           <p className="listing_book_price">Price: {saleData.price} Credits</p>
+           <p className="listing_book_stock">{saleData.stock > 1 ? `${saleData.stock} copies` : "1 copy"} Available</p>
+           </>
+           : null}
         </div>
       </div>
     </>

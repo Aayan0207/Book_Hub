@@ -51,7 +51,7 @@
   height: 25px;
   z-index: 1;
 }
-.listing_book_cover_image_div, .cover_image_div , .result_book_cover_image_div, .donate_cover_image_div{
+.listing_book_cover_image_div, .cover_image_div , .donate_cover_image_div{
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -60,7 +60,7 @@
   cursor: default;
   padding-bottom:10px;
 }
-.listing_book_cover_image, .cover_image, .result_book_cover_image,.donate_cover_image {
+.listing_book_cover_image, .cover_image, .donate_cover_image {
   width: 150px;
   height: 200px;
 }
