@@ -62,7 +62,7 @@ function Card({ payload, setPage, setIsbn }) {
             {payload.book.info.title.value}
           </p>
           <p className={payload.book.info.author.class}>
-            by {payload.book.info.author.value.join(", ")}
+            by {payload.book.info.author.value?.join(", ")}
           </p>
           <div className={payload.book.info.ratings.parentClass}>
             <div className={payload.book.info.ratings.bar.parentClass}>

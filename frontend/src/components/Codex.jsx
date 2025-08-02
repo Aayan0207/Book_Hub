@@ -33,6 +33,7 @@ function Codex({ setPage, setIsbn }) {
       .then((receivedData) => setData(receivedData))
       .catch((error) => console.log(error));
   }, [payload]);
+
   function submitForm(event) {
     event.preventDefault();
     setSlide(1);

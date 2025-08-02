@@ -3,14 +3,27 @@ import "../assets/book_crate/book_crate.css";
 import getToken from "./getToken.jsx";
 import Spinner from "./spinner.jsx";
 import Card from "./Card";
+import Paginator from "./Pagination.jsx";
 
 function Book_Crate({ setPage, setIsbn }) {
   const urlPrefix = "http://localhost:8000";
   const token = getToken();
-  const [payload, setPayload] = useState({});
+  const [payload, setPayload] = useState({
+    data: {
+      query: "",
+      select: "",
+      page: 1,
+    },
+    token: token,
+  });
   const [listings, setListings] = useState({});
   const [listingsData, setListingsData] = useState({});
   const [refreshListings, setRefreshListings] = useState(false);
+  const [slide, setSlide] = useState(1);
+
+  useEffect(() => {
+    setPayload({ ...payload, data: { ...payload.data, page: slide } });
+  }, [slide]);
 
   useEffect(() => {
     fetch(`${urlPrefix}/load_listings`, {
@@ -46,7 +59,7 @@ function Book_Crate({ setPage, setIsbn }) {
   }, [listings]);
 
   useEffect(() => {
-    if (!payload || !payload?.data?.query || !payload?.data?.select) return;
+    if (!payload) return;
     setListingsData({});
     fetch(`${urlPrefix}/load_listings`, {
       method: "POST",
@@ -68,11 +81,12 @@ function Book_Crate({ setPage, setIsbn }) {
       data: {
         query: form.querySelector("#id_query").value,
         select: form.querySelector("#id_select").value,
-        page: 1, //Update this when pagination system set up
+        page: 1,
       },
       token: token,
     };
     setPayload(details);
+    setSlide(1);
   }
 
   return (
@@ -191,6 +205,7 @@ function Book_Crate({ setPage, setIsbn }) {
           <Spinner />
         )}
       </div>
+      <Paginator page={slide} setPage={setSlide} maxPage={listings?.maximum} />
     </>
   );
 }

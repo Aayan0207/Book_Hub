@@ -605,8 +605,6 @@ def load_listings(request):
                     listings,
                 )
             )
-        if not query and not select:
-            shuffle(listings)
         listings = Paginator(listings, 10)
         maximum = listings.num_pages
         listings = listings.page(page)
