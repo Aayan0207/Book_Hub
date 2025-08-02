@@ -3,13 +3,34 @@ import "../assets/codex/codex.css";
 import Spinner from "./spinner";
 
 function Book({ isbn }) {
-  if (!isbn.trim().match(/^(?:\d{10}|\d{13})$/)) return <p>Invalid ISBN</p>;
+  if (!isbn.trim().match(/^(?:\d{10}|\d{13})$/)) return <p>Invalid ISBN.</p>;
 
   const urlPrefix = "http://localhost:8000";
   const [bookData, setBookData] = useState({});
   const [ratingsData, setRatingsData] = useState({});
   const [sortBy, setSortBy] = useState("highest_rated");
   const [reviewsData, setReviewsData] = useState({});
+  const [refreshReviews, setRefreshReviews] = useState(false);
+  const [likesData, setLikesData] = useState({});
+
+  useEffect(() => {
+    if (!reviewsData?.reviews) return;
+    reviewsData.reviews.forEach((item) => {
+      fetch(`${urlPrefix}/get_review_likes`, {
+        method: "POST",
+        body: JSON.stringify({
+          review_id: item.id,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setLikesData((prev) => {
+            return { ...prev, [item.id]: { like_count: data.like_count ? data.like_count : 0 } };
+          });
+        })
+        .catch((error) => console.log(error));
+    });
+  }, [isbn, reviewsData]);
   useEffect(() => {
     fetch(`${urlPrefix}/book_result`, {
       method: "POST",
@@ -46,8 +67,8 @@ function Book({ isbn }) {
     })
       .then((response) => response.json())
       .then((data) => setReviewsData(data))
-      .then((error) => console.log(error));
-  }, [isbn, sortBy]);
+      .catch((error) => console.log(error));
+  }, [isbn, sortBy, refreshReviews]);
   return (
     <>
       {bookData?.volumeInfo ? (
@@ -168,7 +189,10 @@ function Book({ isbn }) {
                     Most Liked
                   </option>
                 </select>
-                <button className="refresh_reviews_button btn btn-dark">
+                <button
+                  className="refresh_reviews_button btn btn-dark"
+                  onClick={() => setRefreshReviews(!refreshReviews)}
+                >
                   <i className="bi bi-arrow-repeat"></i>Refresh Reviews
                 </button>
               </div>
@@ -206,7 +230,7 @@ function Book({ isbn }) {
                       <div className="review_like_button_div">
                         <div className="like_button"></div>
                         <p className="review_like_count_div">
-                          {/*Add likes stuff here*/}
+                          {likesData[item.id].like_count}
                         </p>
                       </div>
                       <p className="review_timestamp_div">
