@@ -1,7 +1,8 @@
+import React, { useEffect, useState } from "react";
 import Card from "./Card.jsx";
 import getToken from "./getToken.jsx";
 import Spinner from "./spinner.jsx";
-import React, { useEffect, useState } from "react";
+import Paginator from "./Pagination.jsx";
 import "../assets/codex/codex.css";
 
 function Codex({ setPage, setIsbn }) {
@@ -12,6 +13,11 @@ function Codex({ setPage, setIsbn }) {
   const [data, setData] = useState({});
   const [payload, setPayload] = useState({});
   const [slide, setSlide] = useState(1);
+
+  useEffect(() => {
+    setPayload({ ...payload, data: { ...payload.data, page: slide } });
+  }, [slide]);
+
   useEffect(() => {
     if (!payload || !payload.token || !payload.data) return;
     fetch(`${urlPrefix}/codex/book_results`, {
@@ -27,16 +33,16 @@ function Codex({ setPage, setIsbn }) {
       .then((receivedData) => setData(receivedData))
       .catch((error) => console.log(error));
   }, [payload]);
-
   function submitForm(event) {
     event.preventDefault();
+    setSlide(1);
     setViewSpinner(true);
     const form = event.target;
     const details = {
       data: {
         query: form.querySelector("#id_query").value,
         select: form.querySelector("#id_select").value,
-        page: slide,
+        page: 1,
       },
       token: token,
     };
@@ -45,6 +51,7 @@ function Codex({ setPage, setIsbn }) {
       setViewSpinner(false);
     }, 2600);
   }
+
   return (
     <>
       <div id="search_book_form_div" align="center">
@@ -154,6 +161,7 @@ function Codex({ setPage, setIsbn }) {
             })
           : null}
       </div>
+      <Paginator page={slide} setPage={setSlide} maxPage={10} />
     </>
   );
 }
