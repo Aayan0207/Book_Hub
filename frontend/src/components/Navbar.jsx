@@ -4,7 +4,7 @@ import Landing from "./Landing";
 import Login from "./Login";
 import Register from "./Register";
 import Book from "./Book";
-
+import Book_Crate from "./Book_Crate";
 function Navbar({ page, setPage }) {
   const [isbn, setIsbn] = useState(null);
   function renderPage() {
@@ -19,6 +19,8 @@ function Navbar({ page, setPage }) {
         return <Landing setPage={setPage} />;
       case "book":
         return <Book isbn={isbn}/>;
+      case  "book_crate":
+        return <Book_Crate setPage={setPage} setIsbn={setIsbn}/>;
     }
   }
   return (
@@ -37,7 +39,7 @@ function Navbar({ page, setPage }) {
               />
               Book Crate
             </li>
-            <li className="nav-item" onClick={() => setPage("readres_grove")}>
+            <li className="nav-item" onClick={() => setPage("readers_grove")}>
               <img
                 id="readers_grove_image"
                 src="/assets/readers_grove/Readers_Grove_Initial.png"

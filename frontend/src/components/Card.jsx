@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Book from "./Book.jsx";
 import "../assets/codex/codex.css";
+import "../assets/book_crate/book_crate.css";
+
 function Card({ payload, setPage, setIsbn }) {
   if (!payload || !payload.book.image.source) return;
   if (!payload.book.isbn.match(/^(?:\d{10}|\d{13})$/)) return;
@@ -78,11 +80,11 @@ function Card({ payload, setPage, setIsbn }) {
               </p>
             </div>
           </div>
-          <p className={payload.book.info.publishInfo.class}>
-            Published on: {payload.book.info.publishInfo.value}
+          <p className={payload.book.info.publishInfo?.class}>
+            Published on: {payload.book.info.publishInfo?.value}
           </p>
-          <p className={payload.book.info.snippet.class}>
-            {payload.book.info.snippet.value
+          <p className={payload.book.info.snippet?.class}>
+            {payload.book.info.snippet?.value
               ? payload.book.info.snippet.value
               : "No snippet available."}
           </p>

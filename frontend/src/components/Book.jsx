@@ -8,7 +8,7 @@ function Book({ isbn }) {
   const urlPrefix = "http://localhost:8000";
   const [bookData, setBookData] = useState({});
   const [ratingsData, setRatingsData] = useState({});
-  const [sortBy, setSortBy] = useState("highest_rated");
+  const [sortBy, setSortBy] = useState("highest rated");
   const [reviewsData, setReviewsData] = useState({});
   const [refreshReviews, setRefreshReviews] = useState(false);
   const [likesData, setLikesData] = useState({});
@@ -25,12 +25,16 @@ function Book({ isbn }) {
         .then((response) => response.json())
         .then((data) => {
           setLikesData((prev) => {
-            return { ...prev, [item.id]: { like_count: data.like_count ? data.like_count : 0 } };
+            return {
+              ...prev,
+              [item.id]: { like_count: data?.like_count ? data.like_count : 0 },
+            };
           });
         })
         .catch((error) => console.log(error));
     });
   }, [isbn, reviewsData]);
+
   useEffect(() => {
     fetch(`${urlPrefix}/book_result`, {
       method: "POST",
@@ -56,6 +60,7 @@ function Book({ isbn }) {
   }, [isbn]);
 
   useEffect(() => {
+    setLikesData({});
     fetch(`${urlPrefix}/get_book_reviews`, {
       method: "POST",
       body: JSON.stringify({
@@ -69,6 +74,7 @@ function Book({ isbn }) {
       .then((data) => setReviewsData(data))
       .catch((error) => console.log(error));
   }, [isbn, sortBy, refreshReviews]);
+
   return (
     <>
       {bookData?.volumeInfo ? (
@@ -173,10 +179,10 @@ function Book({ isbn }) {
                     setSortBy(event.target.value);
                   }}
                 >
-                  <option className="sort_by_option" value="highest_rated">
+                  <option className="sort_by_option" value="highest rated">
                     Highest Rated
                   </option>
-                  <option className="sort_by_option" value="lowest_rated">
+                  <option className="sort_by_option" value="lowest rated">
                     Lowest Rated
                   </option>
                   <option className="sort_by_option" value="latest">
@@ -185,7 +191,7 @@ function Book({ isbn }) {
                   <option className="sort_by_option" value="oldest">
                     Oldest
                   </option>
-                  <option className="sort_by_option" value="most_liked">
+                  <option className="sort_by_option" value="most liked">
                     Most Liked
                   </option>
                 </select>
