@@ -69,7 +69,7 @@ function Book_Crate({ setPage, setIsbn }) {
           alignItems: "center",
         }}
       >
-        <h2 id="header">Book Crate</h2>
+        <h2 id="header">Browse the Crate and find your next read</h2>
       </div>
       <div id="search_book_form_div">
         <form
@@ -117,7 +117,6 @@ function Book_Crate({ setPage, setIsbn }) {
         {listings?.listings ? (
           listings.listings.map((item) => {
             const isbn = item.book_isbn;
-            // console.log(listingsData[isbn]);
             if (
               !listingsData[isbn] ||
               !listingsData[isbn]?.items[0]?.volumeInfo
