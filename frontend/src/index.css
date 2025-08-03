@@ -6,6 +6,18 @@ body {
   background-color: #121212;
   color: #e4e6e8;
 }
+a {
+  color: gold; 
+  cursor: pointer;
+  text-decoration: underline;
+}
+#login_body_div a, #register_body_div a {
+  color:blue;
+}
+input{
+  margin-top:5px;
+  margin-bottom:5px;
+}
 p {
   margin: 0px;
 }
@@ -15,7 +27,8 @@ textarea {
   width: 100%;
   margin: 5px;
 }
-.navbar {
+.navbar, #login_body_div, #register_body_div {
+  color: #1c1c1c;
   background-color: #ebe3d5;
   margin-bottom: 10px;
 }

@@ -1066,7 +1066,7 @@ def login_view(request):
         password = data["password"]
         user = authenticate(request, username=username, password=password)
 
-        if user and password:
+        if user:
             login(request, user)
             # return HttpResponseRedirect(reverse("readers_grove"))
             return JsonResponse({"user":username, "isUser": user.is_authenticated, "isSuper": user.is_superuser})

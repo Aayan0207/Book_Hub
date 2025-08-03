@@ -35,8 +35,8 @@ function Login({ setPage, setUserData }) {
     setInvalid(false);
     const form = event.target;
     const details = {
-      username: form.querySelector("[name='username']").value,
-      password: form.querySelector("[name='password']").value,
+      username: form.querySelector("[name='username']").value.trim(),
+      password: form.querySelector("[name='password']").value.trim(),
     };
     setPayload(details);
   }
@@ -75,7 +75,7 @@ function Login({ setPage, setUserData }) {
             <input className="btn btn-primary" type="submit" value="Login" />
             <p>
               Don't have an account?
-              <a onClick={() => setPage("register")} style={{color:"gold", cursor:"pointer"}}> Register here.</a>
+              <a onClick={() => setPage("register")}> Register here.</a>
             </p>
           </form>
         </div>
