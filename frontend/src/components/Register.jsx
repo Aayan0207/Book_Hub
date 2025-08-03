@@ -6,7 +6,7 @@ function Register({ setPage }) {
       <div id="register_wrapper">
         <div id="register_body_div">
           <h2>Register</h2>
-          <form action="{% url 'register' %}" method="post" id="register_form">
+          <form action="/register" method="post" id="register_form">
             <div className="form-group">
               <input
                 className="form-control"
@@ -47,8 +47,8 @@ function Register({ setPage }) {
             <input className="btn btn-primary" type="submit" value="Register" />
           </form>
           <p>
-            Already have an account? &nbsp;{" "}
-            <p onClick={() => setPage("login")}>Log In here.</p>
+            Already have an account?&nbsp;
+            <a onClick={() => setPage("login")}>Log In here.</a>
           </p>
         </div>
       </div>
