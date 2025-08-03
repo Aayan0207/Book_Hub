@@ -7,6 +7,7 @@ function Login({ setPage, setUserData }) {
   const token = getToken();
   const [payload, setPayload] = useState({});
   const [invalid, setInvalid] = useState(null);
+
   useEffect(() => {
     if (!payload?.username || !payload?.password) return;
     fetch(`${urlPrefix}/login`, {
