@@ -1,14 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Codex from "./Codex";
 import Landing from "./Landing";
 import Login from "./Login";
 import Register from "./Register";
 import Book from "./Book";
 import Book_Crate from "./Book_Crate";
+import Readers_Grove from "./Readers_Grove";
 
 function Navbar({ page, setPage }) {
+  const urlPrefix = "http://localhost:8000";
   const [isbn, setIsbn] = useState(null);
   const [userData, setUserData] = useState(null);
+  const [logout, setLogout] = useState(false);
+
+  useEffect(() => {
+    if (!userData || !userData?.isUser) return;
+    fetch(`${urlPrefix}/logout`).then(() => {
+      setUserData(null);
+      setPage("default");
+    });
+  }, [logout]);
+
   function renderPage() {
     switch (page) {
       case "codex":
@@ -16,13 +28,15 @@ function Navbar({ page, setPage }) {
       case "login":
         return <Login setPage={setPage} setUserData={setUserData} />;
       case "register":
-        return <Register setPage={setPage} />;
+        return <Register setPage={setPage} setUserData={setUserData} />;
       case "default":
-        return <Landing setPage={setPage} userData={userData}/>;
+        return <Landing setPage={setPage} userData={userData} />;
       case "book":
         return <Book isbn={isbn} />;
       case "book_crate":
         return <Book_Crate setPage={setPage} setIsbn={setIsbn} />;
+      case "readers_grove":
+        return <Readers_Grove setPage={setPage} userData={userData}/>;
     }
   }
   return (
@@ -70,10 +84,13 @@ function Navbar({ page, setPage }) {
               </li>
             ) : null}
             {userData?.isUser ? (
-              <li className="nav-item" id="logout" onClick={() => {
-                setUserData(null);
-                setPage("default");
-                }}>
+              <li
+                className="nav-item"
+                id="logout"
+                onClick={() => {
+                  setLogout(!logout);
+                }}
+              >
                 <span className="nav-link">Logout</span>
               </li>
             ) : null}

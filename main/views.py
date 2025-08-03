@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
-from random import shuffle
 from django.http import (
     HttpResponse,
     HttpResponseRedirect,
@@ -1061,16 +1060,25 @@ def index(request):
 
 def login_view(request):
     if request.method == "POST":
-        data=loads(request.body)
-        username = data["username"]
-        password = data["password"]
+        try:
+            data=loads(request.body)
+            username = data["username"]
+            password = data["password"]
+            request_from = "react"
+        except: # Remove this later
+            username = request.POST["username"]
+            password = request.POST["password"]
+            request_from = "base"
+            
         user = authenticate(request, username=username, password=password)
 
         if user:
             login(request, user)
-            # return HttpResponseRedirect(reverse("readers_grove"))
+            if request_from=="base":
+                return HttpResponseRedirect(reverse("readers_grove"))
             return JsonResponse({"user":username, "isUser": user.is_authenticated, "isSuper": user.is_superuser})
         else:
+            return JsonResponse({"message":"Invalid username and/or password"})
             return render(
                 request,
                 "main/login.html",
@@ -1087,12 +1095,13 @@ def logout_view(request):
 
 def register(request):
     if request.method == "POST":
-        username = request.POST["username"]
-        email = request.POST["email"]
-
-        password = request.POST["password"]
-        confirmation = request.POST["confirmation"]
+        data=loads(request.body)
+        username = data["username"]
+        email = data["email"]
+        password = data["password"]
+        confirmation = data["confirmation"]
         if password != confirmation:
+            return JsonResponse({"message":"Passwords must match"})
             return render(
                 request, "main/register.html", {"message": "Passwords must match."}
             )
@@ -1101,10 +1110,12 @@ def register(request):
             user = User.objects.create_user(username, email, password)
             user.save()
         except IntegrityError:
+            return JsonResponse({"message": "Username already taken"})
             return render(
                 request, "main/register.html", {"message": "Username already taken."}
             )
         login(request, user)
+        return JsonResponse({"user":username, "isUser": user.is_authenticated,"isSuper":user.is_superuser})
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "main/register.html")

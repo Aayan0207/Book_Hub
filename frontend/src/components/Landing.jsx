@@ -22,7 +22,7 @@ function Landing({setPage, userData}) {
           <img id="book_hub_img" src="/assets/main/BookHub_Icon.png" />
         </h1>
         {!userData?.isUser ? 
-        <h2><a onClick={() => setPage("register")}>Login/Register</a> to gain access to all the features of Book Hub.</h2>
+        <h2><a onClick={() => setPage("register")} id="landing_link">Login/Register</a> to gain access to all the features of Book Hub.</h2>
         :null}
         <div id="button_grid">
           <button className="btn btn-info" onClick={() => setPage("book_crate")}>

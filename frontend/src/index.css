@@ -7,16 +7,20 @@ body {
   color: #e4e6e8;
 }
 a {
-  color: gold; 
   cursor: pointer;
+}
+#landing_link {
+  color: gold;
   text-decoration: underline;
 }
-#login_body_div a, #register_body_div a {
-  color:blue;
+#login_body_div a,
+#register_body_div a {
+  color: blue;
+  text-decoration: underline;
 }
-input{
-  margin-top:5px;
-  margin-bottom:5px;
+input {
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 p {
   margin: 0px;
@@ -27,10 +31,15 @@ textarea {
   width: 100%;
   margin: 5px;
 }
-.navbar, #login_body_div, #register_body_div {
+.navbar {
   color: #1c1c1c;
   background-color: #ebe3d5;
   margin-bottom: 10px;
+}
+#login_body_div,
+#register_body_div {
+  color: #1c1c1c;
+  background-color: #c4bba3;
 }
 .nav-link {
   color: #1c1c1c;

@@ -6,7 +6,7 @@ function Login({ setPage, setUserData }) {
   const urlPrefix = "http://localhost:8000";
   const token = getToken();
   const [payload, setPayload] = useState({});
-  const [invalid, setInvalid] = useState(false);
+  const [invalid, setInvalid] = useState(null);
   useEffect(() => {
     if (!payload?.username || !payload?.password) return;
     fetch(`${urlPrefix}/login`, {
@@ -15,13 +15,14 @@ function Login({ setPage, setUserData }) {
         "Content-Type": "application/json",
         "X-CSRFToken": token,
       },
-      credentials:"include",
+      credentials: "include",
       body: JSON.stringify(payload),
     })
       .then((response) => response.json())
       .then((data) => {
+        console.log(data);
         if (!data.isUser) {
-          setInvalid(true);
+          setInvalid(data.message);
           return;
         }
         setUserData(data);
@@ -32,7 +33,7 @@ function Login({ setPage, setUserData }) {
 
   function submitForm(event) {
     event.preventDefault();
-    setInvalid(false);
+    setInvalid(null);
     const form = event.target;
     const details = {
       username: form.querySelector("[name='username']").value.trim(),
@@ -45,7 +46,6 @@ function Login({ setPage, setUserData }) {
     <>
       <div id="login_wrapper">
         <div id="login_body_div">
-          {invalid ? <p>Invalid Username and/or Password</p> : null}
           <h2>Login</h2>
           <form
             action="/login"
@@ -73,6 +73,7 @@ function Login({ setPage, setUserData }) {
               />
             </div>
             <input className="btn btn-primary" type="submit" value="Login" />
+            {invalid ? <p>{invalid}</p> : null}
             <p>
               Don't have an account?
               <a onClick={() => setPage("register")}> Register here.</a>
