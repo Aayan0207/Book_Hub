@@ -162,7 +162,9 @@ function Codex({ setPage, setIsbn }) {
             })
           : null}
       </div>
-      <Paginator page={slide} setPage={setSlide} maxPage={10} />
+      {data?.results?.totalItems > 0 ? (
+        <Paginator page={slide} setPage={setSlide} maxPage={10} />
+      ) : null}
     </>
   );
 }

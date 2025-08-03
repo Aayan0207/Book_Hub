@@ -8,12 +8,13 @@ import Book_Crate from "./Book_Crate";
 
 function Navbar({ page, setPage }) {
   const [isbn, setIsbn] = useState(null);
+  const [userData, setUserData] = useState(null);
   function renderPage() {
     switch (page) {
       case "codex":
         return <Codex setPage={setPage} setIsbn={setIsbn} />;
       case "login":
-        return <Login setPage={setPage} />;
+        return <Login setPage={setPage} setUserData={setUserData} />;
       case "register":
         return <Register setPage={setPage} />;
       case "default":
@@ -59,23 +60,41 @@ function Navbar({ page, setPage }) {
                 Codex
               </span>
             </li>
-            <li className="nav-item" id="logout">
-              <span className="nav-link">Logout</span>
-            </li>
-            <li
-              className="nav-item"
-              id="login"
-              onClick={() => setPage("login")}
-            >
-              <span className="nav-link">Login</span>
-            </li>
-            <li
-              className="nav-item"
-              id="register"
-              onClick={() => setPage("register")}
-            >
-              <span className="nav-link">Register</span>
-            </li>
+            {userData?.isUser ? (
+              <li
+                className="nav-item"
+                id="display_username"
+                onClick={() => setPage("readers_grove")}
+              >
+                <span className="nav-link">{userData.user}</span>
+              </li>
+            ) : null}
+            {userData?.isUser ? (
+              <li className="nav-item" id="logout" onClick={() => {
+                setUserData(null);
+                setPage("default");
+                }}>
+                <span className="nav-link">Logout</span>
+              </li>
+            ) : null}
+            {!userData?.isUser ? (
+              <li
+                className="nav-item"
+                id="login"
+                onClick={() => setPage("login")}
+              >
+                <span className="nav-link">Login</span>
+              </li>
+            ) : null}
+            {!userData?.isUser ? (
+              <li
+                className="nav-item"
+                id="register"
+                onClick={() => setPage("register")}
+              >
+                <span className="nav-link">Register</span>
+              </li>
+            ) : null}
           </ul>
         </div>
       </nav>

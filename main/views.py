@@ -1061,14 +1061,15 @@ def index(request):
 
 def login_view(request):
     if request.method == "POST":
-
-        username = request.POST["username"]
-        password = request.POST["password"]
+        data=loads(request.body)
+        username = data["username"]
+        password = data["password"]
         user = authenticate(request, username=username, password=password)
 
-        if user is not None:
+        if user and password:
             login(request, user)
-            return HttpResponseRedirect(reverse("readers_grove"))
+            # return HttpResponseRedirect(reverse("readers_grove"))
+            return JsonResponse({"user":username, "isUser": user.is_authenticated, "isSuper": user.is_superuser})
         else:
             return render(
                 request,
