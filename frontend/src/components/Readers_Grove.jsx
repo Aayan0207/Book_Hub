@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "../assets/readers_grove/readers_grove.css";
 import Profile from "./Profile.jsx";
-function Readers_Grove({ setPage, userData }) {
+
+function Readers_Grove({ setPage, userData, setIsbn }) {
   useEffect(() => {
     if (!userData?.isUser) setPage("login");
   }, [userData]);
@@ -11,7 +12,7 @@ function Readers_Grove({ setPage, userData }) {
   function renderView() {
     switch (view) {
       case "profile":
-        return <Profile userData={userData}/>;
+        return <Profile userData={userData} setPage={setPage} setIsbn={setIsbn}/>;
     }
   }
 

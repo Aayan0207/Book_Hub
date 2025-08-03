@@ -1074,9 +1074,10 @@ def login_view(request):
 
         if user:
             login(request, user)
-            if request_from=="base":
+            id=User.objects.get(username=username).id # type: ignore 
+            if request_from=="base":# Remove this
                 return HttpResponseRedirect(reverse("readers_grove"))
-            return JsonResponse({"user":username, "isUser": user.is_authenticated, "isSuper": user.is_superuser})
+            return JsonResponse({"user":username, "userId":id, "isUser": user.is_authenticated, "isSuper": user.is_superuser})
         else:
             return JsonResponse({"message":"Invalid username and/or password"})
             return render(
@@ -1115,7 +1116,8 @@ def register(request):
                 request, "main/register.html", {"message": "Username already taken."}
             )
         login(request, user)
-        return JsonResponse({"user":username, "isUser": user.is_authenticated,"isSuper":user.is_superuser})
+        id=User.objects.get(username=username).id # type: ignore 
+        return JsonResponse({"user":username, "userId":id ,"isUser": user.is_authenticated,"isSuper":user.is_superuser})
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "main/register.html")
