@@ -125,6 +125,7 @@ class QuoteForm(forms.Form):
 def csrf_token(request):
     return JsonResponse({"detail": "CSRF cookie set"})
 
+
 def user(request, profile):
     try:
         user = User.objects.get(username=profile)
@@ -511,7 +512,7 @@ def get_listing(request):
                 )
             )
         except:
-            isbn=data["isbn"]
+            isbn = data["isbn"]
             listing = list(
                 Listing.objects.filter(book_isbn=isbn).values(
                     "id", "book_isbn", "price", "stock", "timestamp"
@@ -1061,25 +1062,32 @@ def index(request):
 def login_view(request):
     if request.method == "POST":
         try:
-            data=loads(request.body)
+            data = loads(request.body)
             username = data["username"]
             password = data["password"]
             request_from = "react"
-        except: # Remove this later
+        except:  # Remove this later
             username = request.POST["username"]
             password = request.POST["password"]
             request_from = "base"
-            
+
         user = authenticate(request, username=username, password=password)
 
         if user:
             login(request, user)
-            id=User.objects.get(username=username).id # type: ignore 
-            if request_from=="base":# Remove this
+            id = User.objects.get(username=username).id  # type: ignore
+            if request_from == "base":  # Remove this
                 return HttpResponseRedirect(reverse("readers_grove"))
-            return JsonResponse({"user":username, "userId":id, "isUser": user.is_authenticated, "isSuper": user.is_superuser})
+            return JsonResponse(
+                {
+                    "user": username,
+                    "userId": id,
+                    "isUser": user.is_authenticated,
+                    "isSuper": user.is_superuser,
+                }
+            )
         else:
-            return JsonResponse({"message":"Invalid username and/or password"})
+            return JsonResponse({"message": "Invalid username and/or password"})
             return render(
                 request,
                 "main/login.html",
@@ -1096,13 +1104,13 @@ def logout_view(request):
 
 def register(request):
     if request.method == "POST":
-        data=loads(request.body)
+        data = loads(request.body)
         username = data["username"]
         email = data["email"]
         password = data["password"]
         confirmation = data["confirmation"]
         if password != confirmation:
-            return JsonResponse({"message":"Passwords must match"})
+            return JsonResponse({"message": "Passwords must match"})
             return render(
                 request, "main/register.html", {"message": "Passwords must match."}
             )
@@ -1116,8 +1124,15 @@ def register(request):
                 request, "main/register.html", {"message": "Username already taken."}
             )
         login(request, user)
-        id=User.objects.get(username=username).id # type: ignore 
-        return JsonResponse({"user":username, "userId":id ,"isUser": user.is_authenticated,"isSuper":user.is_superuser})
+        id = User.objects.get(username=username).id  # type: ignore
+        return JsonResponse(
+            {
+                "user": username,
+                "userId": id,
+                "isUser": user.is_authenticated,
+                "isSuper": user.is_superuser,
+            }
+        )
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "main/register.html")
