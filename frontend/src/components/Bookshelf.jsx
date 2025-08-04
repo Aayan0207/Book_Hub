@@ -5,6 +5,29 @@ function Bookshelf({ userData, setPage, setIsbn }) {
   const [shelf, setShelf] = useState("all");
   const [books, setBooks] = useState([]);
   const [batch, setBatch] = useState(1);
+  const [loadMore, setLoadMore] = useState(false);
+  const [showMore, setShowMore] = useState(false);
+
+  useEffect(() => {
+    if (!loadMore || batch === 1) return;
+    fetch(`${urlPrefix}/get_bookshelf`, {
+      method: "POST",
+      body: JSON.stringify({
+        user_id: userData?.userId,
+        shelf: shelf,
+        page: batch,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setBooks((prev) => {
+          return([...prev, ...data.bookshelf]);
+        });
+        setLoadMore(data.next);
+        setShowMore(data.next);
+      })
+      .catch((error) => console.log(error));
+  }, [batch]);
 
   function chunkedArray(books) {
     let chunks = [];
@@ -33,7 +56,11 @@ function Bookshelf({ userData, setPage, setIsbn }) {
       }),
     })
       .then((response) => response.json())
-      .then((data) => setBooks(data.bookshelf))
+      .then((data) => {
+        setBooks(data.bookshelf);
+        setLoadMore(data.next);
+        setShowMore(data.next);
+      })
       .catch((error) => console.log(error));
   }, [shelf]);
 
@@ -52,7 +79,6 @@ function Bookshelf({ userData, setPage, setIsbn }) {
           <option value="want to read">Want to Read</option>
         </select>
         <div id="bookshelf_all_div">
-          {console.log(chunkedArray(books))}
           {chunkedArray(books).map((chunk, index) => {
             return (
               <div className="bookshelf_row" key={index}>
@@ -70,6 +96,19 @@ function Bookshelf({ userData, setPage, setIsbn }) {
               </div>
             );
           })}
+        </div>
+        <div style={{display:"flex", alignItems:"center", justifyContent:"center", marginTop:"10px"}}>
+        {loadMore && showMore ? (
+          <button
+            className="btn btn-secondary"
+            onClick={() => {
+              setBatch(batch + 1);
+              setShowMore(false);
+            }}
+          >
+            Load More
+          </button>
+        ) : null}
         </div>
       </div>
     </>
