@@ -1,7 +1,7 @@
 /* #bookshelf_all_div,#update_quote_form, #user_credits_form, #user_search_form, #self_user_alert,#user_found, #no_user_alert, #bookshelf_currently_reading_div, #bookshelf_want_to_read_div, #bookshelf_read_div, #reviews_div, #user_review_form, #user_info {
     display:none;
 } */
-#update_quote_form > input[type='reset'] {
+#update_quote_form > input[type="reset"] {
   margin-left: 5px;
 }
 #user_options,
@@ -86,6 +86,10 @@
   height: 5px;
   background-color: black;
 }
+.user_image_items > img {
+  margin-left: 5px;
+  margin-right: 5px;
+}
 #user_options > hr {
   width: 100%;
   height: 5px;
@@ -140,7 +144,7 @@
 }
 .like_button,
 .liked_button {
-  background-image: url("../codex/Like_Button.png");
+  background-image: url("/assets/codex/Like_Button.png");
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
@@ -162,7 +166,7 @@
   margin-left: 5vw;
 }
 .liked_button {
-  background-image: url("../codex/Liked_Button.png");
+  background-image: url("/assets/codex/Liked_Button.png");
 }
 #user_options {
   display: flex;
@@ -200,13 +204,14 @@
   margin-bottom: 25px;
 }
 .bookshelf_row {
-  background-image: url("../main/Bookshelf_Image.png");
+  background-image: url("/assets/main/Bookshelf_Image.png");
   background-size: 100vw 200px;
   background-repeat: round;
   padding: 10px;
   padding-left: 30px;
   padding-right: 30px;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
   margin-right: 20px;
@@ -255,7 +260,7 @@
   z-index: 1;
 }
 .review_rating_star {
-  background-image: url("../codex/Star_Image_results.png");
+  background-image: url("/assets/codex/Star_Image_results.png");
   height: 25px;
   width: 25px;
   background-repeat: no-repeat;

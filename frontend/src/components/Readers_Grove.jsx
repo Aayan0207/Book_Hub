@@ -4,6 +4,7 @@ import Profile from "./Profile.jsx";
 import Bookshelf from "./Bookshelf.jsx";
 
 function Readers_Grove({ setPage, userData, setIsbn }) {
+  const urlPrefix = "http://localhost:8000";
   useEffect(() => {
     if (!userData?.isUser) setPage("login");
   }, [userData]);
@@ -15,7 +16,7 @@ function Readers_Grove({ setPage, userData, setIsbn }) {
       case "profile":
         return <Profile userData={userData} setPage={setPage} setIsbn={setIsbn}/>;
       case "bookshelf":
-        return <Bookshelf/>;
+        return <Bookshelf userData={userData} setPage={setPage} setIsbn={setIsbn}/>;
     }
   }
 
