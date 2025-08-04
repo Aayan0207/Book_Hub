@@ -1,11 +1,35 @@
 import React, { useState, useEffect, act } from "react";
 import Picture from "./Picture";
+import getToken from "./getToken";
+
 function Profile({ userData, setPage, setIsbn }) {
   const urlPrefix = "http://localhost:8000";
+  const token = getToken();
   const [quote, setQuote] = useState(null);
   const [activityInfo, setActivityInfo] = useState({});
   const [currently, setCurrently] = useState([]);
   const [want, setWant] = useState([]);
+  const [showForm, setShowForm] = useState(false);
+  const [payload, setPayload] = useState({});
+
+  useEffect(() => {
+    if (!payload?.content) return;
+    fetch(`${urlPrefix}/update_quote`, {
+      method: "POST",
+      body: JSON.stringify(payload),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setQuote(data.content);
+        setShowForm(false);
+      })
+      .catch((error) => console.log(error));
+  }, [payload]);
 
   useEffect(() => {
     if (!userData?.isUser) return;
@@ -65,6 +89,16 @@ function Profile({ userData, setPage, setIsbn }) {
       .catch((error) => console.log(error));
   }, [userData]);
 
+  function submitForm(event) {
+    event.preventDefault();
+    const form = event.target;
+    const details = {
+      id: userData?.userId,
+      content: form.querySelector("#id_quote").value,
+    };
+    setPayload(details);
+  }
+
   return (
     <>
       <div id="user_info">
@@ -80,9 +114,45 @@ function Profile({ userData, setPage, setIsbn }) {
         </div>
         <div id="quote_div">
           <p id="quote">{quote}</p>
-          {/*Add form to update quote*/}
-          <button className="update_quote btn btn-info">Update About</button>
-          <button className="delete_quote btn btn-danger">Delete About</button>
+          {showForm ? (
+            <form
+              action="/update_quote"
+              method="post"
+              id="update_quote_form"
+              onSubmit={(event) => submitForm(event)}
+              onReset={() => setShowForm(false)}
+            >
+              <textarea name="quote" maxLength="2000" id="id_quote" required>
+                {quote}
+              </textarea>
+              <input
+                type="submit"
+                className="btn btn-success"
+                value="Add"
+                id="submit_quote_button"
+              />
+              <input
+                type="reset"
+                className="btn btn-danger"
+                value="Cancel"
+                id="cancel_quote_button"
+              />
+            </form>
+          ) : null}
+          {quote ? (
+            <>
+              <button
+                className="update_quote btn btn-info"
+                onClick={() => setShowForm(true)}
+              >
+                Update About
+              </button>
+              <button className="delete_quote btn btn-danger">
+                Delete AFbout
+              </button>
+            </>
+          ) : null}{" "}
+          {/*Add quote button*/}
         </div>
         <hr />
         <div id="user_activity_info">
