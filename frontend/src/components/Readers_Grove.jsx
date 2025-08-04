@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../assets/readers_grove/readers_grove.css";
 import Profile from "./Profile.jsx";
+import Bookshelf from "./Bookshelf.jsx";
 
 function Readers_Grove({ setPage, userData, setIsbn }) {
   useEffect(() => {
@@ -13,6 +14,8 @@ function Readers_Grove({ setPage, userData, setIsbn }) {
     switch (view) {
       case "profile":
         return <Profile userData={userData} setPage={setPage} setIsbn={setIsbn}/>;
+      case "bookshelf":
+        return <Bookshelf/>;
     }
   }
 
