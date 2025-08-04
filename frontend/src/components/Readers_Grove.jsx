@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "../assets/readers_grove/readers_grove.css";
 import Profile from "./Profile.jsx";
 import Bookshelf from "./Bookshelf.jsx";
-
+import Feed from "./Feed.jsx";
 function Readers_Grove({ setPage, userData, setIsbn }) {
   const urlPrefix = "http://localhost:8000";
   useEffect(() => {
@@ -17,6 +17,8 @@ function Readers_Grove({ setPage, userData, setIsbn }) {
         return <Profile userData={userData} setPage={setPage} setIsbn={setIsbn}/>;
       case "bookshelf":
         return <Bookshelf userData={userData} setPage={setPage} setIsbn={setIsbn}/>;
+      case "feed":
+        return <Feed/>;
     }
   }
 

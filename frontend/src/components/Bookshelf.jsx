@@ -21,7 +21,7 @@ function Bookshelf({ userData, setPage, setIsbn }) {
       .then((response) => response.json())
       .then((data) => {
         setBooks((prev) => {
-          return([...prev, ...data.bookshelf]);
+          return [...prev, ...data.bookshelf];
         });
         setLoadMore(data.next);
         setShowMore(data.next);
@@ -97,18 +97,25 @@ function Bookshelf({ userData, setPage, setIsbn }) {
             );
           })}
         </div>
-        <div style={{display:"flex", alignItems:"center", justifyContent:"center", marginTop:"10px"}}>
-        {loadMore && showMore ? (
-          <button
-            className="btn btn-secondary"
-            onClick={() => {
-              setBatch(batch + 1);
-              setShowMore(false);
-            }}
-          >
-            Load More
-          </button>
-        ) : null}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginTop: "10px",
+          }}
+        >
+          {loadMore && showMore ? (
+            <button
+              className="btn btn-info"
+              onClick={() => {
+                setBatch(batch + 1);
+                setShowMore(false);
+              }}
+            >
+              Load More
+            </button>
+          ) : null}
         </div>
       </div>
     </>
