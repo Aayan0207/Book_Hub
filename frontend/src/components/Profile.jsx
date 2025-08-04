@@ -11,6 +11,20 @@ function Profile({ userData, setPage, setIsbn }) {
   const [want, setWant] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [payload, setPayload] = useState({});
+  const [deleteQuote, setDeleteQuote] = useState(false);
+
+  useEffect(() => {
+    if (!quote) return;
+    fetch(`${urlPrefix}/delete_quote`, {
+      method: "POST",
+      body: JSON.stringify({
+        id: userData?.userId,
+      }),
+    })
+      .then((response) => response.json())
+      .then((_) => setQuote(null))
+      .catch((error) => console.log(error));
+  }, [deleteQuote]);
 
   useEffect(() => {
     if (!payload?.content) return;
@@ -113,7 +127,7 @@ function Profile({ userData, setPage, setIsbn }) {
           <hr />
         </div>
         <div id="quote_div">
-          <p id="quote">{quote}</p>
+          {!showForm ? <p id="quote">{quote}</p> : null}
           {showForm ? (
             <form
               action="/update_quote"
@@ -139,7 +153,7 @@ function Profile({ userData, setPage, setIsbn }) {
               />
             </form>
           ) : null}
-          {quote ? (
+          {quote && !showForm ? (
             <>
               <button
                 className="update_quote btn btn-info"
@@ -147,12 +161,21 @@ function Profile({ userData, setPage, setIsbn }) {
               >
                 Update About
               </button>
-              <button className="delete_quote btn btn-danger">
-                Delete AFbout
+              <button
+                className="delete_quote btn btn-danger"
+                onClick={() => setDeleteQuote(!deleteQuote)}
+              >
+                Delete About
               </button>
             </>
-          ) : null}{" "}
-          {/*Add quote button*/}
+          ) : !showForm ? (
+            <button
+              className="add_quote_button btn btn-success"
+              onClick={() => setShowForm(true)}
+            >
+              Add About
+            </button>
+          ) : null}
         </div>
         <hr />
         <div id="user_activity_info">
