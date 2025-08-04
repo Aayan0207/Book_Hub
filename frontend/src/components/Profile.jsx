@@ -1,11 +1,46 @@
 import React, { useState, useEffect, act } from "react";
-
-function Profile({ userData, setPage }) {
+import Picture from "./Picture";
+function Profile({ userData, setPage, setIsbn }) {
   const urlPrefix = "http://localhost:8000";
   const [quote, setQuote] = useState(null);
   const [activityInfo, setActivityInfo] = useState({});
+  const [currently, setCurrently] = useState([]);
+  const [want, setWant] = useState([]);
 
   useEffect(() => {
+    if (!userData?.isUser) return;
+    fetch(`${urlPrefix}/get_bookshelf`, {
+      method: "POST",
+      body: JSON.stringify({
+        user_id: userData.userId,
+        page: 1,
+        shelf: "want to read",
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setWant(data.bookshelf.slice(0, 3));
+      });
+  }, [userData]);
+
+  useEffect(() => {
+    if (!userData?.isUser) return;
+    fetch(`${urlPrefix}/get_bookshelf`, {
+      method: "POST",
+      body: JSON.stringify({
+        user_id: userData.userId,
+        page: 1,
+        shelf: "currently reading",
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setCurrently(data.bookshelf.slice(0, 3));
+      });
+  }, [userData]);
+
+  useEffect(() => {
+    if (!userData?.isUser) return;
     fetch(`${urlPrefix}/user_activity_info`, {
       method: "POST",
       body: JSON.stringify({
@@ -18,6 +53,7 @@ function Profile({ userData, setPage }) {
   }, [userData]);
 
   useEffect(() => {
+    if (!userData?.isUser) return;
     fetch(`${urlPrefix}/get_quote`, {
       method: "POST",
       body: JSON.stringify({
@@ -108,33 +144,37 @@ function Profile({ userData, setPage }) {
           </div>
         </div>
         <div id="user_reading_div">
-            {/*Add dynamism and everything*/}
+          {/*Add dynamism and everything*/}
           <div id="user_currently_reading">
             <h3>Currently Reading</h3>
             <div className="user_image_items">
-              <img
-                src=""
-                className="user_currently_reading_image"
-              />
-              <img
-                src=""
-                className="user_currently_reading_image"
-              />
-              <img src="" className="user_currently_reading_image" />
+              {currently.map((item) => {
+                return (
+                  <Picture
+                    key={item.book_isbn}
+                    isbn={item.book_isbn}
+                    cls={"user_currently_reading_image"}
+                    setIsbn={setIsbn}
+                    setPage={setPage}
+                  />
+                );
+              })}
             </div>
           </div>
           <div id="user_want_to_read">
             <h3>Wants to Read</h3>
             <div className="user_image_items">
-              <img
-                src=""
-                className="user_want_to_read_image"
-              />
-              <img
-                src=""
-                className="user_want_to_read_image"
-              />
-              <img src="" className="user_want_to_read_image" />
+              {want.map((item) => {
+                return (
+                  <Picture
+                    key={item.book_isbn}
+                    isbn={item.book_isbn}
+                    cls={"user_want_to_read_image"}
+                    setIsbn={setIsbn}
+                    setPage={setPage}
+                  />
+                );
+              })}
             </div>
           </div>
         </div>
