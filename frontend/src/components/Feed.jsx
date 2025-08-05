@@ -6,7 +6,6 @@ function Feed({ userData, setPage, setIsbn }) {
   const [refresh, setRefresh] = useState(false);
   const [reviews, setReviews] = useState([]);
   const [reviewsData, setReviewsData] = useState({});
-
   useEffect(() => {
     fetch(`${urlPrefix}/random_reviews`, {
       method: "POST",
@@ -61,7 +60,15 @@ function Feed({ userData, setPage, setIsbn }) {
             user: userData,
             book: {
               isbn: item.book_isbn,
-              review: { id: item.id, reviewer: item.user_id },
+              review: {
+                id: item.id,
+                reviewerId: item.user_id,
+                reviewer: item.user_id__username,
+                content: item.content,
+                rating: item.rating,
+                timestamp: item.timestamp,
+                likes:item.likes_count,
+              },
               parentClass: "user_review_div",
               image: {
                 parentClass: "book_cover_image_div",
@@ -96,7 +103,12 @@ function Feed({ userData, setPage, setIsbn }) {
             },
           };
           return (
-            <Card key={item.id} payload={cardDetails} setIsbn={setIsbn} setPage={setPage} />
+            <Card
+              key={item.id}
+              payload={cardDetails}
+              setIsbn={setIsbn}
+              setPage={setPage}
+            />
           );
         })}
       </div>

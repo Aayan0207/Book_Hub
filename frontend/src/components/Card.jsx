@@ -117,6 +117,49 @@ function Card({ payload, setPage, setIsbn }) {
             </>
           ) : null}
         </div>
+        {payload.book.review ? (
+          <div className="book_review">
+            <div className="review_username_header">
+              {payload.book.review.reviewer}
+            </div>
+            {/*Bookmark Button and Functionality*/}
+            <div className="review_rating_div">
+              <div className="review_progress_bar_div">
+                <div
+                  className="review_progress_bar progress-bar bg-warning"
+                  style={{ width: `${payload.book.review.rating * 20}` }}
+                ></div>
+              </div>
+              <div className="review_rating_stars_div">
+                <div className="review_rating_star"></div>
+                <div className="review_rating_star"></div>
+                <div className="review_rating_star"></div>
+                <div className="review_rating_star"></div>
+                <div className="review_rating_star"></div>
+              </div>
+              <div className="review_text_div">
+                {payload.book.review.rating}
+              </div>
+            </div>
+            <div class="review_content_div">
+              <div class="review_content">{payload.book.review.content}</div>
+            </div>
+            <div className="review_like_button_div">
+                  <div className="like_button"></div> {/* Update for user liked and all */}
+                  <div className="review_like_count_div">{payload.book.review.likes}</div>
+                </div>
+            <div className="review_timestamp_div">
+              {new Date(payload.book.review.timestamp).toLocaleDateString(
+                "en-US",
+                {
+                  month: "short",
+                  year: "numeric",
+                  day: "numeric",
+                }
+              )}
+            </div>
+          </div>
+        ) : null}
       </div>
     </>
   );

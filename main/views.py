@@ -13,7 +13,7 @@ from django import forms
 from json import loads
 from requests import get
 from django.views.decorators.csrf import csrf_exempt
-from django.db.models import Avg
+from django.db.models import Avg, Count
 from .models import *
 from django.utils import timezone
 from django.core.paginator import Paginator
@@ -233,9 +233,10 @@ def user_activity_info(request):
 def random_reviews(request):
     if request.method == "POST":
         reviews = list(
-            Review.objects.select_related("user_id")
+            Review.objects.select_related("user_id").select_related("id")
             .exclude(content="")
             .exclude(content=None)
+            .annotate(likes_count=Count("like"))
             .order_by("?")
             .values(
                 "id",
@@ -245,6 +246,7 @@ def random_reviews(request):
                 "timestamp",
                 "user_id__username",
                 "user_id",
+                "likes_count"
             )
         )[:30]
         return JsonResponse({"reviews": reviews})

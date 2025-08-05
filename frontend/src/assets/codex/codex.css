@@ -124,10 +124,7 @@ textarea {
 }
 .book_review,
 .user_review_div {
-  border: 2px solid black;
-  border-radius: 5px;
-  margin: 5px;
-  padding: 10px;
+  margin-top: 10px;
   background-color: #c4bba3;
   color: black;
 }
