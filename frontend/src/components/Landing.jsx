@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import "../assets/main/main.css";
-import Codex from "./Codex";
+
 function Landing({setPage, userData}) {
 
   return (

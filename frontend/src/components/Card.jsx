@@ -3,7 +3,7 @@ import "../assets/codex/codex.css";
 import "../assets/book_crate/book_crate.css";
 import "../assets/readers_grove/readers_grove.css";
 
-function Card({ payload, setPage, setIsbn }) {
+function Card({ payload, setPage, setIsbn, userData = {} }) {
   if (!payload || !payload.book.image.source) return;
   if (!payload.book.isbn.match(/^(?:\d{10}|\d{13})$/)) return;
   const urlPrefix = "http://localhost:8000";
@@ -11,6 +11,74 @@ function Card({ payload, setPage, setIsbn }) {
   const [viewBook, setViewBook] = useState(false);
   const [ratingsData, setRatingsData] = useState({});
   const [saleData, setSaleData] = useState({});
+  const [userLiked, setUserLiked] = useState(false);
+  const [updateLike, setUpdateLike] = useState(false);
+  const [bookmarked, setBookmarked] = useState(false);
+  const [updateBookmark, setUpdateBookmark] = useState(false);
+
+  useEffect(() => {
+    if (!userData || !payload.book.review) return;
+    if (payload.book.review.reviewerId == userData.userId) return;
+    fetch(`${urlPrefix}/update_bookmark`, {
+      method: "POST",
+      body: JSON.stringify({
+        user_id: userData?.userId,
+        profile_id: payload.book.review.reviewerId,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => setBookmarked(data.bookmark))
+      .catch((error) => console.log(error));
+  }, [updateBookmark]);
+
+  useEffect(() => {
+    if (!userData || !payload.book.review) return;
+    fetch(`${urlPrefix}/user_bookmarked`, {
+      method: "POST",
+      body: JSON.stringify({
+        user_id: userData?.userId,
+        profile_id: payload.book.review.reviewerId,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => setBookmarked(data.bookmark))
+      .catch((error) => console.log(error));
+  }, [isbn]);
+
+  useEffect(() => {
+    if (!userData || !payload.book.review) return;
+    fetch(`${urlPrefix}/update_like`, {
+      method: "POST",
+      body: JSON.stringify({
+        review_id: payload.book.review.id,
+        user_id: userData.userId,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setUserLiked(data.liked);
+        if (data.liked) {
+          payload.book.review.likes++;
+        } else {
+          payload.book.review.likes--;
+        }
+      })
+      .catch((error) => console.log(error));
+  }, [updateLike]);
+
+  useEffect(() => {
+    if (!userData || !payload.book.review) return;
+    fetch(`${urlPrefix}/user_liked`, {
+      method: "POST",
+      body: JSON.stringify({
+        review_id: payload.book.review.id,
+        user_id: userData.userId,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => setUserLiked(data.liked))
+      .catch((error) => console.log(error));
+  }, [isbn]);
 
   useEffect(() => {
     if (viewBook) {
@@ -121,6 +189,23 @@ function Card({ payload, setPage, setIsbn }) {
           <div className="book_review">
             <div className="review_username_header">
               {payload.book.review.reviewer}
+              {payload.book.review.reviewerId != userData.userId ? (
+                bookmarked ? (
+                  <button
+                    className="bookmark_button btn btn-warning"
+                    onClick={() => setUpdateBookmark(!updateBookmark)}
+                  >
+                    <i className="bi bi-bookmark-dash"></i> Remove Bookmark
+                  </button>
+                ) : (
+                  <button
+                    className="bookmark_button btn btn-primary"
+                    onClick={() => setUpdateBookmark(!updateBookmark)}
+                  >
+                    <i className="bi bi-bookmark-plus"></i> Bookmark
+                  </button>
+                )
+              ) : null}
             </div>
             {/*Bookmark Button and Functionality*/}
             <div className="review_rating_div">
@@ -141,13 +226,19 @@ function Card({ payload, setPage, setIsbn }) {
                 {payload.book.review.rating}
               </div>
             </div>
-            <div class="review_content_div">
-              <div class="review_content">{payload.book.review.content}</div>
+            <div className="review_content_div">
+              <div className="review_content">{payload.book.review.content}</div>
             </div>
             <div className="review_like_button_div">
-                  <div className="like_button"></div> {/* Update for user liked and all */}
-                  <div className="review_like_count_div">{payload.book.review.likes}</div>
-                </div>
+              <div
+                className={userLiked ? "liked_button" : "like_button"}
+                style={userData?.isUser ? { cursor: "pointer" } : null}
+                onClick={() => setUpdateLike(!updateLike)}
+              ></div>{" "}
+              <div className="review_like_count_div">
+                {payload.book.review.likes}
+              </div>
+            </div>
             <div className="review_timestamp_div">
               {new Date(payload.book.review.timestamp).toLocaleDateString(
                 "en-US",

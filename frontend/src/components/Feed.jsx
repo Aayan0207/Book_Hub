@@ -108,6 +108,7 @@ function Feed({ userData, setPage, setIsbn }) {
               payload={cardDetails}
               setIsbn={setIsbn}
               setPage={setPage}
+              userData={userData}
             />
           );
         })}
