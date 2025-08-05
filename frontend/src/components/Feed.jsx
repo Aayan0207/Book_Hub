@@ -1,9 +1,105 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import Card from "./Card";
 
-function Feed() {
+function Feed({ userData, setPage, setIsbn }) {
+  const urlPrefix = "http://localhost:8000";
+  const [refresh, setRefresh] = useState(false);
+  const [reviews, setReviews] = useState([]);
+  const [reviewsData, setReviewsData] = useState({});
+
+  useEffect(() => {
+    fetch(`${urlPrefix}/random_reviews`, {
+      method: "POST",
+    })
+      .then((response) => response.json())
+      .then((data) => setReviews(data?.reviews))
+      .catch((error) => console.log(error));
+  }, [refresh]);
+
+  useEffect(() => {
+    if (!reviews) return;
+    setReviewsData({});
+    reviews.forEach((review) => {
+      fetch(`${urlPrefix}/book_result`, {
+        method: "POST",
+        body: JSON.stringify({
+          isbn: review.book_isbn,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) =>
+          setReviewsData((prev) => {
+            return { ...prev, [review.book_isbn]: data.result };
+          })
+        )
+        .catch((error) => console.log(error));
+    });
+  }, [reviews]);
+
   return (
     <>
-      <div id="home_div"></div>
+      <div id="home_div">
+        <div
+          style={{
+            alignItems: "center",
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          <button
+            className="refresh_feed_button btn btn-light"
+            onClick={() => setRefresh(!refresh)}
+          >
+            <i className="bi bi-arrow-repeat"></i> Refresh Feed
+          </button>
+        </div>
+        {reviews.map((item) => {
+          if (!reviewsData[item.book_isbn]) return;
+          const bookData = reviewsData[item.book_isbn].items[0];
+
+          const cardDetails = {
+            user: userData,
+            book: {
+              isbn: item.book_isbn,
+              review: { id: item.id, reviewer: item.user_id },
+              parentClass: "user_review_div",
+              image: {
+                parentClass: "book_cover_image_div",
+                source: bookData?.volumeInfo?.imageLinks?.thumbnail,
+              },
+              info: {
+                parentClass: "book_info_div",
+                title: {
+                  class: "search_book_title",
+                  value: bookData?.volumeInfo?.title,
+                },
+                author: {
+                  class: "search_book_author",
+                  value: bookData?.volumeInfo?.authors,
+                },
+                ratings: {
+                  parentClass: "search_rating_div",
+                  bar: {
+                    parentClass: "search_ratings_bar_div",
+                    class: "search_rating_bar",
+                  },
+                  stars: {
+                    parentClass: "search_ratings_stars_div",
+                    class: "search_ratings_star",
+                  },
+                  data: {
+                    parentClass: "search_ratings_count_div",
+                    class: "search_rating_info",
+                  },
+                },
+              },
+            },
+          };
+          return (
+            <Card key={item.id} payload={cardDetails} setIsbn={setIsbn} setPage={setPage} />
+          );
+        })}
+      </div>
     </>
   );
 }

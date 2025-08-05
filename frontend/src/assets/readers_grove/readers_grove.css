@@ -164,6 +164,8 @@
   color: black;
   margin-right: 5vw;
   margin-left: 5vw;
+  display:grid;
+  grid-template-columns: 1fr 2fr;
 }
 .liked_button {
   background-image: url("/assets/codex/Liked_Button.png");

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import Book from "./Book.jsx";
 import "../assets/codex/codex.css";
 import "../assets/book_crate/book_crate.css";
+import "../assets/readers_grove/readers_grove.css";
 
 function Card({ payload, setPage, setIsbn }) {
   if (!payload || !payload.book.image.source) return;
@@ -43,7 +43,8 @@ function Card({ payload, setPage, setIsbn }) {
       .then((data) => setRatingsData(data))
       .catch((error) => console.log(error));
   }, [isbn]);
-  if (payload.book.sale_id && saleData?.stock===0) return;
+
+  if (payload.book.sale_id && saleData.stock === 0) return;
   return (
     <>
       <div className={payload.book.parentClass}>
@@ -52,7 +53,7 @@ function Card({ payload, setPage, setIsbn }) {
             className={payload.book.image.class}
             src={payload.book.image.source}
           ></img>
-          {payload.user.isuser ? payload.book.options : null}
+          {payload.user?.isUser ? payload.book?.options : null}
         </div>
         <div
           className={payload.book.info.parentClass}
@@ -104,12 +105,17 @@ function Card({ payload, setPage, setIsbn }) {
               {payload.book.info.snippet?.value}
             </p>
           ) : null}
-          {payload.book.sale_id ?
-          <>
-           <p className="listing_book_price">Price: {saleData.price} Credits</p>
-           <p className="listing_book_stock">{saleData.stock > 1 ? `${saleData.stock} copies` : "1 copy"} Available</p>
-           </>
-           : null}
+          {payload.book.sale_id ? (
+            <>
+              <p className="listing_book_price">
+                Price: {saleData.price} Credits
+              </p>
+              <p className="listing_book_stock">
+                {saleData.stock > 1 ? `${saleData.stock} copies` : "1 copy"}{" "}
+                Available
+              </p>
+            </>
+          ) : null}
         </div>
       </div>
     </>
