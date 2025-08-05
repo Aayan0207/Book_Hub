@@ -17,7 +17,6 @@ class Bookmark(models.Model):
     bookmark_id = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="follows"
     )
-    
 
 
 class Listing(models.Model):

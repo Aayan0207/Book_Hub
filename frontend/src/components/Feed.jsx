@@ -6,6 +6,7 @@ function Feed({ userData, setPage, setIsbn }) {
   const [refresh, setRefresh] = useState(false);
   const [reviews, setReviews] = useState([]);
   const [reviewsData, setReviewsData] = useState({});
+  
   useEffect(() => {
     fetch(`${urlPrefix}/random_reviews`, {
       method: "POST",

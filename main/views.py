@@ -232,7 +232,8 @@ def user_activity_info(request):
 def random_reviews(request):
     if request.method == "POST":
         reviews = list(
-            Review.objects.select_related("user_id").select_related("id")
+            Review.objects.select_related("user_id")
+            .select_related("id")
             .exclude(content="")
             .exclude(content=None)
             .annotate(likes_count=Count("like"))
@@ -245,7 +246,7 @@ def random_reviews(request):
                 "timestamp",
                 "user_id__username",
                 "user_id",
-                "likes_count"
+                "likes_count",
             )
         )[:30]
         return JsonResponse({"reviews": reviews})
