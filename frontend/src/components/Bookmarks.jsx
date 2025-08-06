@@ -25,6 +25,7 @@ function Bookmarks({ userData, setPage, setIsbn }) {
     setReviewsData({});
     setBookmarks({});
     reviews.forEach((review) => {
+      const reviewerId = review.user_id;
       fetch(`${urlPrefix}/book_result`, {
         method: "POST",
         body: JSON.stringify({
@@ -43,14 +44,13 @@ function Bookmarks({ userData, setPage, setIsbn }) {
         method: "POST",
         body: JSON.stringify({
           user_id: userData?.userId,
-          profile_id: review.user_id,
+          profile_id: reviewerId,
         }),
       })
         .then((response) => response.json())
         .then((data) => {
-            console.log(data);
           setBookmarks((prev) => {
-            return { ...prev, [review.user_id]: data.bookmark };
+            return { ...prev, [reviewerId]: data.bookmark };
           });
         })
         .catch((error) => console.log(error));

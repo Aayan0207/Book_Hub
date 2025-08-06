@@ -303,12 +303,12 @@ def update_bookmark(request):
         user_id = data["user_id"]
         profile_id = data["profile_id"]
         try:
-            bookmark = Bookmark.objects.get(user_id=user_id, bookmark_id=profile_id)
+            bookmark = Bookmark.objects.filter(user_id=user_id, bookmark_id=profile_id)
             bookmark.delete()
             return JsonResponse({"bookmark": False})
         except Bookmark.DoesNotExist:
-            user = User.objects.get(id=user_id)
-            profile = User.objects.get(id=profile_id)
+            user = User.objects.filter(id=user_id)
+            profile = User.objects.filter(id=profile_id)
             Bookmark.objects.create(user_id=user, bookmark_id=profile)
             return JsonResponse({"bookmark": True})
 
@@ -319,11 +319,9 @@ def user_bookmarked(request):
         data = loads(request.body)
         user_id = data["user_id"]
         profile_id = data["profile_id"]
-        try:
-            bookmark = Bookmark.objects.get(user_id=user_id, bookmark_id=profile_id)
-            return JsonResponse({"bookmark": True})
-        except Bookmark.DoesNotExist:
-            return JsonResponse({"bookmark": False})
+        bookmark = Bookmark.objects.filter(user_id=user_id, bookmark_id=profile_id).exists()
+        return JsonResponse({"bookmark": bookmark})
+   
 
 
 @csrf_exempt
@@ -764,7 +762,7 @@ def update_like(request):
         review_id = data["review_id"]
         user_id = data["user_id"]
         try:
-            like = Like.objects.get(review_id=review_id, user_id=user_id)
+            like = Like.objects.filter(review_id=review_id, user_id=user_id)
             like.delete()
             return JsonResponse({"liked": False})
         except Like.DoesNotExist:

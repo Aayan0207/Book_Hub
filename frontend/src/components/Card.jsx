@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import "../assets/codex/codex.css";
 import "../assets/book_crate/book_crate.css";
 import "../assets/readers_grove/readers_grove.css";
@@ -27,17 +27,18 @@ function Card({
   useEffect(() => {
     if (!userData || !payload.book.review) return;
     if (payload.book.review.reviewerId == userData.userId) return;
+    const reviewerId = payload.book.review.reviewerId;
     fetch(`${urlPrefix}/update_bookmark`, {
       method: "POST",
       body: JSON.stringify({
         user_id: userData?.userId,
-        profile_id: payload.book.review.reviewerId,
+        profile_id: reviewerId,
       }),
     })
       .then((response) => response.json())
       .then((data) => {
         setBookmarks((prev) => {
-          return { ...prev, [payload.book.review.reviewerId]: data.bookmarked };
+          return { ...prev, [reviewerId]: data.bookmark };
         });
       })
       .catch((error) => console.log(error));
