@@ -319,10 +319,11 @@ def user_bookmarked(request):
         data = loads(request.body)
         user_id = data["user_id"]
         profile_id = data["profile_id"]
-        bookmark = Bookmark.objects.filter(user_id=user_id, bookmark_id=profile_id).exists()
+        bookmark = Bookmark.objects.filter(
+            user_id=user_id, bookmark_id=profile_id
+        ).exists()
         print(bookmark)
         return JsonResponse({"bookmark": bookmark})
-   
 
 
 @csrf_exempt
@@ -762,11 +763,11 @@ def update_like(request):
         data = loads(request.body)
         review_id = data["review_id"]
         user_id = data["user_id"]
-        try:
-            like = Like.objects.filter(review_id=review_id, user_id=user_id)
+        like = Like.objects.filter(review_id=review_id, user_id=user_id)
+        if like.exists():
             like.delete()
             return JsonResponse({"liked": False})
-        except Like.DoesNotExist:
+        else:
             user = User.objects.get(id=user_id)
             review = Review.objects.get(id=review_id)
             Like.objects.create(user_id=user, review_id=review)

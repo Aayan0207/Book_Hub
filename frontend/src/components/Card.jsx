@@ -20,43 +20,8 @@ function Card({
   const [saleData, setSaleData] = useState({});
   const [userLiked, setUserLiked] = useState(false);
   const [updateLike, setUpdateLike] = useState(false);
-  // const [bookmarked, setBookmarked] = useState(false);
   const [updateBookmark, setUpdateBookmark] = useState(false);
   const [likes, setLikes] = useState(payload.book?.review?.likes);
-
-  // useEffect(() => {
-  //   if (!userData || !payload.book.review) return;
-  //   if (payload.book.review.reviewerId == userData.userId) return;
-  //   const reviewerId = payload.book.review.reviewerId;
-  //   fetch(`${urlPrefix}/update_bookmark`, {
-  //     method: "POST",
-  //     body: JSON.stringify({
-  //       user_id: userData?.userId,
-  //       profile_id: reviewerId,
-  //     }),
-  //   })
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       setBookmarks((prev) => {
-  //         return { ...prev, [reviewerId]: data.bookmark };
-  //       });
-  //     })
-  //     .catch((error) => console.log(error));
-  // }, [updateBookmark]);
-
-  // useEffect(() => {
-  //   if (!userData || !payload.book.review) return;
-  //   fetch(`${urlPrefix}/user_bookmarked`, {
-  //     method: "POST",
-  //     body: JSON.stringify({
-  //       user_id: userData?.userId,
-  //       profile_id: payload.book.review.reviewerId,
-  //     }),
-  //   })
-  //     .then((response) => response.json())
-  //     .then((data) => setBookmarked(data.bookmark))
-  //     .catch((error) => console.log(error));
-  // }, [isbn]);
 
   useEffect(() => {
     if (!userData || !payload.book.review || !likes) return;
@@ -146,7 +111,7 @@ function Card({
       })
       .catch((error) => console.log(error));
   };
-  console.log( bookmarks[payload.book.review.reviewerId]);
+  console.log(bookmarks[payload.book.review.reviewerId]);
   if (payload.book.sale_id && saleData.stock === 0) return;
   return (
     <>
