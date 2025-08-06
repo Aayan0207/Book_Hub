@@ -111,7 +111,7 @@ function Card({
       })
       .catch((error) => console.log(error));
   };
-  console.log(bookmarks[payload.book.review.reviewerId]);
+  
   if (payload.book.sale_id && saleData.stock === 0) return;
   return (
     <>
