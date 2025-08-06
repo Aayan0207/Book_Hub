@@ -21,6 +21,7 @@ function Feed({ userData, setPage, setIsbn }) {
     if (!reviews) return;
     setReviewsData({});
     reviews.forEach((review) => {
+      const reviewerId = review.user_id;
       fetch(`${urlPrefix}/book_result`, {
         method: "POST",
         body: JSON.stringify({
@@ -39,13 +40,13 @@ function Feed({ userData, setPage, setIsbn }) {
         method: "POST",
         body: JSON.stringify({
           user_id: userData?.userId,
-          profile_id: review.user_id,
+          profile_id: reviewerId,
         }),
       })
         .then((response) => response.json())
         .then((data) => {
           setBookmarks((prev) => {
-            return { ...prev, [review.user_id]: data.bookmark };
+            return { ...prev, [reviewerId]: data.bookmark };
           });
         })
         .catch((error) => console.log(error));

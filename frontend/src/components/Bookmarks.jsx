@@ -39,7 +39,7 @@ function Bookmarks({ userData, setPage, setIsbn }) {
           })
         )
         .catch((error) => console.log(error));
-      console.log(bookmarks);
+
       fetch(`${urlPrefix}/user_bookmarked`, {
         method: "POST",
         body: JSON.stringify({

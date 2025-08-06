@@ -302,13 +302,13 @@ def update_bookmark(request):
         data = loads(request.body)
         user_id = data["user_id"]
         profile_id = data["profile_id"]
-        try:
-            bookmark = Bookmark.objects.filter(user_id=user_id, bookmark_id=profile_id)
+        bookmark = Bookmark.objects.filter(user_id=user_id, bookmark_id=profile_id)
+        if bookmark.exists():
             bookmark.delete()
             return JsonResponse({"bookmark": False})
-        except Bookmark.DoesNotExist:
-            user = User.objects.filter(id=user_id)
-            profile = User.objects.filter(id=profile_id)
+        else:
+            user = User.objects.get(id=user_id)
+            profile = User.objects.get(id=profile_id)
             Bookmark.objects.create(user_id=user, bookmark_id=profile)
             return JsonResponse({"bookmark": True})
 
@@ -320,6 +320,7 @@ def user_bookmarked(request):
         user_id = data["user_id"]
         profile_id = data["profile_id"]
         bookmark = Bookmark.objects.filter(user_id=user_id, bookmark_id=profile_id).exists()
+        print(bookmark)
         return JsonResponse({"bookmark": bookmark})
    
 

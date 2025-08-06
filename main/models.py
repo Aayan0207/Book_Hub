@@ -19,7 +19,7 @@ class Bookmark(models.Model):
     )
 
     def __str__(self):
-        return f"{self.bookmark_id} {self.user_id}"
+        return f"{self.user_id} {self.bookmark_id}"
 
 
 class Listing(models.Model):
@@ -85,4 +85,4 @@ class Like(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.review_id} {self.user_id}"
+        return f"{self.user_id} {self.review_id}"

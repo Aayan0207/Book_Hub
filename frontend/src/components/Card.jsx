@@ -24,25 +24,25 @@ function Card({
   const [updateBookmark, setUpdateBookmark] = useState(false);
   const [likes, setLikes] = useState(payload.book?.review?.likes);
 
-  useEffect(() => {
-    if (!userData || !payload.book.review) return;
-    if (payload.book.review.reviewerId == userData.userId) return;
-    const reviewerId = payload.book.review.reviewerId;
-    fetch(`${urlPrefix}/update_bookmark`, {
-      method: "POST",
-      body: JSON.stringify({
-        user_id: userData?.userId,
-        profile_id: reviewerId,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setBookmarks((prev) => {
-          return { ...prev, [reviewerId]: data.bookmark };
-        });
-      })
-      .catch((error) => console.log(error));
-  }, [updateBookmark]);
+  // useEffect(() => {
+  //   if (!userData || !payload.book.review) return;
+  //   if (payload.book.review.reviewerId == userData.userId) return;
+  //   const reviewerId = payload.book.review.reviewerId;
+  //   fetch(`${urlPrefix}/update_bookmark`, {
+  //     method: "POST",
+  //     body: JSON.stringify({
+  //       user_id: userData?.userId,
+  //       profile_id: reviewerId,
+  //     }),
+  //   })
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       setBookmarks((prev) => {
+  //         return { ...prev, [reviewerId]: data.bookmark };
+  //       });
+  //     })
+  //     .catch((error) => console.log(error));
+  // }, [updateBookmark]);
 
   // useEffect(() => {
   //   if (!userData || !payload.book.review) return;
@@ -126,6 +126,27 @@ function Card({
       .catch((error) => console.log(error));
   }, [isbn]);
 
+  const handleBookmarkToggle = () => {
+    if (!userData || !payload.book.review) return;
+    const reviewerId = payload.book.review.reviewerId;
+
+    fetch(`${urlPrefix}/update_bookmark`, {
+      method: "POST",
+      body: JSON.stringify({
+        user_id: userData.userId,
+        profile_id: reviewerId,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setBookmarks((prev) => ({
+          ...prev,
+          [reviewerId]: data.bookmark,
+        }));
+      })
+      .catch((error) => console.log(error));
+  };
+  console.log( bookmarks[payload.book.review.reviewerId]);
   if (payload.book.sale_id && saleData.stock === 0) return;
   return (
     <>
@@ -207,14 +228,14 @@ function Card({
                 bookmarks[payload.book.review.reviewerId] ? (
                   <button
                     className="bookmark_button btn btn-warning"
-                    onClick={() => setUpdateBookmark(!updateBookmark)}
+                    onClick={() => handleBookmarkToggle()}
                   >
                     <i className="bi bi-bookmark-dash"></i> Remove Bookmark
                   </button>
                 ) : (
                   <button
                     className="bookmark_button btn btn-primary"
-                    onClick={() => setUpdateBookmark(!updateBookmark)}
+                    onClick={() => handleBookmarkToggle()}
                   >
                     <i className="bi bi-bookmark-plus"></i> Bookmark
                   </button>
