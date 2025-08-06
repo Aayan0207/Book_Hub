@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "../assets/codex/codex.css";
 import "../assets/book_crate/book_crate.css";
 import "../assets/readers_grove/readers_grove.css";
@@ -15,6 +15,7 @@ function Card({ payload, setPage, setIsbn, userData = {} }) {
   const [updateLike, setUpdateLike] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
   const [updateBookmark, setUpdateBookmark] = useState(false);
+  const [likes, setLikes] = useState(payload.book?.review?.likes);
 
   useEffect(() => {
     if (!userData || !payload.book.review) return;
@@ -46,7 +47,8 @@ function Card({ payload, setPage, setIsbn, userData = {} }) {
   }, [isbn]);
 
   useEffect(() => {
-    if (!userData || !payload.book.review) return;
+    if (!userData || !payload.book.review || !likes) return;
+    const wasLiked = userLiked;
     fetch(`${urlPrefix}/update_like`, {
       method: "POST",
       body: JSON.stringify({
@@ -57,10 +59,10 @@ function Card({ payload, setPage, setIsbn, userData = {} }) {
       .then((response) => response.json())
       .then((data) => {
         setUserLiked(data.liked);
-        if (data.liked) {
-          payload.book.review.likes++;
-        } else {
-          payload.book.review.likes--;
+        if (wasLiked && !data.liked) {
+          setLikes((prev) => prev - 1);
+        } else if (!wasLiked && data.liked) {
+          setLikes((prev) => prev + 1);
         }
       })
       .catch((error) => console.log(error));
@@ -227,7 +229,9 @@ function Card({ payload, setPage, setIsbn, userData = {} }) {
               </div>
             </div>
             <div className="review_content_div">
-              <div className="review_content">{payload.book.review.content}</div>
+              <div className="review_content">
+                {payload.book.review.content}
+              </div>
             </div>
             <div className="review_like_button_div">
               <div
@@ -235,9 +239,7 @@ function Card({ payload, setPage, setIsbn, userData = {} }) {
                 style={userData?.isUser ? { cursor: "pointer" } : null}
                 onClick={() => setUpdateLike(!updateLike)}
               ></div>{" "}
-              <div className="review_like_count_div">
-                {payload.book.review.likes}
-              </div>
+              <div className="review_like_count_div">{likes}</div>
             </div>
             <div className="review_timestamp_div">
               {new Date(payload.book.review.timestamp).toLocaleDateString(

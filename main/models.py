@@ -17,7 +17,8 @@ class Bookmark(models.Model):
     bookmark_id = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="follows"
     )
-
+    def __str__(self):
+        return f"{self.bookmark_id} {self.user_id}"
 
 class Listing(models.Model):
     id = models.AutoField(primary_key=True)
