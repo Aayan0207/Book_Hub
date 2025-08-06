@@ -20,8 +20,9 @@ function Card({
   const [saleData, setSaleData] = useState({});
   const [userLiked, setUserLiked] = useState(false);
   const [updateLike, setUpdateLike] = useState(false);
-  const [updateBookmark, setUpdateBookmark] = useState(false);
   const [likes, setLikes] = useState(payload.book?.review?.likes);
+
+  // Update the following to fn, No like if no content
 
   useEffect(() => {
     if (!userData || !payload.book.review || !likes) return;
@@ -91,7 +92,7 @@ function Card({
       .catch((error) => console.log(error));
   }, [isbn]);
 
-  const handleBookmarkToggle = () => {
+  function handleBookmarkToggle() {
     if (!userData || !payload.book.review) return;
     const reviewerId = payload.book.review.reviewerId;
 
@@ -110,8 +111,8 @@ function Card({
         }));
       })
       .catch((error) => console.log(error));
-  };
-  
+  }
+
   if (payload.book.sale_id && saleData.stock === 0) return;
   return (
     <>
