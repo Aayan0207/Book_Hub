@@ -53,6 +53,11 @@ urlpatterns = [
     path("load_donations", views.load_donations, name="load_donations"),
     path("user_bookmarked", views.user_bookmarked, name="user_bookmarked"),
     path(
+        "load_bookmark_reviews",
+        views.load_bookmark_reviews,
+        name="load_bookmark_reviews",
+    ),
+    path(
         "load_admin_donations", views.load_admin_donations, name="load_admin_donations"
     ),
     path("codex/", views.codex, name="codex"),

@@ -3,6 +3,7 @@ import "../assets/readers_grove/readers_grove.css";
 import Profile from "./Profile.jsx";
 import Bookshelf from "./Bookshelf.jsx";
 import Feed from "./Feed.jsx";
+import Bookmarks from "./Bookmarks.jsx";
 
 function Readers_Grove({ setPage, userData, setIsbn }) {
   const urlPrefix = "http://localhost:8000";
@@ -23,7 +24,11 @@ function Readers_Grove({ setPage, userData, setIsbn }) {
           <Bookshelf userData={userData} setPage={setPage} setIsbn={setIsbn} />
         );
       case "feed":
-        return <Feed userData={userData} setPage={setPage} setIsbn={setIsbn}/>;
+        return <Feed userData={userData} setPage={setPage} setIsbn={setIsbn} />;
+      case "bookmarks":
+        return (
+          <Bookmarks userData={userData} setPage={setPage} setIsbn={setIsbn} />
+        );
     }
   }
 

@@ -1,9 +1,16 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect} from "react";
 import "../assets/codex/codex.css";
 import "../assets/book_crate/book_crate.css";
 import "../assets/readers_grove/readers_grove.css";
 
-function Card({ payload, setPage, setIsbn, userData = {} }) {
+function Card({
+  payload,
+  setPage,
+  setIsbn,
+  userData = {},
+  bookmarks = {},
+  setBookmarks = {},
+}) {
   if (!payload || !payload.book.image.source) return;
   if (!payload.book.isbn.match(/^(?:\d{10}|\d{13})$/)) return;
   const urlPrefix = "http://localhost:8000";
@@ -13,7 +20,7 @@ function Card({ payload, setPage, setIsbn, userData = {} }) {
   const [saleData, setSaleData] = useState({});
   const [userLiked, setUserLiked] = useState(false);
   const [updateLike, setUpdateLike] = useState(false);
-  const [bookmarked, setBookmarked] = useState(false);
+  // const [bookmarked, setBookmarked] = useState(false);
   const [updateBookmark, setUpdateBookmark] = useState(false);
   const [likes, setLikes] = useState(payload.book?.review?.likes);
 
@@ -28,23 +35,27 @@ function Card({ payload, setPage, setIsbn, userData = {} }) {
       }),
     })
       .then((response) => response.json())
-      .then((data) => setBookmarked(data.bookmark))
+      .then((data) => {
+        setBookmarks((prev) => {
+          return { ...prev, [payload.book.review.reviewerId]: data.bookmarked };
+        });
+      })
       .catch((error) => console.log(error));
   }, [updateBookmark]);
 
-  useEffect(() => {
-    if (!userData || !payload.book.review) return;
-    fetch(`${urlPrefix}/user_bookmarked`, {
-      method: "POST",
-      body: JSON.stringify({
-        user_id: userData?.userId,
-        profile_id: payload.book.review.reviewerId,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => setBookmarked(data.bookmark))
-      .catch((error) => console.log(error));
-  }, [isbn]);
+  // useEffect(() => {
+  //   if (!userData || !payload.book.review) return;
+  //   fetch(`${urlPrefix}/user_bookmarked`, {
+  //     method: "POST",
+  //     body: JSON.stringify({
+  //       user_id: userData?.userId,
+  //       profile_id: payload.book.review.reviewerId,
+  //     }),
+  //   })
+  //     .then((response) => response.json())
+  //     .then((data) => setBookmarked(data.bookmark))
+  //     .catch((error) => console.log(error));
+  // }, [isbn]);
 
   useEffect(() => {
     if (!userData || !payload.book.review || !likes) return;
@@ -191,8 +202,8 @@ function Card({ payload, setPage, setIsbn, userData = {} }) {
           <div className="book_review">
             <div className="review_username_header">
               {payload.book.review.reviewer}
-              {payload.book.review.reviewerId != userData.userId ? (
-                bookmarked ? (
+              {payload.book.review.reviewerId != userData?.userId ? (
+                bookmarks[payload.book.review.reviewerId] ? (
                   <button
                     className="bookmark_button btn btn-warning"
                     onClick={() => setUpdateBookmark(!updateBookmark)}
@@ -209,7 +220,6 @@ function Card({ payload, setPage, setIsbn, userData = {} }) {
                 )
               ) : null}
             </div>
-            {/*Bookmark Button and Functionality*/}
             <div className="review_rating_div">
               <div className="review_progress_bar_div">
                 <div
@@ -230,7 +240,11 @@ function Card({ payload, setPage, setIsbn, userData = {} }) {
             </div>
             <div className="review_content_div">
               <div className="review_content">
-                {payload.book.review.content}
+                {payload.book?.review?.content ? (
+                  payload.book.review.content
+                ) : (
+                  <p className="no_review_content">Not reviewed yet</p>
+                )}
               </div>
             </div>
             <div className="review_like_button_div">

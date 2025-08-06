@@ -253,6 +253,36 @@ def random_reviews(request):
 
 
 @csrf_exempt
+def load_bookmark_reviews(request):
+    if request.method == "POST":
+        data = loads(request.body)
+        user_id = data["id"]
+        bookmarks = (
+            Bookmark.objects.select_related("bookmark_id")
+            .filter(user_id=user_id)
+            .values("bookmark_id")
+        )
+        reviews = list(
+            Review.objects.select_related("user_id")
+            .select_related("id")
+            .filter(user_id__in=bookmarks)
+            .annotate(likes_count=Count("like"))
+            .order_by("-timestamp")
+            .values(
+                "id",
+                "book_isbn",
+                "rating",
+                "content",
+                "timestamp",
+                "user_id__username",
+                "user_id",
+                "likes_count",
+            )
+        )[:30]
+        return JsonResponse({"reviews": reviews})
+
+
+@csrf_exempt
 def load_bookmarks(request):
     if request.method == "POST":
         data = loads(request.body)

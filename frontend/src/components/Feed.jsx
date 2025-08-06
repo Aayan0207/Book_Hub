@@ -6,7 +6,8 @@ function Feed({ userData, setPage, setIsbn }) {
   const [refresh, setRefresh] = useState(false);
   const [reviews, setReviews] = useState([]);
   const [reviewsData, setReviewsData] = useState({});
-  
+  const [bookmarks, setBookmarks] = useState({});
+
   useEffect(() => {
     fetch(`${urlPrefix}/random_reviews`, {
       method: "POST",
@@ -32,6 +33,21 @@ function Feed({ userData, setPage, setIsbn }) {
             return { ...prev, [review.book_isbn]: data.result };
           })
         )
+        .catch((error) => console.log(error));
+
+      fetch(`${urlPrefix}/user_bookmarked`, {
+        method: "POST",
+        body: JSON.stringify({
+          user_id: userData?.userId,
+          profile_id: review.user_id,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setBookmarks((prev) => {
+            return { ...prev, [review.user_id]: data.bookmark };
+          });
+        })
         .catch((error) => console.log(error));
     });
   }, [reviews]);
@@ -68,7 +84,7 @@ function Feed({ userData, setPage, setIsbn }) {
                 content: item.content,
                 rating: item.rating,
                 timestamp: item.timestamp,
-                likes:item.likes_count,
+                likes: item.likes_count,
               },
               parentClass: "user_review_div",
               image: {
@@ -110,6 +126,8 @@ function Feed({ userData, setPage, setIsbn }) {
               setIsbn={setIsbn}
               setPage={setPage}
               userData={userData}
+              bookmarks={bookmarks}
+              setBookmarks={setBookmarks}
             />
           );
         })}
