@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from "react";
 import Card from "./Card";
-
+import getToken from "./getToken";
 function Bookmarks({ userData, setPage, setIsbn }) {
   const urlPrefix = "http://localhost:8000";
+  const token = getToken();
   const [refresh, setRefresh] = useState(false);
   const [reviews, setReviews] = useState([]);
   const [reviewsData, setReviewsData] = useState({});
   const [bookmarks, setBookmarks] = useState({});
+  const [showForm, setShowForm] = useState(false);
+  const [payload, setPayload] = useState({});
+  const [same, setSame] = useState(false);
+  const [invalid, setInvalid] = useState(false);
+  const [found, setFound] = useState(null);
+  // const [bookmarked, setBookmarked] = useState(false);
 
   useEffect(() => {
     fetch(`${urlPrefix}/load_bookmark_reviews`, {
@@ -57,12 +64,159 @@ function Bookmarks({ userData, setPage, setIsbn }) {
     });
   }, [reviews]);
 
+  useEffect(() => {
+    if (!payload?.username) return;
+    setSame(false);
+    setInvalid(false);
+    setFound(null);
+    fetch(`${urlPrefix}/user_exists`, {
+      method: "POST",
+      body: JSON.stringify(payload),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (!data.user) {
+          setInvalid(true);
+          return;
+        } else if (data.user[0].id === userData?.userId) {
+          setSame(true);
+          return;
+        }
+        setFound(data.user[0]);
+        fetch(`${urlPrefix}/user_bookmarked`, {
+          method: "POST",
+          body: JSON.stringify({
+            user_id: userData?.userId,
+            profile_id: found?.id,
+          }),
+        })
+          .then((response) => response.json())
+          .then((res) => {
+            setBookmarks((prev) => {
+              return { ...prev, [found.id]: res.bookmark };
+            });
+          })
+          .catch((error) => console.log(error));
+      })
+      .catch((error) => console.log(error));
+  }, [payload]);
+
+  function submitForm(event) {
+    event.preventDefault();
+    const form = event.target;
+    const details = {
+      username: form.querySelector("#id_username").value,
+    };
+    setPayload(details);
+  }
+  function handleBookmarkToggle() {
+    if (!userData || !found?.id) return;
+
+    fetch(`${urlPrefix}/update_bookmark`, {
+      method: "POST",
+      body: JSON.stringify({
+        user_id: userData.userId,
+        profile_id: found.id,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setBookmarks((prev) => {
+          return { ...prev, [found.id]: data.bookmark };
+        });
+      })
+      .catch((error) => console.log(error));
+  }
   return (
     <>
       <div id="home_div">
-        <button className="manage_bookmarks_button btn btn-dark">
+        <button
+          className="manage_bookmarks_button btn btn-dark"
+          onClick={() => setShowForm(!showForm)}
+        >
           <i className="bi bi-bookmarks"></i> Manage Bookmarks
         </button>
+        {showForm ? (
+          <form
+            action="/user_exists"
+            method="post"
+            id="user_search_form"
+            onReset={() => {
+              setShowForm(false);
+              setFound(null);
+              setInvalid(false);
+              setSame(false);
+            }}
+            onSubmit={(event) => submitForm(event)}
+          >
+            <div>
+              <label htmlFor="id_username">Username:</label>
+              <input
+                type="text"
+                name="username"
+                maxLength="255"
+                required={true}
+                id="id_username"
+              />
+            </div>
+            <input
+              type="submit"
+              className="btn btn-success"
+              value="Search"
+              id="submit_search_button"
+            />
+            <input
+              type="reset"
+              className="btn btn-danger"
+              value="Done"
+              id="cancel_search_button"
+            />
+            {found ? (
+              <div id="user_found">
+                <p id="found_username">{found.username}</p>
+                {bookmarks[found.id] ? (
+                  <button
+                    className="bookmark_button btn btn-warning"
+                    onClick={() => handleBookmarkToggle()}
+                  >
+                    <i className="bi bi-bookmark-dash"></i> Remove Bookmark
+                  </button>
+                ) : (
+                  <button
+                    className="bookmark_button btn btn-primary"
+                    onClick={() => handleBookmarkToggle()}
+                  >
+                    <i className="bi bi-bookmark-plus"></i> Bookmark
+                  </button>
+                )}
+              </div>
+            ) : null}
+            {invalid ? (
+              <div
+                className="alert alert-warning"
+                role="alert"
+                id="no_user_alert"
+              >
+                No user found with provided username.
+              </div>
+            ) : null}
+            {same ? (
+              <div
+                className="alert alert-warning"
+                role="alert"
+                id="self_user_alert"
+              >
+                You cannot bookmark yourself.
+              </div>
+            ) : null}
+          </form>
+        ) : null}
+        <hr />
         <div
           style={{
             alignItems: "center",

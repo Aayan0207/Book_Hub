@@ -322,7 +322,6 @@ def user_bookmarked(request):
         bookmark = Bookmark.objects.filter(
             user_id=user_id, bookmark_id=profile_id
         ).exists()
-        print(bookmark)
         return JsonResponse({"bookmark": bookmark})
 
 
