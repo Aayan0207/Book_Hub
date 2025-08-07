@@ -23,7 +23,8 @@ function Card({
   const [likes, setLikes] = useState(payload.book?.review?.likes);
   const [showDropdown, setShowDropdown] = useState(false);
   const [showCard, setShowCard] = useState(true);
-
+  const [showForm, setShowForm] = useState(false);
+  
   useEffect(() => {
     if (!userData || !payload.book.review) return;
     fetch(`${urlPrefix}/user_liked`, {
@@ -112,7 +113,8 @@ function Card({
       })
       .catch((error) => console.log(error));
   }
-
+  
+  //Update complete it
   function updateReview() {
     fetch(`${urlPrefix}/manage_review`, {
       method: "POST",
@@ -133,7 +135,7 @@ function Card({
       })
       .catch((error) => console.log(error));
   }
-  
+
   function deleteReview() {
     fetch(`${urlPrefix}/manage_review`, {
       method: "POST",
