@@ -700,11 +700,20 @@ def get_user_reviews(request):
         except:
             user_id = data["id"]
         reviews = list(
-            Review.objects.filter(user_id=user_id)
+            Review.objects.select_related("user_id")
+            .select_related("id")
+            .filter(user_id=user_id)
+            .annotate(likes_count = Count("like"))
             .order_by("-timestamp")
-            .exclude(content=None, rating=0)
             .values(
-                "user_id__username", "rating", "content", "timestamp", "id", "book_isbn"
+                "id",
+                "book_isbn",
+                "user_id",
+                "rating",
+                "content",
+                "timestamp",
+                "user_id__username",
+                "likes_count",
             )
         )
         reviews = Paginator(reviews, 10)
