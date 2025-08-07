@@ -19,7 +19,6 @@ function Card({
   const [ratingsData, setRatingsData] = useState({});
   const [saleData, setSaleData] = useState({});
   const [userLiked, setUserLiked] = useState(false);
-  // const [updateLike, setUpdateLike] = useState(false);
   const [likes, setLikes] = useState(payload.book?.review?.likes);
 
   useEffect(() => {
