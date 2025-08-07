@@ -19,32 +19,8 @@ function Card({
   const [ratingsData, setRatingsData] = useState({});
   const [saleData, setSaleData] = useState({});
   const [userLiked, setUserLiked] = useState(false);
-  const [updateLike, setUpdateLike] = useState(false);
+  // const [updateLike, setUpdateLike] = useState(false);
   const [likes, setLikes] = useState(payload.book?.review?.likes);
-
-  // Update the following to fn, No like if no content
-
-  useEffect(() => {
-    if (!userData || !payload.book.review || !likes) return;
-    const wasLiked = userLiked;
-    fetch(`${urlPrefix}/update_like`, {
-      method: "POST",
-      body: JSON.stringify({
-        review_id: payload.book.review.id,
-        user_id: userData.userId,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setUserLiked(data.liked);
-        if (wasLiked && !data.liked) {
-          setLikes((prev) => prev - 1);
-        } else if (!wasLiked && data.liked) {
-          setLikes((prev) => prev + 1);
-        }
-      })
-      .catch((error) => console.log(error));
-  }, [updateLike]);
 
   useEffect(() => {
     if (!userData || !payload.book.review) return;
@@ -113,6 +89,27 @@ function Card({
       .catch((error) => console.log(error));
   }
 
+  function handleLikeToggle() {
+    if (!userData || !payload.book.review) return;
+    const wasLiked = userLiked;
+    fetch(`${urlPrefix}/update_like`, {
+      method: "POST",
+      body: JSON.stringify({
+        review_id: payload.book.review.id,
+        user_id: userData.userId,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setUserLiked(data.liked);
+        if (wasLiked && !data.liked) {
+          setLikes((prev) => prev - 1);
+        } else if (!wasLiked && data.liked) {
+          setLikes((prev) => prev + 1);
+        }
+      })
+      .catch((error) => console.log(error));
+  }
   if (payload.book.sale_id && saleData.stock === 0) return;
   return (
     <>
@@ -235,24 +232,28 @@ function Card({
                 )}
               </div>
             </div>
-            <div className="review_like_button_div">
-              <div
-                className={userLiked ? "liked_button" : "like_button"}
-                style={userData?.isUser ? { cursor: "pointer" } : null}
-                onClick={() => setUpdateLike(!updateLike)}
-              ></div>{" "}
-              <div className="review_like_count_div">{likes}</div>
-            </div>
-            <div className="review_timestamp_div">
-              {new Date(payload.book.review.timestamp).toLocaleDateString(
-                "en-US",
-                {
-                  month: "short",
-                  year: "numeric",
-                  day: "numeric",
-                }
-              )}
-            </div>
+            {payload.book?.review?.content ? (
+              <>
+                <div className="review_like_button_div">
+                  <div
+                    className={userLiked ? "liked_button" : "like_button"}
+                    style={userData?.isUser ? { cursor: "pointer" } : null}
+                    onClick={() => handleLikeToggle()}
+                  ></div>{" "}
+                  <div className="review_like_count_div">{likes}</div>
+                </div>
+                <div className="review_timestamp_div">
+                  {new Date(payload.book.review.timestamp).toLocaleDateString(
+                    "en-US",
+                    {
+                      month: "short",
+                      year: "numeric",
+                      day: "numeric",
+                    }
+                  )}
+                </div>
+              </>
+            ) : null}
           </div>
         ) : null}
       </div>
