@@ -947,29 +947,40 @@ def manage_review(request):
         data = loads(request.body)
         user_id = data["user_id"]
         isbn = data["isbn"]
-        form_result = ReviewForm(data)
-        if form_result.is_valid():
-            content = form_result.cleaned_data["content"]
-            try:
-                user_review = Review.objects.get(user_id=user_id, book_isbn=isbn)
-                if not user_review.timestamp:
-                    user_review.timestamp = timezone.localtime()
-                    user_review.save()
-                if user_review.content != content:
-                    user_review.content = content
-                    user_review.save()
-                review_id = user_review.id
-            except Review.DoesNotExist:
-                user = User.objects.get(id=user_id)
-                Review.objects.create(
-                    user_id=user,
-                    book_isbn=isbn,
-                    content=content,
-                    timestamp=timezone.localtime(),
-                )
-                user_review = Review.objects.get(user_id=user_id, book_isbn=isbn)
-                review_id = user_review.id
-            return JsonResponse({"review": content, "id": review_id})
+        try: #Update to have delete action. Remove try except
+            delete=data["delete"]
+            if delete:
+                review = Review.objects.get(user_id=user_id, book_isbn=isbn)
+                review.content = ""
+                review.timestamp = None
+                review.save()
+                # for like in Like.objects.filter(review_id=review.id):
+                #     like.delete()
+                return JsonResponse({"deleted": True})
+        except:
+            form_result = ReviewForm(data)
+            if form_result.is_valid():
+                content = form_result.cleaned_data["content"]
+                try:
+                    user_review = Review.objects.get(user_id=user_id, book_isbn=isbn)
+                    if not user_review.timestamp:
+                        user_review.timestamp = timezone.localtime()
+                        user_review.save()
+                    if user_review.content != content:
+                        user_review.content = content
+                        user_review.save()
+                    review_id = user_review.id
+                except Review.DoesNotExist:
+                    user = User.objects.get(id=user_id)
+                    Review.objects.create(
+                        user_id=user,
+                        book_isbn=isbn,
+                        content=content,
+                        timestamp=timezone.localtime(),
+                    )
+                    user_review = Review.objects.get(user_id=user_id, book_isbn=isbn)
+                    review_id = user_review.id
+                return JsonResponse({"review": content, "id": review_id})
         return JsonResponse({"review": None})
 
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "../assets/codex/codex.css";
 import "../assets/book_crate/book_crate.css";
 import "../assets/readers_grove/readers_grove.css";
-
+import getToken from "./getToken";
 function Card({
   payload,
   setPage,
@@ -13,6 +13,7 @@ function Card({
 }) {
   if (!payload || !payload.book.image.source) return;
   if (!payload.book.isbn.match(/^(?:\d{10}|\d{13})$/)) return;
+  const token = getToken();
   const urlPrefix = "http://localhost:8000";
   const isbn = payload.book.isbn;
   const [viewBook, setViewBook] = useState(false);
@@ -20,6 +21,8 @@ function Card({
   const [saleData, setSaleData] = useState({});
   const [userLiked, setUserLiked] = useState(false);
   const [likes, setLikes] = useState(payload.book?.review?.likes);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [showCard, setShowCard] = useState(true);
 
   useEffect(() => {
     if (!userData || !payload.book.review) return;
@@ -109,7 +112,50 @@ function Card({
       })
       .catch((error) => console.log(error));
   }
+
+  function updateReview() {
+    fetch(`${urlPrefix}/manage_review`, {
+      method: "POST",
+      body: JSON.stringify({
+        user_id: userData?.userId,
+        isbn: payload.book.isbn,
+        delete: false,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
+    })
+      .then((response) => response.json())
+      .then((_) => {
+        setShowCard(false);
+      })
+      .catch((error) => console.log(error));
+  }
+  
+  function deleteReview() {
+    fetch(`${urlPrefix}/manage_review`, {
+      method: "POST",
+      body: JSON.stringify({
+        user_id: userData?.userId,
+        isbn: payload.book.isbn,
+        delete: true,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
+    })
+      .then((response) => response.json())
+      .then((_) => {
+        setShowCard(false);
+      })
+      .catch((error) => console.log(error));
+  }
   if (payload.book.sale_id && saleData.stock === 0) return;
+  if (!showCard) return;
   return (
     <>
       <div className={payload.book.parentClass}>
@@ -186,6 +232,28 @@ function Card({
           <div className="book_review">
             <div className="review_username_header">
               {payload.book.review.reviewer}
+              {payload.book.review.reviewerId === userData?.userId ? (
+                <div
+                  className="review_options_container"
+                  style={{ position: "relative", display: "inline-block" }}
+                >
+                  <i
+                    className="user_review_options bi bi-three-dots-vertical"
+                    onClick={() => setShowDropdown(!showDropdown)}
+                  />
+                  {showDropdown && (
+                    <ul className="user_review_options_dropdown dropdown-menu show">
+                      <li className="dropdown-item">Edit</li>
+                      <li
+                        className="dropdown-item"
+                        onClick={() => deleteReview()}
+                      >
+                        Delete
+                      </li>
+                    </ul>
+                  )}
+                </div>
+              ) : null}
               {payload.book.review.reviewerId != userData?.userId ? (
                 bookmarks[payload.book.review.reviewerId] ? (
                   <button

@@ -241,12 +241,14 @@
   font-style: oblique;
   color: #59564b;
 }
-.user_review_options_dropdown {
+.review_options_container {
+  position: relative;
+  float:right;
+}
+.user_review_options_dropdown{
   position: absolute;
   right: 0;
-  left: auto;
   top: 100%;
-  display: none;
 }
 .user_review_options {
   position: relative;
