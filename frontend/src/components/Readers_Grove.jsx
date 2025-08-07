@@ -4,9 +4,9 @@ import Profile from "./Profile.jsx";
 import Bookshelf from "./Bookshelf.jsx";
 import Feed from "./Feed.jsx";
 import Bookmarks from "./Bookmarks.jsx";
+import Ratings_Reviews from "./Ratings_Reviews.jsx";
 
 function Readers_Grove({ setPage, userData, setIsbn }) {
-  const urlPrefix = "http://localhost:8000";
   useEffect(() => {
     if (!userData?.isUser) setPage("login");
   }, [userData]);
@@ -29,6 +29,8 @@ function Readers_Grove({ setPage, userData, setIsbn }) {
         return (
           <Bookmarks userData={userData} setPage={setPage} setIsbn={setIsbn} />
         );
+      case "ratings_reviews":
+        return <Ratings_Reviews userData={userData} setPage={setPage} setIsbn={setIsbn}/>;
     }
   }
 

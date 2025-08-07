@@ -693,9 +693,12 @@ def update_listing(request):
 def get_user_reviews(request):
     if request.method == "POST":
         data = loads(request.body)
-        user = data["username"]
         page = data["page"]
-        user_id = User.objects.get(username=user)
+        try: #Remove this
+            user = data["username"]
+            user_id = User.objects.get(username=user)
+        except:
+            user_id = data["id"]
         reviews = list(
             Review.objects.filter(user_id=user_id)
             .order_by("-timestamp")
