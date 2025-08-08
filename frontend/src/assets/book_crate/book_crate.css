@@ -159,6 +159,12 @@
 #search_listing_form, #listing_form{
     margin:5px;
 }
+#listing_form{
+  display:flex;
+  align-items: left;
+  justify-content: center;
+  flex-direction: column;
+}
 #id_book_isbn{
     background-color: lightgrey;
     border-radius:5px;
