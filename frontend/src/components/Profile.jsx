@@ -1,8 +1,8 @@
-import React, { useState, useEffect, act } from "react";
+import React, { useState, useEffect } from "react";
 import Picture from "./Picture";
 import getToken from "./getToken";
 
-function Profile({ userData, setPage, setIsbn }) {
+function Profile({ userData, setPage, setIsbn, profileView=false }) {
   const urlPrefix = "http://localhost:8000";
   const token = getToken();
   const [quote, setQuote] = useState(null);
@@ -153,7 +153,7 @@ function Profile({ userData, setPage, setIsbn }) {
               />
             </form>
           ) : null}
-          {quote && !showForm ? (
+          {!profileView && (quote && !showForm ? (
             <>
               <button
                 className="update_quote btn btn-info"
@@ -175,7 +175,7 @@ function Profile({ userData, setPage, setIsbn }) {
             >
               Add About
             </button>
-          ) : null}
+          ) : null)}
         </div>
         <hr />
         <div id="user_activity_info">

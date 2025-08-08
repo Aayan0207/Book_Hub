@@ -2,43 +2,23 @@ import React, { useState, useEffect } from "react";
 import "../assets/readers_grove/readers_grove.css";
 import Profile from "./Profile.jsx";
 import Bookshelf from "./Bookshelf.jsx";
-import Feed from "./Feed.jsx";
-import Bookmarks from "./Bookmarks.jsx";
 import Ratings_Reviews from "./Ratings_Reviews.jsx";
 
-function Readers_Grove({ setPage, userData, setIsbn, setProfile }) {
+function User({ setPage, userData, setIsbn, profileData }) {
   const [view, setView] = useState("profile");
-
-  useEffect(() => {
-    if (!userData?.isUser) setPage("login");
-  }, [userData]);
 
   function renderView() {
     switch (view) {
       case "profile":
         return (
-          <Profile userData={userData} setPage={setPage} setIsbn={setIsbn} />
+          <Profile userData={profileData} setPage={setPage} setIsbn={setIsbn} profileView={true}/>
         );
       case "bookshelf":
         return (
-          <Bookshelf userData={userData} setPage={setPage} setIsbn={setIsbn} />
-        );
-      case "feed":
-        return (
-          <Feed
-            userData={userData}
+          <Bookshelf
+            userData={profileData}
             setPage={setPage}
             setIsbn={setIsbn}
-            setProfile={setProfile}
-          />
-        );
-      case "bookmarks":
-        return (
-          <Bookmarks
-            userData={userData}
-            setPage={setPage}
-            setIsbn={setIsbn}
-            setProfile={setProfile}
           />
         );
       case "ratings_reviews":
@@ -62,22 +42,7 @@ function Readers_Grove({ setPage, userData, setIsbn, setProfile }) {
               id="account"
               onClick={() => setView("profile")}
             >
-              {userData?.user}
-            </li>
-            <hr />
-            <li
-              className="nav-item nav-link"
-              id="home"
-              onClick={() => setView("feed")}
-            >
-              Home
-            </li>{" "}
-            <li
-              className="nav-item nav-link"
-              id="bookmarks"
-              onClick={() => setView("bookmarks")}
-            >
-              Bookmarks
+              {profileData?.user}
             </li>
             <hr />
             <li
@@ -102,4 +67,4 @@ function Readers_Grove({ setPage, userData, setIsbn, setProfile }) {
   );
 }
 
-export default Readers_Grove;
+export default User;

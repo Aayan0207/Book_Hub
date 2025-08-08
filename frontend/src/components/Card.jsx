@@ -18,7 +18,9 @@ function Card({
   const token = getToken();
   const urlPrefix = "http://localhost:8000";
   const isbn = payload.book.isbn;
+  const reviewer = payload.book?.review?.reviewer;
   const [viewBook, setViewBook] = useState(false);
+  const [viewProfile, setViewProfile] = useState(false);
   const [ratingsData, setRatingsData] = useState({});
   const [saleData, setSaleData] = useState({});
   const [userLiked, setUserLiked] = useState(false);
@@ -28,6 +30,27 @@ function Card({
   const [showForm, setShowForm] = useState(false);
   const [content, setContent] = useState(payload.book?.review?.content);
   const [inBookshelf, setInBookshelf] = useState(false);
+
+  useEffect(() => {
+    if (!viewProfile || reviewer === userData?.user) return;
+    fetch(`${urlPrefix}/user_exists`, {
+      method: "POST",
+      body: JSON.stringify({
+        username: reviewer,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setProfile(data);
+        setPage("user");
+      })
+      .catch((error) => console.log(error));
+  }, [viewProfile]);
 
   useEffect(() => {
     if (!userData?.isUser || options != "shelf") return;
@@ -206,7 +229,7 @@ function Card({
             className={payload.book.image.class}
             src={payload.book.image.source}
           ></img>
-          {inBookshelf && userData?.isUser ? (
+          {inBookshelf && userData?.isUser && options === "shelf" ? (
             <button
               className="search_bookshelf_button btn btn-danger"
               data-bs-toggle=""
@@ -215,7 +238,7 @@ function Card({
             >
               Remove from Bookshelf
             </button>
-          ) : userData?.isUser ? (
+          ) : userData?.isUser && options === "shelf" ? (
             <>
               <button
                 className="search_bookshelf_button btn btn-success dropdown-toggle"
@@ -312,12 +335,7 @@ function Card({
         {payload.book.review ? (
           <div className="book_review">
             <div className="review_username_header">
-              <p
-                onClick={() => {
-                  setProfile(payload.book.review.reviewerId);
-                  setPage("readers_grove");
-                }}
-              >
+              <p onClick={() => setViewProfile(true)}>
                 {payload.book.review.reviewer}
               </p>
               {payload.book.review.reviewerId === userData?.userId ? (

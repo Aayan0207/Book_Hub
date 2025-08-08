@@ -6,7 +6,7 @@ import Register from "./Register";
 import Book from "./Book";
 import Book_Crate from "./Book_Crate";
 import Readers_Grove from "./Readers_Grove";
-
+import User from "./User";
 function Navbar({ page, setPage }) {
   const urlPrefix = "http://localhost:8000";
   const [isbn, setIsbn] = useState(null);
@@ -26,12 +26,7 @@ function Navbar({ page, setPage }) {
     switch (page) {
       case "codex":
         return (
-          <Codex
-            setPage={setPage}
-            setIsbn={setIsbn}
-            userData={userData}
-            setProfile={setProfile}
-          />
+          <Codex setPage={setPage} setIsbn={setIsbn} userData={userData} />
         );
       case "login":
         return <Login setPage={setPage} setUserData={setUserData} />;
@@ -41,6 +36,15 @@ function Navbar({ page, setPage }) {
         return <Landing setPage={setPage} userData={userData} />;
       case "book":
         return <Book isbn={isbn} />;
+      case "user":
+        return (
+          <User
+            setIsbn={setIsbn}
+            setPage={setPage}
+            userData={userData}
+            profileData={profile}
+          />
+        );
       case "book_crate":
         return <Book_Crate setPage={setPage} setIsbn={setIsbn} />;
       case "readers_grove":
@@ -49,7 +53,6 @@ function Navbar({ page, setPage }) {
             setPage={setPage}
             userData={userData}
             setIsbn={setIsbn}
-            profile={profile}
             setProfile={setProfile}
           />
         );

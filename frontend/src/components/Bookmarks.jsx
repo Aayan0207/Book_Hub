@@ -79,25 +79,25 @@ function Bookmarks({ userData, setPage, setIsbn, setProfile }) {
     })
       .then((response) => response.json())
       .then((data) => {
-        if (!data.user) {
+        if (!data) {
           setInvalid(true);
           return;
-        } else if (data.user[0].id === userData?.userId) {
+        } else if (data.userId === userData?.userId) {
           setSame(true);
           return;
         }
-        setFound(data.user[0]);
+        setFound(data);
         fetch(`${urlPrefix}/user_bookmarked`, {
           method: "POST",
           body: JSON.stringify({
             user_id: userData?.userId,
-            profile_id: found?.id,
+            profile_id: found?.userId,
           }),
         })
           .then((response) => response.json())
           .then((res) => {
             setBookmarks((prev) => {
-              return { ...prev, [found.id]: res.bookmark };
+              return { ...prev, [found.userId]: res.bookmark };
             });
           })
           .catch((error) => console.log(error));

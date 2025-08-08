@@ -143,11 +143,18 @@ def user_exists(request):
     if request.method == "POST":
         data = loads(request.body)
         username = data["username"].capitalize()
+        user = User.objects.filter(username=username).values("id", "username")
         try:
-            user = list(User.objects.filter(username=username).values("id", "username"))
-            return JsonResponse({"user": user})
+            user = User.objects.get(username=username)
+            return JsonResponse({
+                "user": user.username,
+                "userId": user.id, #type: ignore
+                "isUser": user.is_authenticated,
+                "isSuper": user.is_superuser,
+            })
         except User.DoesNotExist:
             return JsonResponse({"user": False})
+
 
 
 def add_credits(request):
