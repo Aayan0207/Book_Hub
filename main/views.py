@@ -660,10 +660,9 @@ def update_listing(request):
             return JsonResponse({"listing":"deleted"})
         price = int(data["price"])
         stock = int(data["stock"])
-        try:
-            librarian_id = int(data["librarian_id"])
-        except:
-            librarian_id = None
+        librarian_id = data.get("librarian_id",None)
+        if librarian_id:
+            librarian_id=int(librarian_id)
         try:
             listing = Listing.objects.get(book_isbn=isbn)
             if price != listing.price:

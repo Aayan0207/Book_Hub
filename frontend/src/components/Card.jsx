@@ -32,6 +32,7 @@ function Card({
   const [inBookshelf, setInBookshelf] = useState(false);
   const [userRating, setUserRating] = useState(0);
   const [starBar, setStarBar] = useState(0);
+  const [showListingForm, setShowListingForm] = useState(false);
 
   useEffect(() => {
     if (!userData?.userId || options != "shelf") return;
@@ -274,6 +275,34 @@ function Card({
       })
       .catch((error) => console.log(error));
   }
+
+  function updateListing(event) {
+    event.preventDefault();
+    const form = event.target;
+    fetch(`${urlPrefix}/update_listing`, {
+      method: "POST",
+      body: JSON.stringify({
+        isbn: isbn,
+        price: form.querySelector("#id_price").value,
+        stock: form.querySelector("#id_stock").value,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        const listing = data.listing[0];
+        setSaleData((prev) => {
+          return { ...prev, stock: listing.stock, price: listing.price };
+        });
+        setShowListingForm(false);
+      })
+      .catch((error) => console.log(error));
+  }
+
   if (payload.book.sale_id && saleData.stock === 0) return;
   if (!showCard) return;
 
@@ -288,7 +317,10 @@ function Card({
           {options === "crate" &&
             (userData?.isUser && userData?.isSuper ? (
               <>
-                <button className="update_listing_button btn btn-info">
+                <button
+                  className="update_listing_button btn btn-info"
+                  onClick={() => setShowListingForm(true)}
+                >
                   Update Listing
                 </button>
                 <button
@@ -446,6 +478,58 @@ function Card({
             </>
           ) : null}
         </div>
+        {options === "crate" &&
+          (showListingForm ? (
+            <form
+              action="/update_listing"
+              method="POST"
+              id="listing_form"
+              onSubmit={(event) => updateListing(event)}
+              onReset={() => setShowForm(false)}
+            >
+              <label htmlFor="id_price">Price (Credits):</label>
+              <input
+                type="number"
+                name="price"
+                min="1"
+                max="100000"
+                required={true}
+                id="id_price"
+                defaultValue={saleData?.price}
+              />
+              <label htmlFor="id_stock">Stock:</label>
+              <input
+                type="number"
+                name="stock"
+                min="1"
+                max="10000"
+                required={true}
+                id="id_stock"
+                defaultValue={saleData?.stock}
+              />
+              <label htmlFor="id_book_isbn">ISBN:</label>
+              <input
+                type="text"
+                name="book_isbn"
+                readOnly={true}
+                maxLength="13"
+                id="id_book_isbn"
+                value={payload.book.isbn}
+              />
+              <input
+                type="submit"
+                value="List"
+                className="btn btn-success"
+                id="create_listing_button"
+              />
+              <input
+                type="reset"
+                value="Cancel"
+                className="btn btn-danger"
+                id="cancel_create_listing_button"
+              />
+            </form>
+          ) : null)}
         {payload.book.review ? (
           <div className="book_review">
             <div className="review_username_header">
