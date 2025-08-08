@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import "../assets/codex/codex.css";
 import "../assets/book_crate/book_crate.css";
 import "../assets/readers_grove/readers_grove.css";
