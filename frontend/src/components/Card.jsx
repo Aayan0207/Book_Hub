@@ -24,6 +24,7 @@ function Card({
   const [showDropdown, setShowDropdown] = useState(false);
   const [showCard, setShowCard] = useState(true);
   const [showForm, setShowForm] = useState(false); //Add form and edit
+  const [content, setContent] = useState(payload.book?.review?.content);
 
   useEffect(() => {
     if (!userData || !payload.book.review) return;
@@ -113,15 +114,18 @@ function Card({
       })
       .catch((error) => console.log(error));
   }
-  
+
   //Update complete it
-  function updateReview() {
+  function updateReview(event) {
+    event.preventDefault();
+    const form = event.target;
     fetch(`${urlPrefix}/manage_review`, {
       method: "POST",
       body: JSON.stringify({
         user_id: userData?.userId,
         isbn: payload.book.isbn,
         delete: false,
+        content: form.querySelector("#id_content").value,
       }),
       headers: {
         "Content-Type": "application/json",
@@ -130,8 +134,9 @@ function Card({
       credentials: "include",
     })
       .then((response) => response.json())
-      .then((_) => {
-        setShowCard(false);
+      .then((data) => {
+        setContent(data.review);
+        setShowForm(false);
       })
       .catch((error) => console.log(error));
   }
@@ -243,9 +248,14 @@ function Card({
                     className="user_review_options bi bi-three-dots-vertical"
                     onClick={() => setShowDropdown(!showDropdown)}
                   />
-                  {showDropdown && (
+                  {showDropdown && !showForm && (
                     <ul className="user_review_options_dropdown dropdown-menu show">
-                      <li className="dropdown-item">Edit</li>
+                      <li
+                        className="dropdown-item"
+                        onClick={() => setShowForm(true)}
+                      >
+                        Edit
+                      </li>
                       <li
                         className="dropdown-item"
                         onClick={() => deleteReview()}
@@ -294,11 +304,41 @@ function Card({
             </div>
             <div className="review_content_div">
               <div className="review_content">
-                {payload.book?.review?.content ? (
-                  payload.book.review.content
-                ) : (
+                {payload.book?.review?.content && !showForm ? (
+                  content
+                ) : !showForm ? (
                   <p className="no_review_content">Not reviewed yet</p>
-                )}
+                ) : null}
+                {showForm ? (
+                  <form
+                    action="/manage_review"
+                    method="post"
+                    id="user_review_form"
+                    onSubmit={(event) => updateReview(event)}
+                    onReset={() => setShowForm(false)}
+                  >
+                    <textarea
+                      name="content"
+                      cols="40"
+                      rows="10"
+                      required={true}
+                      id="id_content"
+                      defaultValue={content}
+                    ></textarea>
+                    <input
+                      type="submit"
+                      className="btn btn-success"
+                      value="Give Review"
+                      id="submit_review_button"
+                    />
+                    <input
+                      type="reset"
+                      className="btn btn-danger"
+                      value="Cancel"
+                      id="cancel_review_button"
+                    />
+                  </form>
+                ) : null}
               </div>
             </div>
             {payload.book?.review?.content ? (
