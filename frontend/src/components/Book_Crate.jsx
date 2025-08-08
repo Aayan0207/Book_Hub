@@ -1,11 +1,11 @@
-import React, { useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import "../assets/book_crate/book_crate.css";
 import getToken from "./getToken.jsx";
 import Spinner from "./spinner.jsx";
 import Card from "./Card";
 import Paginator from "./Pagination.jsx";
 
-function Book_Crate({ setPage, setIsbn, userData=null }) {
+function Book_Crate({ setPage, setIsbn, userData = null }) {
   const urlPrefix = "http://localhost:8000";
   const token = getToken();
   const [payload, setPayload] = useState({
@@ -100,6 +100,28 @@ function Book_Crate({ setPage, setIsbn, userData=null }) {
       >
         <h2 id="header">Browse the Crate and find your next read!</h2>
       </div>
+      {userData?.isUser ? (
+        userData?.isSuper ? (
+          <>
+            <h3 id="superuser_header">
+              <p>Welcome, Librarian {userData?.user}</p>
+              <div>
+                <button id="create_listing" className="btn btn-success">
+                  <i className="bi bi-plus-square"></i>Add Listing
+                </button>
+                <button id="manage_donations" className="btn btn-warning">
+                  <i className="bi bi-book"></i> Manage Book Donations
+                </button>
+              </div>
+            </h3>
+            <hr />
+          </>
+        ) : (
+          {
+            /* Standard User Greeting */
+          }
+        )
+      ) : null}
       <div id="search_book_form_div">
         <form
           action="/load_listings"
