@@ -7,7 +7,7 @@ function Card({
   payload,
   setPage,
   setIsbn,
-  setProfile=null,
+  setProfile = null,
   userData = {},
   bookmarks = {},
   setBookmarks = {},
@@ -30,6 +30,25 @@ function Card({
   const [showForm, setShowForm] = useState(false);
   const [content, setContent] = useState(payload.book?.review?.content);
   const [inBookshelf, setInBookshelf] = useState(false);
+  const [userRating, setUserRating] = useState(0);
+  const [starBar, setStarBar] = useState(0);
+
+  useEffect(() => {
+    if (!userData?.userId || options != "shelf") return;
+    fetch(`${urlPrefix}/get_user_rating`, {
+      method: "POST",
+      body: JSON.stringify({
+        user_id: userData?.userId,
+        isbn: isbn,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setStarBar(data.rating * 20);
+        setUserRating(data.rating);
+      })
+      .catch((error) => console.log(error));
+  }, [isbn, options, userData?.userId]);
 
   useEffect(() => {
     if (!viewProfile || reviewer === userData?.user) return;
@@ -218,6 +237,23 @@ function Card({
       .catch((error) => console.log(error));
   }
 
+  function updateRating(rating) {
+    fetch(`${urlPrefix}/update_rating`, {
+      method: "POST",
+      body: JSON.stringify({
+        isbn: isbn,
+        user_id: userData?.userId,
+        rating: rating,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setUserRating(data.rating);
+        setStarBar(data.rating * 20);
+      })
+      .catch((error) => console.log(error));
+  }
+
   if (payload.book.sale_id && saleData.stock === 0) return;
   if (!showCard) return;
 
@@ -229,46 +265,86 @@ function Card({
             className={payload.book.image.class}
             src={payload.book.image.source}
           ></img>
-          {inBookshelf && userData?.isUser && options === "shelf" ? (
-            <button
-              className="search_bookshelf_button btn btn-danger"
-              data-bs-toggle=""
-              type="button"
-              onClick={() => updateBookshelf()}
-            >
-              Remove from Bookshelf
-            </button>
-          ) : userData?.isUser && options === "shelf" ? (
+          {options === "shelf" && (
             <>
-              <button
-                className="search_bookshelf_button btn btn-success dropdown-toggle"
-                data-bs-toggle="dropdown"
-                type="button"
-              >
-                Add to Bookshelf
-              </button>
-              <ul className="dropdown-menu">
-                <li
-                  className="dropdown-item"
-                  onClick={() => updateBookshelf("read")}
-                >
-                  Read
-                </li>
-                <li
-                  className="dropdown-item"
-                  onClick={() => updateBookshelf("currently reading")}
-                >
-                  Currently Reading
-                </li>
-                <li
-                  className="dropdown-item"
-                  onClick={() => updateBookshelf("want to read")}
-                >
-                  Want to Read
-                </li>
-              </ul>
+              <div id="bookshelf_button_div" className="dropdown">
+                {inBookshelf && userData?.isUser ? (
+                  <button
+                    className="search_bookshelf_button btn btn-danger"
+                    data-bs-toggle=""
+                    type="button"
+                    onClick={() => updateBookshelf()}
+                  >
+                    Remove from Bookshelf
+                  </button>
+                ) : userData?.isUser ? (
+                  <>
+                    <button
+                      className="search_bookshelf_button btn btn-success dropdown-toggle"
+                      data-bs-toggle="dropdown"
+                      type="button"
+                    >
+                      Add to Bookshelf
+                    </button>
+                    <ul className="dropdown-menu">
+                      <li
+                        className="dropdown-item"
+                        onClick={() => updateBookshelf("read")}
+                      >
+                        Read
+                      </li>
+                      <li
+                        className="dropdown-item"
+                        onClick={() => updateBookshelf("currently reading")}
+                      >
+                        Currently Reading
+                      </li>
+                      <li
+                        className="dropdown-item"
+                        onClick={() => updateBookshelf("want to read")}
+                      >
+                        Want to Read
+                      </li>
+                    </ul>
+                  </>
+                ) : null}
+              </div>
+              <div className="search_user_rating_div">
+                <p className="search_user_rating_content">
+                  {userRating && userRating > 0
+                    ? `Your Rating: ${userRating}`
+                    : "Rate this book:"}
+                </p>
+                <div className="search_user_rating_bar_div">
+                  <div
+                    className="search_user_rating_bar progress progress-bar bg-warning"
+                    style={{ width: `${starBar}%` }}
+                  ></div>
+                </div>
+                <div className="search_user_ratings_stars">
+                  {Array(5)
+                    .fill()
+                    .map((_, index) => {
+                      return (
+                        <div
+                          className="search_user_ratings_star"
+                          onMouseOver={() => setStarBar((index + 1) * 20)}
+                          onClick={() => updateRating(index + 1)}
+                        ></div>
+                      );
+                    })}
+                </div>
+                <div className="search_clear_rating_div">
+                  <button
+                    className="search_clear_rating_button btn btn-link"
+                    onClick={() => updateRating(0)}
+                  >
+                    Clear Rating
+                  </button>
+                </div>
+              </div>
             </>
-          ) : null}
+          )}
         </div>
         <div
           className={payload.book.info.parentClass}

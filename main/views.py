@@ -763,7 +763,7 @@ def update_rating(request):
                 user_rating.save()
         except Review.DoesNotExist:
             Review.objects.create(user_id=user, book_isbn=book_isbn, rating=new_rating)
-        return JsonResponse({"rating": "Updated"})
+        return JsonResponse({"rating": new_rating})
 
 
 @csrf_exempt
