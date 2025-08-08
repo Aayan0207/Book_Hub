@@ -5,7 +5,7 @@ import Spinner from "./spinner.jsx";
 import Paginator from "./Pagination.jsx";
 import "../assets/codex/codex.css";
 
-function Codex({ setPage, setIsbn }) {
+function Codex({ setPage, setIsbn, userData={} }) {
   const urlPrefix = "http://localhost:8000";
   const token = getToken();
   const [viewSpinner, setViewSpinner] = useState(false);
@@ -157,6 +157,8 @@ function Codex({ setPage, setIsbn }) {
                   payload={cardData}
                   setPage={setPage}
                   setIsbn={setIsbn}
+                  options={"shelf"}
+                  userData={userData}
                 />
               );
             })

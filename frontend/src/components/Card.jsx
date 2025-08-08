@@ -10,6 +10,7 @@ function Card({
   userData = {},
   bookmarks = {},
   setBookmarks = {},
+  options = null,
 }) {
   if (!payload || !payload.book.image.source) return;
   if (!payload.book.isbn.match(/^(?:\d{10}|\d{13})$/)) return;
@@ -23,8 +24,25 @@ function Card({
   const [likes, setLikes] = useState(payload.book?.review?.likes);
   const [showDropdown, setShowDropdown] = useState(false);
   const [showCard, setShowCard] = useState(true);
-  const [showForm, setShowForm] = useState(false); //Add form and edit
+  const [showForm, setShowForm] = useState(false);
   const [content, setContent] = useState(payload.book?.review?.content);
+  const [inBookshelf, setInBookshelf] = useState(false);
+
+  useEffect(() => {
+    if (!userData?.isUser || !options === "shelf") return;
+    fetch(`${urlPrefix}/in_bookshelf`, {
+      method: "POST",
+      body: JSON.stringify({
+        isbn: isbn,
+        user_id: userData?.userId,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setInBookshelf(data.in_bookshelf);
+      })
+      .catch((error) => console.log(error));
+  }, [isbn]);
 
   useEffect(() => {
     if (!userData || !payload.book.review) return;
@@ -115,7 +133,6 @@ function Card({
       .catch((error) => console.log(error));
   }
 
-  //Update complete it
   function updateReview(event) {
     event.preventDefault();
     const form = event.target;
@@ -161,8 +178,25 @@ function Card({
       })
       .catch((error) => console.log(error));
   }
+  function updateBookshelf(action = null) {
+    fetch(`${urlPrefix}/update_bookshelf`, {
+      method: "POST",
+      body: JSON.stringify({
+        isbn: isbn,
+        user_id: userData?.userId,
+        action: action,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setInBookshelf(data.in_bookshelf);
+      })
+      .catch((error) => console.log(error));
+  }
+
   if (payload.book.sale_id && saleData.stock === 0) return;
   if (!showCard) return;
+
   return (
     <>
       <div className={payload.book.parentClass}>
@@ -171,7 +205,46 @@ function Card({
             className={payload.book.image.class}
             src={payload.book.image.source}
           ></img>
-          {payload.user?.isUser ? payload.book?.options : null}
+          {inBookshelf && userData?.isUser ? (
+            <button
+              className="search_bookshelf_button btn btn-danger"
+              data-bs-toggle=""
+              type="button"
+              onClick={() => updateBookshelf()}
+            >
+              Remove from Bookshelf
+            </button>
+          ) : userData?.isUser ? (
+            <>
+              <button
+                className="search_bookshelf_button btn btn-success dropdown-toggle"
+                data-bs-toggle="dropdown"
+                type="button"
+              >
+                Add to Bookshelf
+              </button>
+              <ul className="dropdown-menu">
+                <li
+                  className="dropdown-item"
+                  onClick={() => updateBookshelf("read")}
+                >
+                  Read
+                </li>
+                <li
+                  className="dropdown-item"
+                  onClick={() => updateBookshelf("currently reading")}
+                >
+                  Currently Reading
+                </li>
+                <li
+                  className="dropdown-item"
+                  onClick={() => updateBookshelf("want to read")}
+                >
+                  Want to Read
+                </li>
+              </ul>
+            </>
+          ) : null}
         </div>
         <div
           className={payload.book.info.parentClass}

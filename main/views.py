@@ -694,7 +694,7 @@ def get_user_reviews(request):
     if request.method == "POST":
         data = loads(request.body)
         page = data["page"]
-        try: #Remove this
+        try:  # Remove this
             user = data["username"]
             user_id = User.objects.get(username=user)
         except:
@@ -703,7 +703,7 @@ def get_user_reviews(request):
             Review.objects.select_related("user_id")
             .select_related("id")
             .filter(user_id=user_id)
-            .annotate(likes_count = Count("like"))
+            .annotate(likes_count=Count("like"))
             .order_by("-timestamp")
             .values(
                 "id",
@@ -948,14 +948,14 @@ def manage_review(request):
         user_id = data["user_id"]
         isbn = data["isbn"]
         delete = data.get("delete", False)
-    
+
         if delete:
             review = Review.objects.get(user_id=user_id, book_isbn=isbn)
             review.content = ""
             review.timestamp = None
             review.save()
             return JsonResponse({"deleted": True})
-        
+
         form_result = ReviewForm(data)
         if form_result.is_valid():
             content = form_result.cleaned_data["content"]
@@ -978,7 +978,6 @@ def manage_review(request):
                 user_review = Review.objects.get(user_id=user_id, book_isbn=isbn)
                 review_id = user_review.id
             return JsonResponse({"review": content, "id": review_id})
-        
 
 
 @csrf_exempt
@@ -988,20 +987,16 @@ def update_bookshelf(request):
         book_isbn = data["isbn"]
         user_id = data["user_id"]
         action = data["action"]
-        try:
-            if book_in_shelf := Bookshelf.objects.get(
-                user_id=user_id, book_isbn=book_isbn
-            ):
-                book_in_shelf.delete()
+        book_in_shelf = Bookshelf.objects.filter(user_id=user_id, book_isbn=book_isbn)
+        if book_in_shelf.exists():
+            book_in_shelf.delete()
             return JsonResponse({"in_bookshelf": False})
-        except:
-            if action:
-                user = User.objects.get(id=int(user_id))
-                Bookshelf.objects.create(
-                    user_id=user, book_isbn=book_isbn, tag=action.title()
-                )
-                return JsonResponse({"in_bookshelf": True})
-        return JsonResponse({"in_bookshelf": None})
+
+        if not action:
+            return JsonResponse({"in_bookshelf": None})
+        user = User.objects.get(id=int(user_id))
+        Bookshelf.objects.create(user_id=user, book_isbn=book_isbn, tag=action.title())
+        return JsonResponse({"in_bookshelf": True})
 
 
 @csrf_exempt
@@ -1010,11 +1005,8 @@ def in_bookshelf(request):
         data = loads(request.body)
         book_isbn = data["isbn"]
         user_id = data["user_id"]
-        try:
-            if Bookshelf.objects.get(user_id=user_id, book_isbn=book_isbn):
-                return JsonResponse({"in_bookshelf": True})
-        except:
-            return JsonResponse({"in_bookshelf": False})
+        shelf = Bookshelf.objects.filter(user_id=user_id, book_isbn=book_isbn)
+        return JsonResponse({"in_bookshelf": shelf.exists()})
 
 
 @csrf_exempt

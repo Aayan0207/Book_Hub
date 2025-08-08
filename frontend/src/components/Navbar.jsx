@@ -24,7 +24,9 @@ function Navbar({ page, setPage }) {
   function renderPage() {
     switch (page) {
       case "codex":
-        return <Codex setPage={setPage} setIsbn={setIsbn} />;
+        return (
+          <Codex setPage={setPage} setIsbn={setIsbn} userData={userData} />
+        );
       case "login":
         return <Login setPage={setPage} setUserData={setUserData} />;
       case "register":
@@ -36,7 +38,13 @@ function Navbar({ page, setPage }) {
       case "book_crate":
         return <Book_Crate setPage={setPage} setIsbn={setIsbn} />;
       case "readers_grove":
-        return <Readers_Grove setPage={setPage} userData={userData} setIsbn={setIsbn}/>;
+        return (
+          <Readers_Grove
+            setPage={setPage}
+            userData={userData}
+            setIsbn={setIsbn}
+          />
+        );
     }
   }
   return (
