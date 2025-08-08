@@ -7,7 +7,7 @@ function Card({
   payload,
   setPage,
   setIsbn,
-  setProfile,
+  setProfile=null,
   userData = {},
   bookmarks = {},
   setBookmarks = {},

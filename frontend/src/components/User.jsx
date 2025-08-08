@@ -11,7 +11,12 @@ function User({ setPage, userData, setIsbn, profileData }) {
     switch (view) {
       case "profile":
         return (
-          <Profile userData={profileData} setPage={setPage} setIsbn={setIsbn} profileView={true}/>
+          <Profile
+            userData={profileData}
+            setPage={setPage}
+            setIsbn={setIsbn}
+            profileView={true}
+          />
         );
       case "bookshelf":
         return (
@@ -24,9 +29,10 @@ function User({ setPage, userData, setIsbn, profileData }) {
       case "ratings_reviews":
         return (
           <Ratings_Reviews
-            userData={userData}
+            userData={profileData}
             setPage={setPage}
             setIsbn={setIsbn}
+            profileView={true}
           />
         );
     }

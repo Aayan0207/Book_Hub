@@ -124,7 +124,7 @@ function Profile({ userData, setPage, setIsbn, profileView=false }) {
               <p id="credits_p">Admin. No Credits required.</p>
             ) : null /*Change for regular user*/
           }
-          <hr />
+          {!profileView ? <hr /> : null}
         </div>
         <div id="quote_div">
           {!showForm ? <p id="quote">{quote}</p> : null}

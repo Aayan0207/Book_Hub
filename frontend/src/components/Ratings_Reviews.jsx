@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Card from "./Card";
-function Ratings_Reviews({ userData, setPage, setIsbn, setProfile }) {
+function Ratings_Reviews({ userData, setPage, setIsbn, profileView = false }) {
   const urlPrefix = "http://localhost:8000";
   const [batch, setBatch] = useState(1);
   const [more, setMore] = useState(false);
@@ -63,7 +63,11 @@ function Ratings_Reviews({ userData, setPage, setIsbn, setProfile }) {
   return (
     <>
       <div className="reviews_div">
-        <h2 className="reviews_header">Your Ratings &amp; Reviews</h2>
+        <h2 className="reviews_header">
+          {!profileView
+            ? "Your Ratings & Reviews"
+            : `${userData.user}'s Ratings & Reviews`}
+        </h2>
         {reviews
           ? reviews.map((item) => {
               if (!reviewsData[item.book_isbn]) return;
@@ -123,7 +127,6 @@ function Ratings_Reviews({ userData, setPage, setIsbn, setProfile }) {
                   setPage={setPage}
                   setIsbn={setIsbn}
                   userData={userData}
-                  setProfile={setProfile}
                 />
               );
             })
