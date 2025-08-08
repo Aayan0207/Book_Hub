@@ -7,6 +7,7 @@ function Card({
   payload,
   setPage,
   setIsbn,
+  setProfile,
   userData = {},
   bookmarks = {},
   setBookmarks = {},
@@ -27,9 +28,16 @@ function Card({
   const [showForm, setShowForm] = useState(false);
   const [content, setContent] = useState(payload.book?.review?.content);
   const [inBookshelf, setInBookshelf] = useState(false);
+  const [viewProfile, setViewProfile] = useState(false);
 
   useEffect(() => {
-    if (!userData?.isUser || !options === "shelf") return;
+    if (!viewProfile) return;
+    setProfile(viewProfile);
+    setPage("readers_grove");
+  }, [viewProfile]);
+
+  useEffect(() => {
+    if (!userData?.isUser || options != "shelf") return;
     fetch(`${urlPrefix}/in_bookshelf`, {
       method: "POST",
       body: JSON.stringify({
@@ -311,7 +319,9 @@ function Card({
         {payload.book.review ? (
           <div className="book_review">
             <div className="review_username_header">
-              {payload.book.review.reviewer}
+              <p onClick={() => setViewProfile(payload.book.review.reviewerId)}>
+                {payload.book.review.reviewer}
+              </p>
               {payload.book.review.reviewerId === userData?.userId ? (
                 <div
                   className="review_options_container"

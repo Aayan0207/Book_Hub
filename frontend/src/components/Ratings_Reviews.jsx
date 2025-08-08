@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import Card from "./Card";
-function Ratings_Reviews({ userData, setPage, setIsbn }) {
+function Ratings_Reviews({ userData, setPage, setIsbn, setProfile }) {
   const urlPrefix = "http://localhost:8000";
   const [batch, setBatch] = useState(1);
   const [more, setMore] = useState(false);
   const [reviews, setReviews] = useState([]);
   const [reviewsData, setReviewsData] = useState({});
-  
+
   useEffect(() => {
     fetch(`${urlPrefix}/get_user_reviews`, {
       method: "POST",
@@ -35,7 +35,7 @@ function Ratings_Reviews({ userData, setPage, setIsbn }) {
       .then((response) => response.json())
       .then((data) => {
         setReviews((prev) => {
-          return [ ...prev, ...data.reviews ];
+          return [...prev, ...data.reviews];
         });
         setMore(data.next);
       })
@@ -123,6 +123,7 @@ function Ratings_Reviews({ userData, setPage, setIsbn }) {
                   setPage={setPage}
                   setIsbn={setIsbn}
                   userData={userData}
+                  setProfile={setProfile}
                 />
               );
             })

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Card from "./Card";
 
-function Feed({ userData, setPage, setIsbn }) {
+function Feed({ userData, setPage, setIsbn, setProfile }) {
   const urlPrefix = "http://localhost:8000";
   const [refresh, setRefresh] = useState(false);
   const [reviews, setReviews] = useState([]);
@@ -129,6 +129,7 @@ function Feed({ userData, setPage, setIsbn }) {
               userData={userData}
               bookmarks={bookmarks}
               setBookmarks={setBookmarks}
+              setProfile={setProfile}
             />
           );
         })}

@@ -6,8 +6,14 @@ import Feed from "./Feed.jsx";
 import Bookmarks from "./Bookmarks.jsx";
 import Ratings_Reviews from "./Ratings_Reviews.jsx";
 
-function Readers_Grove({ setPage, userData, setIsbn }) {
+function Readers_Grove({ setPage, userData, setIsbn, profile, setProfile }) {
+  const [profileView, setProfileView] = useState(false);
+  if (profile && profile != userData?.userId) {
+    setProfileView(true);
+  }
+
   useEffect(() => {
+    if (profileView) return;
     if (!userData?.isUser) setPage("login");
   }, [userData]);
 
@@ -24,13 +30,32 @@ function Readers_Grove({ setPage, userData, setIsbn }) {
           <Bookshelf userData={userData} setPage={setPage} setIsbn={setIsbn} />
         );
       case "feed":
-        return <Feed userData={userData} setPage={setPage} setIsbn={setIsbn} />;
+        return (
+          <Feed
+            userData={userData}
+            setPage={setPage}
+            setIsbn={setIsbn}
+            setProfile={setProfile}
+          />
+        );
       case "bookmarks":
         return (
-          <Bookmarks userData={userData} setPage={setPage} setIsbn={setIsbn} />
+          <Bookmarks
+            userData={userData}
+            setPage={setPage}
+            setIsbn={setIsbn}
+            setProfile={setProfile}
+          />
         );
       case "ratings_reviews":
-        return <Ratings_Reviews userData={userData} setPage={setPage} setIsbn={setIsbn}/>;
+        return (
+          <Ratings_Reviews
+            userData={userData}
+            setPage={setPage}
+            setIsbn={setIsbn}
+            setProfile={setProfile}
+          />
+        );
     }
   }
 
@@ -46,21 +71,27 @@ function Readers_Grove({ setPage, userData, setIsbn }) {
             >
               {userData?.user}
             </li>
-            <hr />
-            <li
-              className="nav-item nav-link"
-              id="home"
-              onClick={() => setView("feed")}
-            >
-              Home
-            </li>
-            <li
-              className="nav-item nav-link"
-              id="bookmarks"
-              onClick={() => setView("bookmarks")}
-            >
-              Bookmarks
-            </li>
+            {!profileView ? (
+              <>
+                <hr />
+                <li
+                  className="nav-item nav-link"
+                  id="home"
+                  onClick={() => setView("feed")}
+                >
+                  Home
+                </li>{" "}
+              </>
+            ) : null}
+            {!profileView ? (
+              <li
+                className="nav-item nav-link"
+                id="bookmarks"
+                onClick={() => setView("bookmarks")}
+              >
+                Bookmarks
+              </li>
+            ) : null}
             <hr />
             <li
               className="nav-item nav-link"

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Card from "./Card";
 import getToken from "./getToken";
-function Bookmarks({ userData, setPage, setIsbn }) {
+function Bookmarks({ userData, setPage, setIsbn, setProfile }) {
   const urlPrefix = "http://localhost:8000";
   const token = getToken();
   const [refresh, setRefresh] = useState(false);
@@ -13,7 +13,6 @@ function Bookmarks({ userData, setPage, setIsbn }) {
   const [same, setSame] = useState(false);
   const [invalid, setInvalid] = useState(false);
   const [found, setFound] = useState(null);
-  // const [bookmarked, setBookmarked] = useState(false);
 
   useEffect(() => {
     fetch(`${urlPrefix}/load_bookmark_reviews`, {
@@ -290,6 +289,7 @@ function Bookmarks({ userData, setPage, setIsbn }) {
               userData={userData}
               bookmarks={bookmarks}
               setBookmarks={setBookmarks}
+              setProfile={setProfile}
             />
           );
         })}

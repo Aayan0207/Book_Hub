@@ -12,6 +12,7 @@ function Navbar({ page, setPage }) {
   const [isbn, setIsbn] = useState(null);
   const [userData, setUserData] = useState(null);
   const [logout, setLogout] = useState(false);
+  const [profile, setProfile] = useState(null);
 
   useEffect(() => {
     if (!userData || !userData?.isUser) return;
@@ -25,7 +26,12 @@ function Navbar({ page, setPage }) {
     switch (page) {
       case "codex":
         return (
-          <Codex setPage={setPage} setIsbn={setIsbn} userData={userData} />
+          <Codex
+            setPage={setPage}
+            setIsbn={setIsbn}
+            userData={userData}
+            setProfile={setProfile}
+          />
         );
       case "login":
         return <Login setPage={setPage} setUserData={setUserData} />;
@@ -43,6 +49,8 @@ function Navbar({ page, setPage }) {
             setPage={setPage}
             userData={userData}
             setIsbn={setIsbn}
+            profile={profile}
+            setProfile={setProfile}
           />
         );
     }
