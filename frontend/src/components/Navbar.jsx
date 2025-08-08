@@ -46,7 +46,7 @@ function Navbar({ page, setPage }) {
           />
         );
       case "book_crate":
-        return <Book_Crate setPage={setPage} setIsbn={setIsbn} />;
+        return <Book_Crate setPage={setPage} setIsbn={setIsbn} userData={userData}/>;
       case "readers_grove":
         return (
           <Readers_Grove

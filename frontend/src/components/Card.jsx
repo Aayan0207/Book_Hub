@@ -221,6 +221,7 @@ function Card({
       })
       .catch((error) => console.log(error));
   }
+
   function updateBookshelf(action = null) {
     fetch(`${urlPrefix}/update_bookshelf`, {
       method: "POST",
@@ -254,6 +255,25 @@ function Card({
       .catch((error) => console.log(error));
   }
 
+  function deleteListing() {
+    fetch(`${urlPrefix}/update_listing`, {
+      method: "POST",
+      body: JSON.stringify({
+        isbn: isbn,
+        delete: true,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
+    })
+      .then((response) => response.json())
+      .then((_) => {
+        setShowCard(false);
+      })
+      .catch((error) => console.log(error));
+  }
   if (payload.book.sale_id && saleData.stock === 0) return;
   if (!showCard) return;
 
@@ -265,6 +285,24 @@ function Card({
             className={payload.book.image.class}
             src={payload.book.image.source}
           ></img>
+          {options === "crate" &&
+            (userData?.isUser && userData?.isSuper ? (
+              <>
+                <button className="update_listing_button btn btn-info">
+                  Update Listing
+                </button>
+                <button
+                  className="delete_listing_button btn btn-danger"
+                  onClick={() => deleteListing()}
+                >
+                  Delete Listing
+                </button>
+              </>
+            ) : userData?.isUser ? (
+              {
+                /* Add standard user stuff */
+              }
+            ) : null)}
           {options === "shelf" && (
             <>
               <div id="bookshelf_button_div" className="dropdown">

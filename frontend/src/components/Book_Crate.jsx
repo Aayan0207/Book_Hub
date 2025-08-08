@@ -1,11 +1,11 @@
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect} from "react";
 import "../assets/book_crate/book_crate.css";
 import getToken from "./getToken.jsx";
 import Spinner from "./spinner.jsx";
 import Card from "./Card";
 import Paginator from "./Pagination.jsx";
 
-function Book_Crate({ setPage, setIsbn }) {
+function Book_Crate({ setPage, setIsbn, userData=null }) {
   const urlPrefix = "http://localhost:8000";
   const token = getToken();
   const [payload, setPayload] = useState({
@@ -98,7 +98,7 @@ function Book_Crate({ setPage, setIsbn }) {
           alignItems: "center",
         }}
       >
-        <h2 id="header">Browse the Crate and find your next read</h2>
+        <h2 id="header">Browse the Crate and find your next read!</h2>
       </div>
       <div id="search_book_form_div">
         <form
@@ -198,6 +198,8 @@ function Book_Crate({ setPage, setIsbn }) {
                 payload={cardData}
                 setPage={setPage}
                 setIsbn={setIsbn}
+                userData={userData}
+                options="crate"
               />
             );
           })

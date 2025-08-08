@@ -653,6 +653,11 @@ def update_listing(request):
     if request.method == "POST":
         data = loads(request.body)
         isbn = data["isbn"]
+        delete=data.get("delete", False)
+        if delete:
+            listing = Listing.objects.get(book_isbn=isbn)
+            listing.delete()
+            return JsonResponse({"listing":"deleted"})
         price = int(data["price"])
         stock = int(data["stock"])
         try:
