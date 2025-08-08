@@ -8,14 +8,19 @@ import Ratings_Reviews from "./Ratings_Reviews.jsx";
 
 function Readers_Grove({ setPage, userData, setIsbn, profile, setProfile }) {
   const [profileView, setProfileView] = useState(false);
-  if (profile && profile != userData?.userId) {
-    setProfileView(true);
-  }
+
+  useEffect(() => {
+    if (profile && profile !== userData?.userId) {
+      setProfileView(true);
+    } else {
+      setProfileView(false);
+    }
+  }, [profile, userData?.userId]);
 
   useEffect(() => {
     if (profileView) return;
     if (!userData?.isUser) setPage("login");
-  }, [userData]);
+  }, [userData, profileView, setPage]);
 
   const [view, setView] = useState("profile");
 
@@ -23,7 +28,7 @@ function Readers_Grove({ setPage, userData, setIsbn, profile, setProfile }) {
     switch (view) {
       case "profile":
         return (
-          <Profile userData={userData} setPage={setPage} setIsbn={setIsbn} />
+          <Profile userData={userData} setPage={setPage} setIsbn={setIsbn} profile={profile}/>
         );
       case "bookshelf":
         return (

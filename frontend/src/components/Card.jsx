@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "../assets/codex/codex.css";
 import "../assets/book_crate/book_crate.css";
 import "../assets/readers_grove/readers_grove.css";
@@ -28,13 +28,6 @@ function Card({
   const [showForm, setShowForm] = useState(false);
   const [content, setContent] = useState(payload.book?.review?.content);
   const [inBookshelf, setInBookshelf] = useState(false);
-  const [viewProfile, setViewProfile] = useState(false);
-
-  useEffect(() => {
-    if (!viewProfile) return;
-    setProfile(viewProfile);
-    setPage("readers_grove");
-  }, [viewProfile]);
 
   useEffect(() => {
     if (!userData?.isUser || options != "shelf") return;
@@ -50,7 +43,7 @@ function Card({
         setInBookshelf(data.in_bookshelf);
       })
       .catch((error) => console.log(error));
-  }, [isbn]);
+  }, [isbn, options, userData?.isUser]);
 
   useEffect(() => {
     if (!userData || !payload.book.review) return;
@@ -64,7 +57,7 @@ function Card({
       .then((response) => response.json())
       .then((data) => setUserLiked(data.liked))
       .catch((error) => console.log(error));
-  }, [isbn]);
+  }, [isbn, userData]);
 
   useEffect(() => {
     if (viewBook) {
@@ -319,7 +312,12 @@ function Card({
         {payload.book.review ? (
           <div className="book_review">
             <div className="review_username_header">
-              <p onClick={() => setViewProfile(payload.book.review.reviewerId)}>
+              <p
+                onClick={() => {
+                  setProfile(payload.book.review.reviewerId);
+                  setPage("readers_grove");
+                }}
+              >
                 {payload.book.review.reviewer}
               </p>
               {payload.book.review.reviewerId === userData?.userId ? (
