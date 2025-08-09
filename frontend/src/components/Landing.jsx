@@ -1,8 +1,7 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import "../assets/main/main.css";
 
-function Landing({setPage, userData}) {
-
+function Landing({ setPage, userData }) {
   return (
     <>
       <div
@@ -18,18 +17,27 @@ function Landing({setPage, userData}) {
           with much more to offer to their community.
         </header>
         <h1>
-          Welcome to Book Hub
+          Welcome to Book Hub&nbsp;
           <img id="book_hub_img" src="/assets/main/BookHub_Icon.png" />
         </h1>
-        {!userData?.isUser ? 
-        <h2><a onClick={() => setPage("register")} id="landing_link">Login/Register</a> to gain access to all the features of Book Hub.</h2>
-        :null}
+        {!userData?.isUser ? (
+          <h2>
+            <a onClick={() => setPage("register")} id="landing_link">
+              Login/Register
+            </a>{" "}
+            to gain access to all the features of Book Hub.
+          </h2>
+        ) : null}
         <div id="button_grid">
-          <button className="btn btn-info" onClick={() => setPage("book_crate")}>
-            <img src="/assets/book_crate/Book crate final.png" />
+          <button
+            className="btn btn-info"
+            onClick={() => setPage("book_crate")}
+          >
+            <div className="img_container">
+              <img src="/assets/book_crate/Book crate final.png" />
+            </div>
             <p className="app_header">Book Crate</p>
             <p className="app_content">
-
               A platform where Librarians can add/delete/update listings and
               community members can search among the available ones. Either
               purchase books immediately using the Library's credit system or
@@ -37,12 +45,16 @@ function Landing({setPage, userData}) {
               to donate books to The Book Hub through the Book Crate. If
               accepted, one credit per book donated is gained. Invoices are
               generated and provided for each transaction made.
-
             </p>
           </button>
 
-          <button className="btn btn-success" onClick={() => setPage("readers_grove")}>
-            <img src="/assets/readers_grove/Readers Grove Final.png" />
+          <button
+            className="btn btn-success"
+            onClick={() => setPage("readers_grove")}
+          >
+            <div className="img_container">
+              <img src="/assets/readers_grove/Readers Grove Final.png" />
+            </div>
             <p className="app_header">Reader's Grove</p>
             <p className="app_content">
               A networking area for the community, complete with showing ratings
@@ -53,12 +65,13 @@ function Landing({setPage, userData}) {
               may also add them to your bookshelf under the tag "Read",
               "Currently Reading", or "Want to Read" which will be shown on your
               profile along with an about section to tell others about yourself.
-
             </p>
           </button>
 
           <button className="btn btn-warning" onClick={() => setPage("codex")}>
-            <img id="codex_img" src="/assets/codex/Codex 3.png" />
+            <div className="img_container">
+              <img id="codex_img" src="/assets/codex/Codex 3.png" />
+            </div>
             <p className="app_header">Codex</p>
             <p className="app_content">
               Powered with the help of Google Books API, scour the internet for
@@ -69,7 +82,6 @@ function Landing({setPage, userData}) {
               page, containing detailed information that combines both the
               results from the Google Books API and the thoughts and opinions of
               the Book Hub community.
-
             </p>
           </button>
         </div>

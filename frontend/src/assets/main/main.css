@@ -6,6 +6,15 @@
   gap: 10px;
   opacity: 1;
 }
+#button_grid > button {
+  display:grid;
+  grid-template-rows: 280px 40px auto;
+}
+#button_grid > button *{
+  display:flex;
+  align-items: center;
+  justify-content: center;
+}
 .app_content {
   font-size: 22px;
   color: black;
