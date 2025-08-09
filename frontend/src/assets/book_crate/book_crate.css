@@ -1,6 +1,12 @@
 /* #search_listing_form, #search_result, #no_search_result_alert, #no_donate_result_alert, #donate_book_spinner, #donate_result, #donate_form, #search_book_spinner, #user_cart, .checkout,#donate_search_form, #checkout_button, #no_items, .checkout_listing, #failed_transaction, #user_donations{
     display:none;
 } */
+.close_alert_button {
+  float: right;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .active-link {
   background-color: rgb(0, 51, 255);
   color: white;
@@ -178,12 +184,19 @@
 #search_listing_form,
 #listing_form {
   margin: 5px;
-}
-#listing_form {
   display: flex;
-  align-items: left;
   justify-content: center;
   flex-direction: column;
+}
+#search_listing_form {
+  align-items: center;
+}
+#search_listing_form * {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+#listing_form {
+  align-items: left;
 }
 #id_book_isbn {
   background-color: lightgrey;
@@ -199,7 +212,7 @@
 }
 #search_result {
   display: grid;
-  grid-template-columns: 250px auto;
+  grid-template-columns: 500px auto;
   gap: 5px;
   border: 2px solid black;
   border-radius: 5px;
@@ -215,7 +228,16 @@
   display: inline-block;
   font-size: 16px;
 }
-.bi-plus-square {
+.bi-x-square {
   margin-right: 5px;
-  margin-top: 5px;
+  cursor:pointer;
+}
+#search_book_info{
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: left;
+}
+#search_cover_image{
+  width:200px;
 }

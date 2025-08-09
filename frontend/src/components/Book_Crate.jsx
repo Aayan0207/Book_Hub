@@ -20,7 +20,10 @@ function Book_Crate({ setPage, setIsbn, userData = null }) {
   const [listingsData, setListingsData] = useState({});
   const [refreshListings, setRefreshListings] = useState(false);
   const [slide, setSlide] = useState(1);
-
+  const [newListing, setNewListing] = useState({});
+  const [invalid, setInvalid] = useState(false);
+  const [showGetForm, setShowGetForm] = useState(false);
+  const [showAddForm, setShowAddForm] = useState(false);
   useEffect(() => {
     setPayload({ ...payload, data: { ...payload.data, page: slide } });
   }, [slide]);
@@ -89,6 +92,59 @@ function Book_Crate({ setPage, setIsbn, userData = null }) {
     setSlide(1);
   }
 
+  function findListing(event) {
+    if (!userData?.isSuper) return;
+    setInvalid(false);
+    setShowAddForm(false);
+    event.preventDefault();
+    const form = event.target;
+    fetch(`${urlPrefix}/book_result`, {
+      method: "POST",
+      body: JSON.stringify({
+        isbn: form.querySelector("#id_book_isbn").value,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.result.totalItems != 1) {
+          setInvalid(true);
+          return;
+        }
+        setNewListing(data.result.items[0].volumeInfo);
+        setShowAddForm(true);
+      })
+      .catch((error) => console.log(error));
+  }
+
+  function addListing(event) {
+    if (!userData?.isSuper) return;
+    event.preventDefault();
+    const form = event.target;
+    fetch(`${urlPrefix}/update_listing`, {
+      method: "POST",
+      body: JSON.stringify({
+        isbn: form.querySelector("#id_book_isbn").value,
+        price: form.querySelector("#id_price").value,
+        stock: form.querySelector("#id_stock").value,
+        title: newListing?.title,
+        author: newListing?.authors.join(", "),
+        publisher: newListing?.publisher,
+        librarian_id: userData?.userId,
+      }),
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setIsbn(data.listing[0].book_isbn);
+        setPage("book");
+      })
+      .catch((error) => console.log(error));
+  }
+
   return (
     <>
       <div
@@ -106,7 +162,11 @@ function Book_Crate({ setPage, setIsbn, userData = null }) {
             <h3 id="superuser_header">
               <p>Welcome, Librarian {userData?.user}</p>
               <div>
-                <button id="create_listing" className="btn btn-success">
+                <button
+                  id="create_listing"
+                  className="btn btn-success"
+                  onClick={() => setShowGetForm(true)}
+                >
                   <i className="bi bi-plus-square"></i>Add Listing
                 </button>
                 <button id="manage_donations" className="btn btn-warning">
@@ -121,6 +181,125 @@ function Book_Crate({ setPage, setIsbn, userData = null }) {
             /* Standard User Greeting */
           }
         )
+      ) : null}
+      {userData?.isSuper &&
+        (showGetForm ? (
+          <>
+            <form
+              action="/search_listing"
+              method="POST"
+              id="search_listing_form"
+              onReset={() => setShowGetForm(false)}
+              onSubmit={(event) => findListing(event)}
+            >
+              <div>
+                <label htmlFor="id_book_isbn">ISBN:</label>
+                <input
+                  type="text"
+                  name="book_isbn"
+                  autoComplete="off"
+                  maxLength="13"
+                  required={true}
+                  id="id_book_isbn"
+                />
+              </div>
+              <div>
+                <input
+                  type="submit"
+                  value="Fetch Book"
+                  className="btn btn-success"
+                  id="search_listing_button"
+                />
+                <input
+                  type="reset"
+                  value="Cancel"
+                  className="btn btn-danger"
+                  id="cancel_listing_button"
+                />
+              </div>
+            </form>
+            <hr />
+          </>
+        ) : null)}
+      {invalid ? (
+        <div
+          className="alert alert-warning alert-dismissible fade show"
+          role="alert"
+          id="no_search_result_alert"
+        >
+          No results found. Are you sure that the ISBN is correct?
+          <span
+            onClick={() => setInvalid(false)}
+            className="close_alert_button"
+          >
+            <i class="bi bi-x-square"></i>
+          </span>
+        </div>
+      ) : null}
+      {showAddForm && newListing ? (
+        <>
+        <div id="search_result">
+          <div id="search_cover_image_div">
+            <img
+              id="search_cover_image"
+              src={newListing.imageLinks.thumbnail}
+            />
+          </div>
+          <div id="search_book_info">
+            <p id="search_book_title">{newListing.title}</p>
+            <p id="search_book_author">by {newListing.authors.join(", ")}</p>
+            <form
+              action="/update_listing"
+              method="POST"
+              id="listing_form"
+              onReset={() => setShowAddForm(false)}
+              onSubmit={(event) => addListing(event)}
+            >
+              <label htmlFor="id_price">Price (Credits):</label>
+              <input
+                type="number"
+                name="price"
+                min="1"
+                max="100000"
+                required={true}
+                id="id_price"
+              />
+              <label htmlFor="id_stock">Stock:</label>
+              <input
+                type="number"
+                name="stock"
+                min="1"
+                max="10000"
+                required={true}
+                id="id_stock"
+              />
+              <label htmlFor="id_book_isbn">ISBN:</label>
+              <input
+                type="text"
+                name="book_isbn"
+                readOnly={true}
+                maxLength="13"
+                minLength="10"
+                value={newListing.industryIdentifiers[0].identifier}
+                id="id_book_isbn"
+              />
+              <input
+                type="submit"
+                value="List"
+                className="btn btn-success"
+                id="create_listing_button"
+              />
+              <input
+                type="reset"
+                value="Cancel"
+                className="btn btn-danger"
+                id="cancel_create_listing_button"
+              />
+            </form>
+          </div>
+        </div>
+        <hr/>
+        </>
       ) : null}
       <div id="search_book_form_div">
         <form
