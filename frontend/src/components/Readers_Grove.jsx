@@ -5,6 +5,7 @@ import Bookshelf from "./Bookshelf.jsx";
 import Feed from "./Feed.jsx";
 import Bookmarks from "./Bookmarks.jsx";
 import Ratings_Reviews from "./Ratings_Reviews.jsx";
+import Invoices from "./Invoices.jsx";
 
 function Readers_Grove({ setPage, userData, setIsbn, setProfile }) {
   const [view, setView] = useState("profile");
@@ -48,6 +49,10 @@ function Readers_Grove({ setPage, userData, setIsbn, setProfile }) {
             setPage={setPage}
             setIsbn={setIsbn}
           />
+        );
+      case "invoices":
+        return (
+          <Invoices userData={userData} setPage={setPage} setIsbn={setIsbn} />
         );
     }
   }
@@ -94,6 +99,15 @@ function Readers_Grove({ setPage, userData, setIsbn, setProfile }) {
             >
               Ratings &amp; Reviews
             </li>
+            {!userData.isSuper ? (
+              <li
+                className="nav-item nav-link"
+                id="invoices"
+                onClick={() => setView("invoices")}
+              >
+                Invoices
+              </li>
+            ) : null}
           </ul>
         </div>
         <>{renderView()}</>

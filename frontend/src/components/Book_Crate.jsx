@@ -373,17 +373,17 @@ function Book_Crate({ setPage, setIsbn, userData = null }) {
                 image: {
                   parentClass: "listing_book_cover_image_div",
                   class: "listing_book_cover_image",
-                  source: bookData.items[0].volumeInfo.imageLinks.thumbnail,
+                  source: bookData.items?.[0].volumeInfo.imageLinks.thumbnail,
                 },
                 info: {
                   parentClass: "listing_book_info",
                   title: {
                     class: "listing_book_title",
-                    value: bookData.items[0].volumeInfo.title,
+                    value: bookData.items?.[0].volumeInfo.title,
                   },
                   author: {
                     class: "listing_book_author",
-                    value: bookData.items[0].volumeInfo.authors,
+                    value: bookData.items?.[0].volumeInfo.authors,
                   },
                   ratings: {
                     parentClass: "listing_book_rating_div",

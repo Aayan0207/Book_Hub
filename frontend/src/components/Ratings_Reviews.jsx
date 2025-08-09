@@ -71,7 +71,7 @@ function Ratings_Reviews({ userData, setPage, setIsbn, profileView = false }) {
         {reviews
           ? reviews.map((item) => {
               if (!reviewsData[item.book_isbn]) return;
-              const bookData = reviewsData[item.book_isbn].items[0];
+              const bookData = reviewsData[item.book_isbn].items?.[0];
 
               const cardDetails = {
                 user: userData,

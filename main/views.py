@@ -146,15 +146,16 @@ def user_exists(request):
         user = User.objects.filter(username=username).values("id", "username")
         try:
             user = User.objects.get(username=username)
-            return JsonResponse({
-                "user": user.username,
-                "userId": user.id, #type: ignore
-                "isUser": user.is_authenticated,
-                "isSuper": user.is_superuser,
-            })
+            return JsonResponse(
+                {
+                    "user": user.username,
+                    "userId": user.id,  # type: ignore
+                    "isUser": user.is_authenticated,
+                    "isSuper": user.is_superuser,
+                }
+            )
         except User.DoesNotExist:
             return JsonResponse({"user": False})
-
 
 
 def add_credits(request):
@@ -653,16 +654,16 @@ def update_listing(request):
     if request.method == "POST":
         data = loads(request.body)
         isbn = data["isbn"]
-        delete=data.get("delete", False)
+        delete = data.get("delete", False)
         if delete:
             listing = Listing.objects.get(book_isbn=isbn)
             listing.delete()
-            return JsonResponse({"listing":"deleted"})
+            return JsonResponse({"listing": "deleted"})
         price = int(data["price"])
         stock = int(data["stock"])
-        librarian_id = data.get("librarian_id",None)
+        librarian_id = data.get("librarian_id", None)
         if librarian_id:
-            librarian_id=int(librarian_id)
+            librarian_id = int(librarian_id)
         try:
             listing = Listing.objects.get(book_isbn=isbn)
             if price != listing.price:

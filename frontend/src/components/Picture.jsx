@@ -23,7 +23,7 @@ function Picture({ isbn, setIsbn, setPage, cls }) {
     })
       .then((response) => response.json())
       .then((data) =>
-        setLink(data.result?.items[0]?.volumeInfo?.imageLinks?.thumbnail)
+        setLink(data.result?.items?.[0]?.volumeInfo?.imageLinks?.thumbnail)
       )
       .catch((error) => console.log(error));
   }, [isbn]);

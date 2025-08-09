@@ -3,6 +3,7 @@ import "../assets/codex/codex.css";
 import "../assets/book_crate/book_crate.css";
 import "../assets/readers_grove/readers_grove.css";
 import getToken from "./getToken";
+
 function Card({
   payload,
   setPage,
@@ -524,6 +525,45 @@ function Card({
                 {saleData.stock > 1 ? `${saleData.stock} copies` : "1 copy"}{" "}
                 Available
               </p>
+            </>
+          ) : null}
+          {payload.book.invoice_id ? (
+            <>
+              <hr />
+              <p className="invoice_id_p">
+                Invoice ID: {payload.book.invoice_id}
+              </p>
+              <div className="transaction_info">
+                <p>Quantity: {payload.book.info.invoice.quantity.value}</p>
+                Transaction Info:
+                <p
+                  className="transaction_amount_p"
+                  style={{
+                    color:
+                      payload.book.info.invoice.transactionInfo.type ===
+                      "purchase"
+                        ? "red"
+                        : "green",
+                  }}
+                >
+                  {payload.book.info.invoice.transactionInfo.value}
+                </p>
+                <p>
+                  Timestamp:{" "}
+                  {new Date(
+                    payload.book.info.invoice.timestamp.value
+                  ).toLocaleString(
+                    "en-US",
+                    (options = {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                      hour: "numeric",
+                      minute: "numeric",
+                    })
+                  )}
+                </p>
+              </div>
             </>
           ) : null}
           {payload.book.donate_id ? (

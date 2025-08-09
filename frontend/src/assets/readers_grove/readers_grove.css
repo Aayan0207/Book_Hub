@@ -1,6 +1,10 @@
 /* #bookshelf_all_div,#update_quote_form, #user_credits_form, #user_search_form, #self_user_alert,#user_found, #no_user_alert, #bookshelf_currently_reading_div, #bookshelf_want_to_read_div, #bookshelf_read_div, #reviews_div, #user_review_form, #user_info {
     display:none;
 } */
+.transaction_amount_p {
+  display: inline-block;
+  margin-left: 5px;
+}
 #user_credits_form {
   display: flex;
   justify-content: left;
@@ -245,6 +249,10 @@
 .review_username_header {
   font-size: 24px;
   font-weight: bold;
+}
+.review_username_header > div,
+p {
+  display: inline-block;
 }
 .review_timestamp_div {
   text-align: right;

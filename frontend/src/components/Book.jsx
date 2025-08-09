@@ -56,7 +56,7 @@ function Book({ isbn }) {
       }),
     })
       .then((response) => response.json())
-      .then((data) => setBookData(data.result.items[0]))
+      .then((data) => setBookData(data.result.items?.[0]))
       .catch((error) => console.log(error));
   }, [isbn]);
 
