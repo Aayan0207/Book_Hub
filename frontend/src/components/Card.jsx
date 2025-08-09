@@ -333,7 +333,7 @@ function Card({
       })
       .catch((error) => console.log(error));
   }
-  
+
   if (payload.book.sale_id && saleData.stock === 0) return;
   if (!showCard) return;
 
