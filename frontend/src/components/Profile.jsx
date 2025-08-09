@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Picture from "./Picture";
 import getToken from "./getToken";
 
-function Profile({ userData, setPage, setIsbn, profileView=false }) {
+function Profile({ userData, setPage, setIsbn, profileView = false }) {
   const urlPrefix = "http://localhost:8000";
   const token = getToken();
   const [quote, setQuote] = useState(null);
@@ -10,40 +10,6 @@ function Profile({ userData, setPage, setIsbn, profileView=false }) {
   const [currently, setCurrently] = useState([]);
   const [want, setWant] = useState([]);
   const [showForm, setShowForm] = useState(false);
-  const [payload, setPayload] = useState({});
-  const [deleteQuote, setDeleteQuote] = useState(false);
-
-  useEffect(() => {
-    if (!quote) return;
-    fetch(`${urlPrefix}/delete_quote`, {
-      method: "POST",
-      body: JSON.stringify({
-        id: userData?.userId,
-      }),
-    })
-      .then((response) => response.json())
-      .then((_) => setQuote(null))
-      .catch((error) => console.log(error));
-  }, [deleteQuote]);
-
-  useEffect(() => {
-    if (!payload?.content) return;
-    fetch(`${urlPrefix}/update_quote`, {
-      method: "POST",
-      body: JSON.stringify(payload),
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRFToken": token,
-      },
-      credentials: "include",
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setQuote(data.content);
-        setShowForm(false);
-      })
-      .catch((error) => console.log(error));
-  }, [payload]);
 
   useEffect(() => {
     if (!userData?.isUser) return;
@@ -103,14 +69,47 @@ function Profile({ userData, setPage, setIsbn, profileView=false }) {
       .catch((error) => console.log(error));
   }, [userData]);
 
-  function submitForm(event) {
+  function updateQuote(event) {
     event.preventDefault();
     const form = event.target;
-    const details = {
-      id: userData?.userId,
-      content: form.querySelector("#id_quote").value,
-    };
-    setPayload(details);
+    fetch(`${urlPrefix}/update_quote`, {
+      method: "POST",
+      body: JSON.stringify({
+        id: userData?.userId,
+        content: form.querySelector("#id_quote").value,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setQuote(data.content);
+        setShowForm(false);
+      })
+      .catch((error) => console.log(error));
+  }
+
+  function deleteQuote() {
+    fetch(`${urlPrefix}/update_quote`, {
+      method: "POST",
+      body: JSON.stringify({
+        id: userData?.userId,
+        content: "",
+      }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
+    })
+      .then((response) => response.json())
+      .then((_) => {
+        setQuote(null);
+      })
+      .catch((error) => console.log(error));
   }
 
   return (
@@ -133,7 +132,7 @@ function Profile({ userData, setPage, setIsbn, profileView=false }) {
               action="/update_quote"
               method="post"
               id="update_quote_form"
-              onSubmit={(event) => submitForm(event)}
+              onSubmit={(event) => updateQuote(event)}
               onReset={() => setShowForm(false)}
             >
               <textarea name="quote" maxLength="2000" id="id_quote" required>
@@ -153,29 +152,30 @@ function Profile({ userData, setPage, setIsbn, profileView=false }) {
               />
             </form>
           ) : null}
-          {!profileView && (quote && !showForm ? (
-            <>
+          {!profileView &&
+            (quote && !showForm ? (
+              <>
+                <button
+                  className="update_quote btn btn-info"
+                  onClick={() => setShowForm(true)}
+                >
+                  Update About
+                </button>
+                <button
+                  className="delete_quote btn btn-danger"
+                  onClick={() => deleteQuote()}
+                >
+                  Delete About
+                </button>
+              </>
+            ) : !showForm ? (
               <button
-                className="update_quote btn btn-info"
+                className="add_quote_button btn btn-success"
                 onClick={() => setShowForm(true)}
               >
-                Update About
+                Add About
               </button>
-              <button
-                className="delete_quote btn btn-danger"
-                onClick={() => setDeleteQuote(!deleteQuote)}
-              >
-                Delete About
-              </button>
-            </>
-          ) : !showForm ? (
-            <button
-              className="add_quote_button btn btn-success"
-              onClick={() => setShowForm(true)}
-            >
-              Add About
-            </button>
-          ) : null)}
+            ) : null)}
         </div>
         <hr />
         <div id="user_activity_info">
