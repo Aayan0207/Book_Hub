@@ -304,6 +304,36 @@ function Card({
       .catch((error) => console.log(error));
   }
 
+  function acceptDonation() {
+    fetch(`${urlPrefix}/manage_admin_donation`, {
+      method: "POST",
+      body: JSON.stringify({
+        id: payload.book.donate_id,
+        status: true,
+      }),
+    })
+      .then((response) => response.json())
+      .then((_) => {
+        setShowCard(false);
+      })
+      .catch((error) => console.log(error));
+  }
+
+  function rejectDonation() {
+    fetch(`${urlPrefix}/manage_admin_donation`, {
+      method: "POST",
+      body: JSON.stringify({
+        id: payload.book.donate_id,
+        status: false,
+      }),
+    })
+      .then((response) => response.json())
+      .then((_) => {
+        setShowCard(false);
+      })
+      .catch((error) => console.log(error));
+  }
+  
   if (payload.book.sale_id && saleData.stock === 0) return;
   if (!showCard) return;
 
@@ -317,10 +347,16 @@ function Card({
           ></img>
           {options === "admin_donation" && userData.isSuper && (
             <>
-              <button className="accept_donation_button btn btn-success">
+              <button
+                className="accept_donation_button btn btn-success"
+                onClick={() => acceptDonation()}
+              >
                 <i className="bi bi-journal-check"></i> Accept
               </button>
-              <button className="reject_donation_button btn btn-danger">
+              <button
+                className="reject_donation_button btn btn-danger"
+                onClick={() => rejectDonation()}
+              >
                 <i className="bi bi-journal-x"></i> Reject
               </button>
             </>
@@ -437,36 +473,38 @@ function Card({
           <p className={payload.book.info.author.class}>
             by {payload.book.info.author.value?.join(", ")}
           </p>
-          {payload.book.review && (<div className={payload.book.info?.ratings?.parentClass}>
-            <div className={payload.book.info?.ratings?.bar.parentClass}>
-              <div
-                className={`${payload.book.info?.ratings?.bar.class} progress progress-bar bg-warning`}
-                style={{
-                  width: `${
-                    ratingsData?.avg_rating ? ratingsData.avg_rating * 20 : 0
-                  }%`,
-                }}
-              ></div>
+          {payload.book.review && (
+            <div className={payload.book.info?.ratings?.parentClass}>
+              <div className={payload.book.info?.ratings?.bar.parentClass}>
+                <div
+                  className={`${payload.book.info?.ratings?.bar.class} progress progress-bar bg-warning`}
+                  style={{
+                    width: `${
+                      ratingsData?.avg_rating ? ratingsData.avg_rating * 20 : 0
+                    }%`,
+                  }}
+                ></div>
+              </div>
+              <div className={payload.book.info?.ratings?.stars.parentClass}>
+                {Array(5)
+                  .fill()
+                  .map((_, index) => {
+                    return (
+                      <div
+                        key={index}
+                        className={payload.book.info?.ratings?.stars.class}
+                      ></div>
+                    );
+                  })}
+              </div>
+              <div className={payload.book.info?.ratings?.data.parentClass}>
+                <p className={payload.book.info?.ratings?.data.class}>
+                  {ratingsData?.avg_rating ? ratingsData.avg_rating : 0} (
+                  {ratingsData ? ratingsData.ratings_count : 0} Ratings)
+                </p>
+              </div>
             </div>
-            <div className={payload.book.info?.ratings?.stars.parentClass}>
-              {Array(5)
-                .fill()
-                .map((_, index) => {
-                  return (
-                    <div
-                      key={index}
-                      className={payload.book.info?.ratings?.stars.class}
-                    ></div>
-                  );
-                })}
-            </div>
-            <div className={payload.book.info?.ratings?.data.parentClass}>
-              <p className={payload.book.info?.ratings?.data.class}>
-                {ratingsData?.avg_rating ? ratingsData.avg_rating : 0} (
-                {ratingsData ? ratingsData.ratings_count : 0} Ratings)
-              </p>
-            </div>
-          </div>)}
+          )}
           {payload.book.info.publishInfo ? (
             <p className={payload.book.info.publishInfo?.class}>
               Published on: {payload.book.info.publishInfo?.value}
