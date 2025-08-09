@@ -7,6 +7,8 @@ import Book from "./Book";
 import Book_Crate from "./Book_Crate";
 import Readers_Grove from "./Readers_Grove";
 import User from "./User";
+import Admin_Donations from "./Admin_Donations";
+
 function Navbar({ page, setPage }) {
   const urlPrefix = "http://localhost:8000";
   const [isbn, setIsbn] = useState(null);
@@ -46,7 +48,9 @@ function Navbar({ page, setPage }) {
           />
         );
       case "book_crate":
-        return <Book_Crate setPage={setPage} setIsbn={setIsbn} userData={userData}/>;
+        return (
+          <Book_Crate setPage={setPage} setIsbn={setIsbn} userData={userData} />
+        );
       case "readers_grove":
         return (
           <Readers_Grove
@@ -54,6 +58,14 @@ function Navbar({ page, setPage }) {
             userData={userData}
             setIsbn={setIsbn}
             setProfile={setProfile}
+          />
+        );
+      case "admin_donations":
+        return (
+          <Admin_Donations
+            setPage={setPage}
+            userData={userData}
+            setIsbn={setIsbn}
           />
         );
     }

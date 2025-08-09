@@ -24,6 +24,13 @@ function Book_Crate({ setPage, setIsbn, userData = null }) {
   const [invalid, setInvalid] = useState(false);
   const [showGetForm, setShowGetForm] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showAdminDonations, setShowAdminDonations] = useState(false);
+
+  useEffect(() => {
+    if (!showAdminDonations) return;
+    setPage("admin_donations");
+  }, [showAdminDonations]);
+
   useEffect(() => {
     setPayload({ ...payload, data: { ...payload.data, page: slide } });
   }, [slide]);
@@ -169,7 +176,11 @@ function Book_Crate({ setPage, setIsbn, userData = null }) {
                 >
                   <i className="bi bi-plus-square"></i>Add Listing
                 </button>
-                <button id="manage_donations" className="btn btn-warning">
+                <button
+                  id="manage_donations"
+                  className="btn btn-warning"
+                  onClick={() => setShowAdminDonations(true)}
+                >
                   <i className="bi bi-book"></i> Manage Book Donations
                 </button>
               </div>
@@ -238,67 +249,67 @@ function Book_Crate({ setPage, setIsbn, userData = null }) {
       ) : null}
       {showAddForm && newListing ? (
         <>
-        <div id="search_result">
-          <div id="search_cover_image_div">
-            <img
-              id="search_cover_image"
-              src={newListing.imageLinks.thumbnail}
-            />
+          <div id="search_result">
+            <div id="search_cover_image_div">
+              <img
+                id="search_cover_image"
+                src={newListing.imageLinks.thumbnail}
+              />
+            </div>
+            <div id="search_book_info">
+              <p id="search_book_title">{newListing.title}</p>
+              <p id="search_book_author">by {newListing.authors.join(", ")}</p>
+              <form
+                action="/update_listing"
+                method="POST"
+                id="listing_form"
+                onReset={() => setShowAddForm(false)}
+                onSubmit={(event) => addListing(event)}
+              >
+                <label htmlFor="id_price">Price (Credits):</label>
+                <input
+                  type="number"
+                  name="price"
+                  min="1"
+                  max="100000"
+                  required={true}
+                  id="id_price"
+                />
+                <label htmlFor="id_stock">Stock:</label>
+                <input
+                  type="number"
+                  name="stock"
+                  min="1"
+                  max="10000"
+                  required={true}
+                  id="id_stock"
+                />
+                <label htmlFor="id_book_isbn">ISBN:</label>
+                <input
+                  type="text"
+                  name="book_isbn"
+                  readOnly={true}
+                  maxLength="13"
+                  minLength="10"
+                  value={newListing.industryIdentifiers[0].identifier}
+                  id="id_book_isbn"
+                />
+                <input
+                  type="submit"
+                  value="List"
+                  className="btn btn-success"
+                  id="create_listing_button"
+                />
+                <input
+                  type="reset"
+                  value="Cancel"
+                  className="btn btn-danger"
+                  id="cancel_create_listing_button"
+                />
+              </form>
+            </div>
           </div>
-          <div id="search_book_info">
-            <p id="search_book_title">{newListing.title}</p>
-            <p id="search_book_author">by {newListing.authors.join(", ")}</p>
-            <form
-              action="/update_listing"
-              method="POST"
-              id="listing_form"
-              onReset={() => setShowAddForm(false)}
-              onSubmit={(event) => addListing(event)}
-            >
-              <label htmlFor="id_price">Price (Credits):</label>
-              <input
-                type="number"
-                name="price"
-                min="1"
-                max="100000"
-                required={true}
-                id="id_price"
-              />
-              <label htmlFor="id_stock">Stock:</label>
-              <input
-                type="number"
-                name="stock"
-                min="1"
-                max="10000"
-                required={true}
-                id="id_stock"
-              />
-              <label htmlFor="id_book_isbn">ISBN:</label>
-              <input
-                type="text"
-                name="book_isbn"
-                readOnly={true}
-                maxLength="13"
-                minLength="10"
-                value={newListing.industryIdentifiers[0].identifier}
-                id="id_book_isbn"
-              />
-              <input
-                type="submit"
-                value="List"
-                className="btn btn-success"
-                id="create_listing_button"
-              />
-              <input
-                type="reset"
-                value="Cancel"
-                className="btn btn-danger"
-                id="cancel_create_listing_button"
-              />
-            </form>
-          </div>
-        </div>
-        <hr/>
+          <hr />
         </>
       ) : null}
       <div id="search_book_form_div">
@@ -355,7 +366,6 @@ function Book_Crate({ setPage, setIsbn, userData = null }) {
               return;
             const bookData = listingsData[isbn];
             const cardData = {
-              user: { isuser: false },
               book: {
                 isbn: isbn,
                 sale_id: item.id,
