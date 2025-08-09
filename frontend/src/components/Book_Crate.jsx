@@ -117,7 +117,7 @@ function Book_Crate({ setPage, setIsbn, userData = null }) {
           setInvalid(true);
           return;
         }
-        setNewListing(data.result.items[0].volumeInfo);
+        setNewListing(data.result.items?.[0].volumeInfo);
         setShowAddForm(true);
       })
       .catch((error) => console.log(error));
@@ -361,7 +361,7 @@ function Book_Crate({ setPage, setIsbn, userData = null }) {
             const isbn = item.book_isbn;
             if (
               !listingsData[isbn] ||
-              !listingsData[isbn]?.items[0]?.volumeInfo
+              !listingsData[isbn]?.items?.[0]?.volumeInfo
             )
               return;
             const bookData = listingsData[isbn];

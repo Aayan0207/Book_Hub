@@ -123,6 +123,7 @@ function Card({
   }, [isbn]);
 
   useEffect(() => {
+    if (!payload.book.review) return;
     fetch(`${urlPrefix}/get_book_rating`, {
       method: "POST",
       body: JSON.stringify({
@@ -314,6 +315,16 @@ function Card({
             className={payload.book.image.class}
             src={payload.book.image.source}
           ></img>
+          {options === "admin_donation" && userData.isSuper && (
+            <>
+              <button className="accept_donation_button btn btn-success">
+                <i className="bi bi-journal-check"></i> Accept
+              </button>
+              <button className="reject_donation_button btn btn-danger">
+                <i className="bi bi-journal-x"></i> Reject
+              </button>
+            </>
+          )}
           {options === "crate" &&
             (userData?.isUser && userData?.isSuper ? (
               <>
@@ -426,10 +437,10 @@ function Card({
           <p className={payload.book.info.author.class}>
             by {payload.book.info.author.value?.join(", ")}
           </p>
-          <div className={payload.book.info.ratings.parentClass}>
-            <div className={payload.book.info.ratings.bar.parentClass}>
+          {payload.book.review && (<div className={payload.book.info?.ratings?.parentClass}>
+            <div className={payload.book.info?.ratings?.bar.parentClass}>
               <div
-                className={`${payload.book.info.ratings.bar.class} progress progress-bar bg-warning`}
+                className={`${payload.book.info?.ratings?.bar.class} progress progress-bar bg-warning`}
                 style={{
                   width: `${
                     ratingsData?.avg_rating ? ratingsData.avg_rating * 20 : 0
@@ -437,25 +448,25 @@ function Card({
                 }}
               ></div>
             </div>
-            <div className={payload.book.info.ratings.stars.parentClass}>
+            <div className={payload.book.info?.ratings?.stars.parentClass}>
               {Array(5)
                 .fill()
                 .map((_, index) => {
                   return (
                     <div
                       key={index}
-                      className={payload.book.info.ratings.stars.class}
+                      className={payload.book.info?.ratings?.stars.class}
                     ></div>
                   );
                 })}
             </div>
-            <div className={payload.book.info.ratings.data.parentClass}>
-              <p className={payload.book.info.ratings.data.class}>
+            <div className={payload.book.info?.ratings?.data.parentClass}>
+              <p className={payload.book.info?.ratings?.data.class}>
                 {ratingsData?.avg_rating ? ratingsData.avg_rating : 0} (
                 {ratingsData ? ratingsData.ratings_count : 0} Ratings)
               </p>
             </div>
-          </div>
+          </div>)}
           {payload.book.info.publishInfo ? (
             <p className={payload.book.info.publishInfo?.class}>
               Published on: {payload.book.info.publishInfo?.value}
@@ -474,6 +485,31 @@ function Card({
               <p className="listing_book_stock">
                 {saleData.stock > 1 ? `${saleData.stock} copies` : "1 copy"}{" "}
                 Available
+              </p>
+            </>
+          ) : null}
+          {payload.book.donate_id ? (
+            <>
+              <p className={payload.book.info.donation.quantity.class}>
+                Quantity: {payload.book.info.donation.quantity.value}
+              </p>
+              <p className={payload.book.info.donation.from.class}>
+                Request By: {payload.book.info.donation.from.value}
+              </p>
+              <p>
+                Timestamp:{" "}
+                {new Date(
+                  payload.book.info.donation.timestamp.value
+                ).toLocaleString(
+                  "en-US",
+                  (options = {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                    hour: "numeric",
+                    minute: "numeric",
+                  })
+                )}
               </p>
             </>
           ) : null}

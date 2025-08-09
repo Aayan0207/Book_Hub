@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../assets/book_crate/book_crate.css";
-
+import Card from "./Card";
 function Admin_Donations({ userData, setPage, setIsbn }) {
   const urlPrefix = "http://localhost:8000";
   const [more, setMore] = useState(true);
@@ -54,13 +54,12 @@ function Admin_Donations({ userData, setPage, setIsbn }) {
         .then((response) => response.json())
         .then((data) =>
           setRequestsData((prev) => {
-            return { ...prev, [isbn]: data?.result?.items[0] };
+            return { ...prev, [isbn]: data?.result?.items?.[0] };
           })
         )
         .catch((error) => console.log(error));
     });
   }, [requests]);
-
   return (
     <>
       <div
@@ -88,7 +87,7 @@ function Admin_Donations({ userData, setPage, setIsbn }) {
                 image: {
                   parentClass: "donate_cover_image_div",
                   class: "donate_cover_image",
-                  value: bookData.volumeInfo?.imageLinks?.thumbnail,
+                  source: bookData.volumeInfo?.imageLinks?.thumbnail,
                 },
                 info: {
                   parentClass: "donate_book_info_div",
@@ -100,14 +99,26 @@ function Admin_Donations({ userData, setPage, setIsbn }) {
                     class: "donate_book_author",
                     value: bookData.volumeInfo?.authors,
                   },
-                  //Continue
+                  donation: {
+                    quantity: {
+                      class: "donate_book_quantity",
+                      value: item.quantity,
+                    },
+                    from: {
+                      class: "donate_book_username",
+                      value: item.user_id__username,
+                    },
+                    timestamp: {
+                      value: item.timestamp,
+                    },
+                  },
                 },
               },
             };
             return (
               <Card
                 key={item.id}
-                pyload={cardDetails}
+                payload={cardDetails}
                 userData={userData}
                 setIsbn={setIsbn}
                 setPage={setPage}
@@ -127,15 +138,23 @@ function Admin_Donations({ userData, setPage, setIsbn }) {
           </div>
         )}
         {more ? (
-          <button
-            className="btn btn-info"
-            onClick={() => {
-              setBatch(batch + 1);
-              setMore(false);
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
-            Load More
-          </button>
+            <button
+              className="btn btn-info"
+              onClick={() => {
+                setBatch(batch + 1);
+                setMore(false);
+              }}
+            >
+              Load More
+            </button>
+          </div>
         ) : null}
       </div>
     </>
