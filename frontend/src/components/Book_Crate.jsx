@@ -420,6 +420,19 @@ function Book_Crate({ setPage, setIsbn, userData = null }) {
                       class: "listing_book_author",
                       value: bookData.items?.[0].volumeInfo.authors,
                     },
+                    listing: {
+                      stock: {
+                        class: "listing_book_stock",
+                        value: item.stock,
+                      },
+                      price: {
+                        class: "listing_book_price",
+                        value: item.price,
+                      },
+                      timestamp: {
+                        value: item.timestamp,
+                      },
+                    },
                     ratings: {
                       parentClass: "listing_book_rating_div",
                       bar: {

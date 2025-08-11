@@ -23,7 +23,8 @@ function Card({
   const [viewBook, setViewBook] = useState(false);
   const [viewProfile, setViewProfile] = useState(false);
   const [ratingsData, setRatingsData] = useState({});
-  const [saleData, setSaleData] = useState({});
+  const [stock, setStock] = useState(payload.book.info?.listing?.stock?.value);
+  const [price, setPrice] = useState(payload.book.info?.listing?.price?.value);
   const [userLiked, setUserLiked] = useState(false);
   const [likes, setLikes] = useState(payload.book?.review?.likes);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -39,6 +40,7 @@ function Card({
   const [donationQuantity, setDonationQuantity] = useState(
     payload.book.info?.donation?.quantity?.value
   );
+  
   useEffect(() => {
     if (
       !userData?.userId ||
@@ -132,19 +134,6 @@ function Card({
       setPage("book");
     }
   }, [viewBook]);
-
-  useEffect(() => {
-    if (!payload.book.sale_id) return;
-    fetch(`${urlPrefix}/get_listing`, {
-      method: "POST",
-      body: JSON.stringify({
-        id: payload.book.sale_id,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => setSaleData(data.listing[0]))
-      .catch((error) => console.log(error));
-  }, [isbn]);
 
   useEffect(() => {
     if (!payload.book.review && !payload.book.sale_id) return;
@@ -320,9 +309,8 @@ function Card({
       .then((response) => response.json())
       .then((data) => {
         const listing = data.listing[0];
-        setSaleData((prev) => {
-          return { ...prev, stock: listing.stock, price: listing.price };
-        });
+        setStock(listing.stock);
+        setPrice(listing.price);
         setShowListingForm(false);
       })
       .catch((error) => console.log(error));
@@ -423,7 +411,7 @@ function Card({
       .catch((error) => console.log(error));
   }
 
-  if (payload.book.sale_id && saleData.stock === 0) return;
+  if (payload.book.sale_id && stock === 0) return;
   if (!showCard) return;
 
   return (
@@ -637,12 +625,11 @@ function Card({
           ) : null}
           {payload.book.sale_id ? (
             <>
-              <p className="listing_book_price">
-                Price: {saleData.price} Credits
+              <p className={payload.book.info.listing.price.class}>
+                Price: {price} Credits
               </p>
-              <p className="listing_book_stock">
-                {saleData.stock > 1 ? `${saleData.stock} copies` : "1 copy"}{" "}
-                Available
+              <p className={payload.book.info.listing.stock.class}>
+                {stock > 1 ? `${stock} copies` : "1 copy"} Available
               </p>
             </>
           ) : null}
@@ -720,37 +707,40 @@ function Card({
                 onSubmit={(event) => updateDonation(event)}
                 onReset={() => setShowDonationForm(false)}
               >
-                <label htmlFor="id_quantity">Quantity:</label>
-                <input
-                  type="number"
-                  name="quantity"
-                  min="1"
-                  max="100"
-                  required={true}
-                  id="id_quantity"
-                  defaultValue={donationQuantity}
-                />
-                <input
-                  type="hidden"
-                  name="book_isbn"
-                  readOnly={true}
-                  value={isbn}
-                  maxLength="13"
-                  id="id_book_isbn"
-                />
-
-                <input
-                  type="submit"
-                  value="Donate"
-                  className="btn btn-success"
-                  id="create_donate_button"
-                />
-                <input
-                  type="reset"
-                  value="Cancel"
-                  className="btn btn-danger"
-                  id="cancel_create_donate_button"
-                />
+                <div>
+                  <label htmlFor="id_quantity">Quantity:</label>
+                  <input
+                    type="number"
+                    name="quantity"
+                    min="1"
+                    max="100"
+                    required={true}
+                    id="id_quantity"
+                    defaultValue={donationQuantity}
+                  />
+                </div>
+                <div>
+                  <input
+                    type="hidden"
+                    name="book_isbn"
+                    readOnly={true}
+                    value={isbn}
+                    maxLength="13"
+                    id="id_book_isbn"
+                  />
+                  <input
+                    type="submit"
+                    value="Donate"
+                    className="btn btn-success"
+                    id="create_donate_button"
+                  />
+                  <input
+                    type="reset"
+                    value="Cancel"
+                    className="btn btn-danger"
+                    id="cancel_create_donate_button"
+                  />
+                </div>
               </form>
             </>
           ) : null)}
@@ -771,7 +761,7 @@ function Card({
                 max="100000"
                 required={true}
                 id="id_price"
-                defaultValue={saleData?.price}
+                defaultValue={price}
               />
               <label htmlFor="id_stock">Stock:</label>
               <input
@@ -781,7 +771,7 @@ function Card({
                 max="10000"
                 required={true}
                 id="id_stock"
-                defaultValue={saleData?.stock}
+                defaultValue={stock}
               />
               <label htmlFor="id_book_isbn">ISBN:</label>
               <input

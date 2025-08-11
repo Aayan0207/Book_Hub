@@ -1,6 +1,16 @@
 /* #search_listing_form, #search_result, #no_search_result_alert, #no_donate_result_alert, #donate_book_spinner, #donate_result, #donate_form, #search_book_spinner, #user_cart, .checkout,#donate_search_form, #checkout_button, #no_items, .checkout_listing, #failed_transaction, #user_donations{
     display:none;
 } */
+#donate_form {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  flex-direction: column;
+}
+#donate_form * {
+  margin-left: 5px;
+  margin-right: 5px;
+}
 .close_alert_button {
   float: right;
   display: flex;
