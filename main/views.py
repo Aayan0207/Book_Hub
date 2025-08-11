@@ -493,14 +493,18 @@ def load_cart(request):
     if request.method == "POST":
         data = loads(request.body)
         user_id = data["id"]
+        page=data.get("page",1)
         cart_books = list(
             Cart.objects.filter(user_id=user_id)
-            .order_by("timestamp")
+            .order_by("-timestamp")
             .values("id", "book_isbn", "listing_id")
         )
+        cart_books=Paginator(cart_books, 10).page(page)
+        cart_books.has_next()
         return JsonResponse(
             {
-                "books": cart_books,
+                "books": cart_books.object_list,
+                "next":cart_books.has_next()
             }
         )
 

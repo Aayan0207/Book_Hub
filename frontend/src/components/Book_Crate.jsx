@@ -198,10 +198,14 @@ function Book_Crate({ setPage, setIsbn, userData = null }) {
             <h3 id="user_header">
               <p>Welcome, {userData?.user}</p>
               <button id="donate_books" className="btn btn-success">
-                <i class="bi bi-archive"></i> Donate Books
+                <i className="bi bi-archive"></i> Donate Books
               </button>
-              <button id="cart_icon" className="btn btn-dark">
-                <i class="bi bi-cart4"></i>
+              <button
+                id="cart_icon"
+                className="btn btn-dark"
+                onClick={() => setShowCart(true)}
+              >
+                <i className="bi bi-cart4"></i>
                 Cart
               </button>
             </h3>
@@ -259,7 +263,7 @@ function Book_Crate({ setPage, setIsbn, userData = null }) {
             onClick={() => setInvalid(false)}
             className="close_alert_button"
           >
-            <i class="bi bi-x-square"></i>
+            <i className="bi bi-x-square"></i>
           </span>
         </div>
       ) : null}

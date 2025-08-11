@@ -8,6 +8,7 @@ import Book_Crate from "./Book_Crate";
 import Readers_Grove from "./Readers_Grove";
 import User from "./User";
 import Admin_Donations from "./Admin_Donations";
+import Cart from "./Cart";
 
 function Navbar({ page, setPage }) {
   const urlPrefix = "http://localhost:8000";
@@ -68,6 +69,8 @@ function Navbar({ page, setPage }) {
             setIsbn={setIsbn}
           />
         );
+      case "cart":
+        return <Cart setPage={setPage} userData={userData} setIsbn={setIsbn} />;
     }
   }
   return (

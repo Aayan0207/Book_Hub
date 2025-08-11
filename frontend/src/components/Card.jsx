@@ -37,7 +37,12 @@ function Card({
   const [inCart, setInCart] = useState(false);
 
   useEffect(() => {
-    if (!userData?.userId || options != "crate" || userData?.isSuper) return;
+    if (
+      !userData?.userId ||
+      (options != "crate" && options != "cart") ||
+      userData?.isSuper
+    )
+      return;
     fetch(`${urlPrefix}/in_cart`, {
       method: "POST",
       body: JSON.stringify({
@@ -362,6 +367,9 @@ function Card({
       .then((response) => response.json())
       .then((data) => {
         setInCart(data.status);
+        if (options === "cart" && !data.status) {
+          setShowCard(false);
+        }
       })
       .catch((error) => console.log(error));
   }
@@ -372,6 +380,7 @@ function Card({
   return (
     <>
       <div className={payload.book.parentClass}>
+        {options === "cart" ? <input type="checkbox" className="check_cart_item"/> : null}
         <div className={payload.book.image.parentClass}>
           <img
             className={payload.book.image.class}
@@ -393,7 +402,7 @@ function Card({
               </button>
             </>
           )}
-          {options === "crate" &&
+          {(options === "crate" || options === "cart") &&
             (userData?.isUser && userData?.isSuper ? (
               <>
                 <button
