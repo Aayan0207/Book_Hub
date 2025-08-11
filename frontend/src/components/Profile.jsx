@@ -262,7 +262,7 @@ function Profile({ userData, setPage, setIsbn, profileView = false }) {
         <hr />
         <div id="user_activity_info">
           <div id="user_bookshelf_info_parent">
-            <div id="user_bookshelf_info" align="center">
+            <div id="user_bookshelf_info">
               Bookshelf
               <p id="user_bookshelf_count">
                 {activityInfo?.bookshelf_all_count
@@ -270,7 +270,7 @@ function Profile({ userData, setPage, setIsbn, profileView = false }) {
                   : 0}
               </p>
             </div>
-            <div className="user_sub_bookshelf_info" align="center">
+            <div className="user_sub_bookshelf_info">
               Read
               <p id="user_bookshelf_read_count">
                 {activityInfo?.bookshelf_read_count
@@ -278,7 +278,7 @@ function Profile({ userData, setPage, setIsbn, profileView = false }) {
                   : 0}
               </p>
             </div>
-            <div className="user_sub_bookshelf_info" align="center">
+            <div className="user_sub_bookshelf_info">
               Currently Reading
               <p id="user_bookshelf_currently_reading_count">
                 {activityInfo?.bookshelf_currently_reading_count
@@ -286,7 +286,7 @@ function Profile({ userData, setPage, setIsbn, profileView = false }) {
                   : 0}
               </p>
             </div>
-            <div className="user_sub_bookshelf_info" align="center">
+            <div className="user_sub_bookshelf_info">
               Want to Read
               <p id="user_bookshelf_want_to_read_count">
                 {activityInfo?.bookshelf_want_to_read_count

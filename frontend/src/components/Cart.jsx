@@ -81,64 +81,66 @@ function Cart({ setPage, setIsbn, userData }) {
         </button>
       </h2>
       <hr />
-      {cart ? (
-        cart.map((item) => {
-          const isbn = item.book_isbn;
-          if (!cartData[isbn]) return;
-          const bookData = cartData[isbn];
-          const cardDetails = {
-            book: {
-              isbn: isbn,
-              cart_id: item.id,
-              sale_id: item.listing_id,
-              parentClass: "listing_book_result",
-              image: {
-                parentClass: "listing_book_cover_image_div",
-                class: "listing_book_cover_image",
-                source: bookData.imageLinks?.thumbnail,
+      <div id="user_cart">
+        {cart ? (
+          cart.map((item) => {
+            const isbn = item.book_isbn;
+            if (!cartData[isbn]) return;
+            const bookData = cartData[isbn];
+            const cardDetails = {
+              book: {
+                isbn: isbn,
+                cart_id: item.id,
+                sale_id: item.listing_id,
+                parentClass: "listing_book_result",
+                image: {
+                  parentClass: "listing_book_cover_image_div",
+                  class: "listing_book_cover_image",
+                  source: bookData.imageLinks?.thumbnail,
+                },
+                info: {
+                  parentClass: "listing_book_info",
+                  title: {
+                    class: "listing_book_title",
+                    value: bookData.title,
+                  },
+                  author: {
+                    class: "listing_book_author",
+                    value: bookData.authors,
+                  },
+                  ratings: {
+                    parentClass: "listing_book_rating_div",
+                    bar: {
+                      parentClass: "listing_book_ratings_bar_div",
+                      class: "listing_book_rating_bar",
+                    },
+                    stars: {
+                      parentClass: "listing_book_ratings_stars_div",
+                      class: "listing_book_ratings_star",
+                    },
+                    data: {
+                      parentClass: "listing_book_ratings_count_div",
+                      class: "listing_book_rating_info",
+                    },
+                  },
+                },
               },
-              info: {
-                parentClass: "listing_book_info",
-                title: {
-                  class: "listing_book_title",
-                  value: bookData.title,
-                },
-                author: {
-                  class: "listing_book_author",
-                  value: bookData.authors,
-                },
-                ratings: {
-                  parentClass: "listing_book_rating_div",
-                  bar: {
-                    parentClass: "listing_book_ratings_bar_div",
-                    class: "listing_book_rating_bar",
-                  },
-                  stars: {
-                    parentClass: "listing_book_ratings_stars_div",
-                    class: "listing_book_ratings_star",
-                  },
-                  data: {
-                    parentClass: "listing_book_ratings_count_div",
-                    class: "listing_book_rating_info",
-                  },
-                },
-              },
-            },
-          };
-          return (
-            <Card
-              key={item.book_isbn}
-              payload={cardDetails}
-              setPage={setPage}
-              userData={userData}
-              setIsbn={setIsbn}
-              options="cart"
-            />
-          );
-        })
-      ) : (
-        <p>No Items in the Cart yet.</p>
-      )}
+            };
+            return (
+              <Card
+                key={item.book_isbn}
+                payload={cardDetails}
+                setPage={setPage}
+                userData={userData}
+                setIsbn={setIsbn}
+                options="cart"
+              />
+            );
+          })
+        ) : (
+          <p>No Items in the Cart yet.</p>
+        )}
+      </div>
       {showSpinner ? <Spinner /> : null}
       {more ? (
         <div

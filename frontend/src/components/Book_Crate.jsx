@@ -26,6 +26,13 @@ function Book_Crate({ setPage, setIsbn, userData = null }) {
   const [showAddForm, setShowAddForm] = useState(false);
   const [showAdminDonations, setShowAdminDonations] = useState(false);
   const [showCart, setShowCart] = useState(false);
+  const [showDonations, setShowDonations] = useState(false);
+  const [showSpinner, setShowSpinner] = useState(true);
+
+  useEffect(() => {
+    if (!showDonations) return;
+    setPage("donations");
+  }, [showDonations]);
 
   useEffect(() => {
     if (!showCart) return;
@@ -51,7 +58,10 @@ function Book_Crate({ setPage, setIsbn, userData = null }) {
       },
     })
       .then((response) => response.json())
-      .then((data) => setListings(data))
+      .then((data) => {
+        setListings(data);
+        setTimeout(() => setShowSpinner(false), 2000);
+      })
       .catch((error) => console.log(error));
   }, [refreshListings]);
 
@@ -197,7 +207,11 @@ function Book_Crate({ setPage, setIsbn, userData = null }) {
           <>
             <h3 id="user_header">
               <p>Welcome, {userData?.user}</p>
-              <button id="donate_books" className="btn btn-success">
+              <button
+                id="donate_books"
+                className="btn btn-success"
+                onClick={() => setShowDonations(true)}
+              >
                 <i className="bi bi-archive"></i> Donate Books
               </button>
               <button
@@ -375,68 +389,67 @@ function Book_Crate({ setPage, setIsbn, userData = null }) {
           </div>
         </form>
       </div>
+      {showSpinner ? <Spinner /> : null}
       <div id="listing_results">
-        {listings?.listings ? (
-          listings.listings.map((item) => {
-            const isbn = item.book_isbn;
-            if (
-              !listingsData[isbn] ||
-              !listingsData[isbn]?.items?.[0]?.volumeInfo
-            )
-              return;
-            const bookData = listingsData[isbn];
-            const cardData = {
-              book: {
-                isbn: isbn,
-                sale_id: item.id,
-                parentClass: "listing_load_book_result",
-                image: {
-                  parentClass: "listing_book_cover_image_div",
-                  class: "listing_book_cover_image",
-                  source: bookData.items?.[0].volumeInfo.imageLinks.thumbnail,
+        {listings?.listings
+          ? listings.listings.map((item) => {
+              const isbn = item.book_isbn;
+              if (
+                !listingsData[isbn] ||
+                !listingsData[isbn]?.items?.[0]?.volumeInfo
+              )
+                return;
+              const bookData = listingsData[isbn];
+              const cardData = {
+                book: {
+                  isbn: isbn,
+                  sale_id: item.id,
+                  parentClass: "listing_load_book_result",
+                  image: {
+                    parentClass: "listing_book_cover_image_div",
+                    class: "listing_book_cover_image",
+                    source: bookData.items?.[0].volumeInfo.imageLinks.thumbnail,
+                  },
+                  info: {
+                    parentClass: "listing_book_info",
+                    title: {
+                      class: "listing_book_title",
+                      value: bookData.items?.[0].volumeInfo.title,
+                    },
+                    author: {
+                      class: "listing_book_author",
+                      value: bookData.items?.[0].volumeInfo.authors,
+                    },
+                    ratings: {
+                      parentClass: "listing_book_rating_div",
+                      bar: {
+                        parentClass: "listing_book_ratings_bar_div",
+                        class: "listing_book_rating_bar",
+                      },
+                      stars: {
+                        parentClass: "listing_book_ratings_stars_div",
+                        class: "listing_book_ratings_star",
+                      },
+                      data: {
+                        parentClass: "listing_book_ratings_count_div",
+                        class: "listing_book_rating_info",
+                      },
+                    },
+                  },
                 },
-                info: {
-                  parentClass: "listing_book_info",
-                  title: {
-                    class: "listing_book_title",
-                    value: bookData.items?.[0].volumeInfo.title,
-                  },
-                  author: {
-                    class: "listing_book_author",
-                    value: bookData.items?.[0].volumeInfo.authors,
-                  },
-                  ratings: {
-                    parentClass: "listing_book_rating_div",
-                    bar: {
-                      parentClass: "listing_book_ratings_bar_div",
-                      class: "listing_book_rating_bar",
-                    },
-                    stars: {
-                      parentClass: "listing_book_ratings_stars_div",
-                      class: "listing_book_ratings_star",
-                    },
-                    data: {
-                      parentClass: "listing_book_ratings_count_div",
-                      class: "listing_book_rating_info",
-                    },
-                  },
-                },
-              },
-            };
-            return (
-              <Card
-                key={item.id}
-                payload={cardData}
-                setPage={setPage}
-                setIsbn={setIsbn}
-                userData={userData}
-                options="crate"
-              />
-            );
-          })
-        ) : (
-          <Spinner />
-        )}
+              };
+              return (
+                <Card
+                  key={item.id}
+                  payload={cardData}
+                  setPage={setPage}
+                  setIsbn={setIsbn}
+                  userData={userData}
+                  options="crate"
+                />
+              );
+            })
+          : null}
       </div>
       <Paginator page={slide} setPage={setSlide} maxPage={listings?.maximum} />
     </>

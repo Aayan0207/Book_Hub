@@ -9,6 +9,7 @@ import Readers_Grove from "./Readers_Grove";
 import User from "./User";
 import Admin_Donations from "./Admin_Donations";
 import Cart from "./Cart";
+import Donations from "./Donations";
 
 function Navbar({ page, setPage }) {
   const urlPrefix = "http://localhost:8000";
@@ -64,6 +65,14 @@ function Navbar({ page, setPage }) {
       case "admin_donations":
         return (
           <Admin_Donations
+            setPage={setPage}
+            userData={userData}
+            setIsbn={setIsbn}
+          />
+        );
+      case "donations":
+        return (
+          <Donations
             setPage={setPage}
             userData={userData}
             setIsbn={setIsbn}

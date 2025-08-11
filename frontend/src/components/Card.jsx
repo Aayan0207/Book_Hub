@@ -380,7 +380,9 @@ function Card({
   return (
     <>
       <div className={payload.book.parentClass}>
-        {options === "cart" ? <input type="checkbox" className="check_cart_item"/> : null}
+        {options === "cart" ? (
+          <input type="checkbox" className="check_cart_item" />
+        ) : null}
         <div className={payload.book.image.parentClass}>
           <img
             className={payload.book.image.class}
@@ -399,6 +401,16 @@ function Card({
                 onClick={() => rejectDonation()}
               >
                 <i className="bi bi-journal-x"></i> Reject
+              </button>
+            </>
+          )}
+          {options === "donation" && !userData.isSuper && (
+            <>
+              <button className="update_donation_button btn btn-info">
+                Update Donation
+              </button>
+              <button className="delete_donation_button btn btn-danger">
+                Delete Donation
               </button>
             </>
           )}
@@ -623,9 +635,11 @@ function Card({
               <p className={payload.book.info.donation.quantity.class}>
                 Quantity: {payload.book.info.donation.quantity.value}
               </p>
-              <p className={payload.book.info.donation.from.class}>
-                Request By: {payload.book.info.donation.from.value}
-              </p>
+              {payload.book.info.donation.from?.value && (
+                <p className={payload.book.info.donation.from.class}>
+                  Request By: {payload.book.info.donation.from.value}
+                </p>
+              )}
               <p>
                 Timestamp:{" "}
                 {new Date(

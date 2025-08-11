@@ -152,6 +152,10 @@
   margin: 5px;
   padding: 0px;
 }
+.donate_book_info_div {
+  display: flex;
+  flex-direction: column;
+}
 .listing_book_ratings_bar_div {
   grid-column: 1;
   grid-row: 1;
@@ -179,7 +183,8 @@
   z-index: 1;
 }
 #superuser_header,
-#user_header, #header {
+#user_header,
+#header {
   margin-bottom: 3px;
   display: flex;
   align-items: center;
@@ -187,7 +192,8 @@
   flex-direction: column;
 }
 #superuser_header *,
-#user_header *,#header * {
+#user_header *,
+#header * {
   margin-left: 5px;
   margin-right: 5px;
 }

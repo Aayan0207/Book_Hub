@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
 import "../assets/book_crate/book_crate.css";
 import Card from "./Card";
+import Spinner from "./spinner";
+
 function Admin_Donations({ userData, setPage, setIsbn }) {
   const urlPrefix = "http://localhost:8000";
   const [more, setMore] = useState(true);
   const [batch, setBatch] = useState(1);
   const [requests, setRequests] = useState([]);
   const [requestsData, setRequestsData] = useState({});
+  const [showSpinner, setShowSpinner] = useState(true);
 
   useEffect(() => {
     fetch(`${urlPrefix}/load_admin_donations`, {
@@ -19,6 +22,7 @@ function Admin_Donations({ userData, setPage, setIsbn }) {
       .then((data) => {
         setMore(data.next);
         setRequests(data.donations);
+        setTimeout(() => setShowSpinner(false), 2000);
       })
       .catch((error) => console.log(error));
   }, []);
@@ -33,10 +37,13 @@ function Admin_Donations({ userData, setPage, setIsbn }) {
     })
       .then((response) => response.json())
       .then((data) => {
-        setMore(data.next);
         setRequests((prev) => {
           return [...prev, ...data.donations];
         });
+        setTimeout(() => {
+          setShowSpinner(false);
+          setMore(data.next);
+        }, 2000);
       })
       .catch((error) => console.log(error));
   }, [batch]);
@@ -54,12 +61,13 @@ function Admin_Donations({ userData, setPage, setIsbn }) {
         .then((response) => response.json())
         .then((data) =>
           setRequestsData((prev) => {
-            return { ...prev, [isbn]: data?.result?.items?.[0] };
+            return { ...prev, [isbn]: data?.result?.items?.[0]?.volumeInfo };
           })
         )
         .catch((error) => console.log(error));
     });
   }, [requests]);
+
   return (
     <>
       <div
@@ -77,7 +85,7 @@ function Admin_Donations({ userData, setPage, setIsbn }) {
         {requests.length > 0 ? (
           requests.map((item) => {
             const isbn = item.book_isbn;
-            if (!requestsData[isbn] || !requestsData[isbn]?.volumeInfo) return;
+            if (!requestsData[isbn] || !requestsData[isbn]) return;
             const bookData = requestsData[isbn];
             const cardDetails = {
               book: {
@@ -87,17 +95,17 @@ function Admin_Donations({ userData, setPage, setIsbn }) {
                 image: {
                   parentClass: "donate_cover_image_div",
                   class: "donate_cover_image",
-                  source: bookData.volumeInfo?.imageLinks?.thumbnail,
+                  source: bookData?.imageLinks?.thumbnail,
                 },
                 info: {
                   parentClass: "donate_book_info_div",
                   title: {
                     class: "donate_book_title",
-                    value: bookData.volumeInfo?.title,
+                    value: bookData?.title,
                   },
                   author: {
                     class: "donate_book_author",
-                    value: bookData.volumeInfo?.authors,
+                    value: bookData?.authors,
                   },
                   donation: {
                     quantity: {
@@ -137,6 +145,7 @@ function Admin_Donations({ userData, setPage, setIsbn }) {
             <h2>No Book Donations Yet.</h2>
           </div>
         )}
+        {showSpinner ? <Spinner /> : null}
         {more ? (
           <div
             style={{
@@ -150,6 +159,7 @@ function Admin_Donations({ userData, setPage, setIsbn }) {
               onClick={() => {
                 setBatch(batch + 1);
                 setMore(false);
+                setShowSpinner(true);
               }}
             >
               Load More
