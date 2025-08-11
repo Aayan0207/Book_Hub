@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.utils import timezone
+from django.utils.timezone import now
 from django.core.validators import MaxValueValidator
 
 # Create your models here.
@@ -31,7 +31,7 @@ class Listing(models.Model):
     publisher = models.CharField(max_length=255)
     price = models.PositiveIntegerField()
     stock = models.PositiveIntegerField()
-    timestamp = models.DateTimeField(default=timezone.localtime())
+    timestamp = models.DateTimeField(default=now)
 
 
 class Cart(models.Model):
@@ -39,7 +39,7 @@ class Cart(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     book_isbn = models.CharField(max_length=13)
     listing_id = models.ForeignKey(Listing, on_delete=models.CASCADE)
-    timestamp = models.DateTimeField(default=timezone.localtime())
+    timestamp = models.DateTimeField(default=now)
 
 
 class Donate(models.Model):
@@ -47,7 +47,7 @@ class Donate(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     book_isbn = models.CharField(max_length=13)
     quantity = models.PositiveIntegerField()
-    timestamp = models.DateTimeField(default=timezone.localtime())
+    timestamp = models.DateTimeField(default=now)
 
 
 class Invoice(models.Model):
@@ -57,7 +57,7 @@ class Invoice(models.Model):
     quantity = models.PositiveIntegerField()
     transaction_amount = models.PositiveIntegerField()
     transaction_type = models.CharField(choices={"sale": "sale", "purchase": "purchase"}, max_length=8)  # type: ignore
-    timestamp = models.DateTimeField(default=timezone.localtime())
+    timestamp = models.DateTimeField(default=now)
 
 
 class Bookshelf(models.Model):
@@ -65,7 +65,7 @@ class Bookshelf(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     book_isbn = models.CharField(max_length=13)
     tag = models.CharField(choices={"Read": "Read", "Currently Reading": "Currently Reading", "Want To Read": "Want To Read"}, max_length=20)  # type: ignore
-    timestamp = models.DateTimeField(default=timezone.localtime())
+    timestamp = models.DateTimeField(default=now)
 
 
 class Review(models.Model):

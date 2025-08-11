@@ -34,6 +34,21 @@ function Card({
   const [userRating, setUserRating] = useState(0);
   const [starBar, setStarBar] = useState(0);
   const [showListingForm, setShowListingForm] = useState(false);
+  const [inCart, setInCart] = useState(false);
+
+  useEffect(() => {
+    if (!userData?.userId || options != "crate" || userData?.isSuper) return;
+    fetch(`${urlPrefix}/in_cart`, {
+      method: "POST",
+      body: JSON.stringify({
+        id: userData?.userId,
+        isbn: isbn,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => setInCart(data.status))
+      .catch((error) => console.log(error));
+  }, [isbn, options, userData?.userId]);
 
   useEffect(() => {
     if (!userData?.userId || options != "shelf") return;
@@ -124,7 +139,7 @@ function Card({
   }, [isbn]);
 
   useEffect(() => {
-    if (!payload.book.review) return;
+    if (!payload.book.review && !payload.book.sale_id) return;
     fetch(`${urlPrefix}/get_book_rating`, {
       method: "POST",
       body: JSON.stringify({
@@ -335,6 +350,22 @@ function Card({
       .catch((error) => console.log(error));
   }
 
+  function updateCart() {
+    fetch(`${urlPrefix}/update_cart`, {
+      method: "POST",
+      body: JSON.stringify({
+        isbn: isbn,
+        id: userData?.userId,
+        listing_id: payload.book.sale_id,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setInCart(data.status);
+      })
+      .catch((error) => console.log(error));
+  }
+
   if (payload.book.sale_id && saleData.stock === 0) return;
   if (!showCard) return;
 
@@ -379,9 +410,21 @@ function Card({
                 </button>
               </>
             ) : userData?.isUser ? (
-              {
-                /* Add standard user stuff */
-              }
+              inCart ? (
+                <button
+                  className="cart_button btn btn-info"
+                  onClick={() => updateCart()}
+                >
+                  <i className="bi bi-cart-dash"></i> Remove From Cart
+                </button>
+              ) : (
+                <button
+                  className="cart_button btn btn-warning"
+                  onClick={() => updateCart()}
+                >
+                  <i className="bi bi-cart-plus"></i> Add to Cart
+                </button>
+              )
             ) : null)}
           {options === "shelf" && (
             <>
@@ -474,7 +517,7 @@ function Card({
           <p className={payload.book.info.author.class}>
             by {payload.book.info.author.value?.join(", ")}
           </p>
-          {payload.book.review && (
+          {(payload.book.review || payload.book.sale_id) && (
             <div className={payload.book.info?.ratings?.parentClass}>
               <div className={payload.book.info?.ratings?.bar.parentClass}>
                 <div

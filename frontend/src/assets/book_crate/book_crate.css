@@ -80,6 +80,14 @@
 .purchase_form {
   grid-column-start: 2;
 }
+.listing_book_info {
+  display: flex;
+  flex-direction: column;
+}
+.listing_book_info > * {
+  margin-top: -5px;
+  margin-bottom: -5px;
+}
 .purchase_form {
   align-items: center;
   padding: 10px;
@@ -170,14 +178,16 @@
   height: 25px;
   z-index: 1;
 }
-#superuser_header {
+#superuser_header,
+#user_header {
   margin-bottom: 3px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
 }
-#superuser_header * {
+#superuser_header *,
+#user_header * {
   margin-left: 5px;
   margin-right: 5px;
 }
@@ -230,14 +240,14 @@
 }
 .bi-x-square {
   margin-right: 5px;
-  cursor:pointer;
+  cursor: pointer;
 }
-#search_book_info{
-  display:flex;
+#search_book_info {
+  display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: left;
 }
-#search_cover_image{
-  width:200px;
+#search_cover_image {
+  width: 200px;
 }

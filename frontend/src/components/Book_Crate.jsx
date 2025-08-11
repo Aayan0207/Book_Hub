@@ -25,6 +25,12 @@ function Book_Crate({ setPage, setIsbn, userData = null }) {
   const [showGetForm, setShowGetForm] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [showAdminDonations, setShowAdminDonations] = useState(false);
+  const [showCart, setShowCart] = useState(false);
+
+  useEffect(() => {
+    if (!showCart) return;
+    setPage("cart");
+  }, [showCart]);
 
   useEffect(() => {
     if (!showAdminDonations) return;
@@ -188,9 +194,19 @@ function Book_Crate({ setPage, setIsbn, userData = null }) {
             <hr />
           </>
         ) : (
-          {
-            /* Standard User Greeting */
-          }
+          <>
+            <h3 id="user_header">
+              <p>Welcome, {userData?.user}</p>
+              <button id="donate_books" className="btn btn-success">
+                <i class="bi bi-archive"></i> Donate Books
+              </button>
+              <button id="cart_icon" className="btn btn-dark">
+                <i class="bi bi-cart4"></i>
+                Cart
+              </button>
+            </h3>
+            <hr />
+          </>
         )
       ) : null}
       {userData?.isSuper &&

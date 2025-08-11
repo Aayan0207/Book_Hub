@@ -5,6 +5,9 @@
   display: inline-block;
   margin-left: 5px;
 }
+#credits_div *, #quote_div > p{
+  display:block;
+}
 #user_credits_form {
   display: flex;
   justify-content: left;

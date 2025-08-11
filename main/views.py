@@ -511,10 +511,7 @@ def update_cart(request):
         data = loads(request.body)
         user_id = data["id"]
         book_isbn = data["isbn"]
-        try:
-            listing_id = data["listing_id"]
-        except:
-            listing_id = None
+        listing_id = data.get("listing_id",None)
         user = User.objects.get(id=user_id)
         try:
             book_cart = Cart.objects.get(user_id=user_id, book_isbn=book_isbn)
@@ -532,11 +529,8 @@ def in_cart(request):
         data = loads(request.body)
         user_id = data["id"]
         book_isbn = data["isbn"]
-        try:
-            book_cart = Cart.objects.get(user_id=user_id, book_isbn=book_isbn)
-            return JsonResponse({"status": True})
-        except Cart.DoesNotExist:
-            return JsonResponse({"status": False})
+        book_cart = Cart.objects.filter(user_id=user_id, book_isbn=book_isbn)
+        return JsonResponse({"status": book_cart.exists()})
 
 
 @csrf_exempt
