@@ -35,7 +35,10 @@ function Card({
   const [starBar, setStarBar] = useState(0);
   const [showListingForm, setShowListingForm] = useState(false);
   const [inCart, setInCart] = useState(false);
-
+  const [showDonationForm, setShowDonationForm] = useState(false);
+  const [donationQuantity, setDonationQuantity] = useState(
+    payload.book.info?.donation?.quantity?.value
+  );
   useEffect(() => {
     if (
       !userData?.userId ||
@@ -206,7 +209,7 @@ function Card({
       method: "POST",
       body: JSON.stringify({
         user_id: userData?.userId,
-        isbn: payload.book.isbn,
+        isbn: isbn,
         delete: false,
         content: form.querySelector("#id_content").value,
       }),
@@ -229,7 +232,7 @@ function Card({
       method: "POST",
       body: JSON.stringify({
         user_id: userData?.userId,
-        isbn: payload.book.isbn,
+        isbn: isbn,
         delete: true,
       }),
       headers: {
@@ -376,7 +379,30 @@ function Card({
       .catch((error) => console.log(error));
   }
 
-  function updateDonation(event) {}
+  function updateDonation(event) {
+    event.preventDefault();
+    const form = event.target;
+    fetch(`${urlPrefix}/update_donation`, {
+      method: "POST",
+      body: JSON.stringify({
+        donation_id: payload.book.donate_id,
+        quantity: form.querySelector("#id_quantity").value,
+        id: userData?.userId,
+        isbn: isbn,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setDonationQuantity(data.donation.quantity);
+        setShowDonationForm(false);
+      })
+      .catch((error) => console.log(error));
+  }
 
   function updateCart() {
     fetch(`${urlPrefix}/update_cart`, {
@@ -431,6 +457,7 @@ function Card({
             <>
               <button
                 className="update_donation_button btn btn-info"
+                onClick={() => setShowDonationForm(true)}
               >
                 Update Donation
               </button>
@@ -661,7 +688,7 @@ function Card({
           {payload.book.donate_id ? (
             <>
               <p className={payload.book.info.donation.quantity.class}>
-                Quantity: {payload.book.info.donation.quantity.value}
+                Quantity: {donationQuantity}
               </p>
               {payload.book.info.donation.from?.value && (
                 <p className={payload.book.info.donation.from.class}>
@@ -672,20 +699,61 @@ function Card({
                 Timestamp:{" "}
                 {new Date(
                   payload.book.info.donation.timestamp.value
-                ).toLocaleString(
-                  "en-US",
-                  (options = {
-                    year: "numeric",
-                    month: "short",
-                    day: "numeric",
-                    hour: "numeric",
-                    minute: "numeric",
-                  })
-                )}
+                ).toLocaleString("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                  hour: "numeric",
+                  minute: "numeric",
+                })}
               </p>
             </>
           ) : null}
         </div>
+        {options === "donation" &&
+          (showDonationForm ? (
+            <>
+              <form
+                action="/update_donation"
+                method="POST"
+                id="donate_form"
+                onSubmit={(event) => updateDonation(event)}
+                onReset={() => setShowDonationForm(false)}
+              >
+                <label htmlFor="id_quantity">Quantity:</label>
+                <input
+                  type="number"
+                  name="quantity"
+                  min="1"
+                  max="100"
+                  required={true}
+                  id="id_quantity"
+                  defaultValue={donationQuantity}
+                />
+                <input
+                  type="hidden"
+                  name="book_isbn"
+                  readOnly={true}
+                  value={isbn}
+                  maxLength="13"
+                  id="id_book_isbn"
+                />
+
+                <input
+                  type="submit"
+                  value="Donate"
+                  className="btn btn-success"
+                  id="create_donate_button"
+                />
+                <input
+                  type="reset"
+                  value="Cancel"
+                  className="btn btn-danger"
+                  id="cancel_create_donate_button"
+                />
+              </form>
+            </>
+          ) : null)}
         {options === "crate" &&
           (showListingForm ? (
             <form
@@ -722,7 +790,7 @@ function Card({
                 readOnly={true}
                 maxLength="13"
                 id="id_book_isbn"
-                value={payload.book.isbn}
+                value={isbn}
               />
               <input
                 type="submit"
