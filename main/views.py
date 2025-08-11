@@ -143,7 +143,7 @@ def user_exists(request):
     if request.method == "POST":
         data = loads(request.body)
         username = data["username"].capitalize()
-        user = User.objects.filter(username=username).values("id", "username")
+        # user = User.objects.filter(username=username).values("id", "username")
         try:
             user = User.objects.get(username=username)
             return JsonResponse(
@@ -187,7 +187,7 @@ def update_quote(request):
         if user.quote != content:
             user.quote = content
             user.save()
-        return JsonResponse({"content": User.objects.get(id=user_id).quote})
+        return JsonResponse({"content": user.quote})
 
 
 @csrf_exempt
@@ -395,7 +395,7 @@ def load_donations(request):
         page = data.get("page", 1)
         donations = list(
             Donate.objects.filter(user_id=user_id)
-            .order_by("timestamp")
+            .order_by("-timestamp")
             .values("id", "book_isbn", "quantity", "timestamp")
         )
         donations = Paginator(donations, 10).page(page)
@@ -407,29 +407,44 @@ def load_donations(request):
 def update_donation(request):
     if request.method == "POST":
         data = loads(request.body)
-        user_id = data["id"]
-        book_isbn = data["isbn"]
-        quantity = data["quantity"]
-        try:
-            donation = Donate.objects.get(user_id=user_id, book_isbn=book_isbn)
+        delete = data.get("delete", False)
+        donation_id = data.get("donation_id", None)
+        quantity = data.get("quantity", 0)
+        if donation_id:
+            donation = Donate.objects.get(id=donation_id)
+            if delete:
+                donation.delete()
+                return JsonResponse({"donation": None})
             if donation.quantity != quantity:
                 donation.quantity = quantity
                 donation.save()
-            donation = list(
-                Donate.objects.filter(user_id=user_id, book_isbn=book_isbn).values(
-                    "id", "book_isbn", "quantity", "timestamp"
-                )
+            return JsonResponse(
+                {
+                    "donation": {
+                        "id": donation.id,
+                        "book_isbn": donation.book_isbn,
+                        "quantity": donation.quantity,
+                        "timestamp": donation.timestamp,
+                    }
+                }
             )
-            return JsonResponse({"donation": donation})
-        except Donate.DoesNotExist:
-            user = User.objects.get(id=user_id)
-            Donate.objects.create(user_id=user, book_isbn=book_isbn, quantity=quantity)
-            donation = list(
-                Donate.objects.filter(user_id=user_id, book_isbn=book_isbn).values(
-                    "id", "book_isbn", "quantity", "timestamp"
-                )
-            )
-            return JsonResponse({"donation": donation})
+
+        user_id = data["id"]
+        book_isbn = data["isbn"]
+        user = User.objects.get(id=user_id)
+        donation = Donate.objects.create(
+            user_id=user, book_isbn=book_isbn, quantity=quantity
+        )
+        return JsonResponse(
+            {
+                "donation": {
+                    "id": donation.id,
+                    "book_isbn": donation.book_isbn,
+                    "quantity": donation.quantity,
+                    "timestamp": donation.timestamp,
+                }
+            }
+        )
 
 
 @csrf_exempt
@@ -549,7 +564,7 @@ def get_listing(request):
                     "id", "book_isbn", "price", "stock", "timestamp"
                 )
             )
-        except:
+        except:  # Remove this
             isbn = data["isbn"]
             listing = list(
                 Listing.objects.filter(book_isbn=isbn).values(
@@ -802,11 +817,8 @@ def user_liked(request):
         data = loads(request.body)
         review_id = data["review_id"]
         user_id = data["user_id"]
-        try:
-            if Like.objects.get(review_id=review_id, user_id=user_id):
-                return JsonResponse({"liked": True})
-        except Like.DoesNotExist:
-            return JsonResponse({"liked": False})
+        like = Like.objects.filter(review_id=review_id, user_id=user_id).exists()
+        return JsonResponse({"liked": like})
 
 
 @csrf_exempt

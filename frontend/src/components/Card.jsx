@@ -355,6 +355,29 @@ function Card({
       .catch((error) => console.log(error));
   }
 
+  function deleteDonation() {
+    fetch(`${urlPrefix}/update_donation`, {
+      method: "POST",
+      body: JSON.stringify({
+        delete: true,
+        donation_id: payload.book.donate_id,
+        quantity: 0,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
+    })
+      .then((response) => response.json())
+      .then((_) => {
+        setShowCard(false);
+      })
+      .catch((error) => console.log(error));
+  }
+
+  function updateDonation(event) {}
+
   function updateCart() {
     fetch(`${urlPrefix}/update_cart`, {
       method: "POST",
@@ -406,10 +429,15 @@ function Card({
           )}
           {options === "donation" && !userData.isSuper && (
             <>
-              <button className="update_donation_button btn btn-info">
+              <button
+                className="update_donation_button btn btn-info"
+              >
                 Update Donation
               </button>
-              <button className="delete_donation_button btn btn-danger">
+              <button
+                className="delete_donation_button btn btn-danger"
+                onClick={() => deleteDonation()}
+              >
                 Delete Donation
               </button>
             </>
