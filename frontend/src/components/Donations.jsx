@@ -10,6 +10,7 @@ function Donations({ userData, setPage, setIsbn }) {
   const [requests, setRequests] = useState([]);
   const [requestsData, setRequestsData] = useState({});
   const [showSpinner, setShowSpinner] = useState(true);
+  const [showGetForm, setShowGetForm] = useState(false);
 
   useEffect(() => {
     fetch(`${urlPrefix}/load_donations`, {
@@ -83,7 +84,10 @@ function Donations({ userData, setPage, setIsbn }) {
       </div>
       <h3 id="user_header">
         Welcome, {userData?.user}
-        <button className="add_donation_button btn btn-success">
+        <button
+          className="add_donation_button btn btn-success"
+          onClick={() => setShowGetForm(!showGetForm)}
+        >
           <i className="bi bi-bookmark-plus"></i> Add Book Donation Request
         </button>
       </h3>
