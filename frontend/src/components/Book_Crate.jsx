@@ -60,7 +60,7 @@ function Book_Crate({ setPage, setIsbn, userData = null }) {
       .then((response) => response.json())
       .then((data) => {
         setListings(data);
-        setTimeout(() => setShowSpinner(false), 2000);
+        setTimeout(() => setShowSpinner(false), 3000);
       })
       .catch((error) => console.log(error));
   }, [refreshListings]);
