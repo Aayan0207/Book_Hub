@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import getToken from "./getToken.jsx";
 import Card from "./Card.jsx";
+import Spinner from "./spinner.jsx";
 function Cart({ setPage, setIsbn, userData }) {
   const token = getToken();
   const urlPrefix = "http://localhost:8000";
@@ -8,6 +9,7 @@ function Cart({ setPage, setIsbn, userData }) {
   const [cartData, setCartData] = useState({});
   const [more, setMore] = useState(false);
   const [batch, setBatch] = useState(1);
+  const [showSpinner, setShowSpinner] = useState(false);
 
   useEffect(() => {
     if (!cart) return;
@@ -62,7 +64,10 @@ function Cart({ setPage, setIsbn, userData }) {
         setCart((prev) => {
           return [...prev, ...data.books];
         });
-        setMore(data.next);
+        setTimeout(() => {
+          setShowSpinner(false);
+          setMore(data.next);
+        }, 2000);
       })
       .catch((error) => console.log(error));
   }, [batch]);
@@ -134,16 +139,26 @@ function Cart({ setPage, setIsbn, userData }) {
       ) : (
         <p>No Items in the Cart yet.</p>
       )}
+      {showSpinner ? <Spinner /> : null}
       {more ? (
-        <button
-          className="btn btn-info"
-          onClick={() => {
-            setBatch(batch + 1);
-            setMore(false);
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
-          Load More
-        </button>
+          <button
+            className="btn btn-info"
+            onClick={() => {
+              setBatch(batch + 1);
+              setMore(false);
+              setShowSpinner(true);
+            }}
+          >
+            Load More
+          </button>
+        </div>
       ) : null}
     </>
   );
