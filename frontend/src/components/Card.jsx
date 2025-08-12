@@ -13,6 +13,7 @@ function Card({
   bookmarks = {},
   setBookmarks = {},
   setCheckoutItems = {},
+  checkoutItems = {},
   options = null,
 }) {
   if (!payload || !payload.book.image.source) return;
@@ -412,10 +413,14 @@ function Card({
       .catch((error) => console.log(error));
   }
 
-  function manageCheckoutItem(){
-    
+  function manageCheckoutItem() {
+    const id = payload.book.sale_id;
+    if (checkoutItems.includes(id)) {
+      setCheckoutItems((prev) => prev.filter((item) => item !== id));
+      return;
+    }
+    setCheckoutItems((prev) => [...prev, id]);
   }
-
   if (payload.book.sale_id && stock === 0) return;
   if (!showCard) return;
 
@@ -423,7 +428,11 @@ function Card({
     <>
       <div className={payload.book.parentClass}>
         {options === "cart" ? (
-          <input type="checkbox" className="check_cart_item" onClick={() => manageCheckoutItem()}/>
+          <input
+            type="checkbox"
+            className="check_cart_item"
+            onChange={() => manageCheckoutItem()}
+          />
         ) : null}
         <div className={payload.book.image.parentClass}>
           <img

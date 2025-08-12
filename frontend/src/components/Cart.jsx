@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import getToken from "./getToken.jsx";
 import Card from "./Card.jsx";
 import Spinner from "./spinner.jsx";
-function Cart({ setPage, setIsbn, userData, setCheckoutItems }) {
+function Cart({ setPage, setIsbn, userData, setCheckoutItems, checkoutItems }) {
   const token = getToken();
   const urlPrefix = "http://localhost:8000";
   const [cart, setCart] = useState([]);
@@ -156,6 +156,8 @@ function Cart({ setPage, setIsbn, userData, setCheckoutItems }) {
                 setPage={setPage}
                 userData={userData}
                 setIsbn={setIsbn}
+                setCheckoutItems={setCheckoutItems}
+                checkoutItems={checkoutItems}
                 options="cart"
               />
             );

@@ -83,6 +83,7 @@ function Navbar({ page, setPage }) {
             userData={userData}
             setIsbn={setIsbn}
             setCheckoutItems={setCheckoutItems}
+            checkoutItems={checkoutItems}
           />
         );
       case "checkout":
