@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Card from "./Card";
 import getToken from "./getToken";
+import Spinner from "./spinner";
 function Bookmarks({ userData, setPage, setIsbn, setProfile }) {
   const urlPrefix = "http://localhost:8000";
   const token = getToken();
@@ -13,6 +14,7 @@ function Bookmarks({ userData, setPage, setIsbn, setProfile }) {
   const [same, setSame] = useState(false);
   const [invalid, setInvalid] = useState(false);
   const [found, setFound] = useState(null);
+  const [showSpinner, setShowSpinner] = useState(true);
 
   useEffect(() => {
     fetch(`${urlPrefix}/load_bookmark_reviews`, {
@@ -22,7 +24,12 @@ function Bookmarks({ userData, setPage, setIsbn, setProfile }) {
       }),
     })
       .then((response) => response.json())
-      .then((data) => setReviews(data?.reviews))
+      .then((data) => {
+        setReviews(data?.reviews);
+        setTimeout(() => {
+          setShowSpinner(false);
+        }, 2000);
+      })
       .catch((error) => console.log(error));
   }, [refresh]);
 
@@ -230,9 +237,10 @@ function Bookmarks({ userData, setPage, setIsbn, setProfile }) {
             <i className="bi bi-arrow-repeat"></i> Refresh Feed
           </button>
         </div>
+        {showSpinner ? <Spinner /> : null}
         {reviews.map((item) => {
           if (!reviewsData[item.book_isbn]) return;
-          const bookData = reviewsData[item.book_isbn].items[0];
+          const bookData = reviewsData[item.book_isbn]?.items?.[0];
 
           const cardDetails = {
             user: userData,

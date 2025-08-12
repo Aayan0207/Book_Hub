@@ -80,18 +80,19 @@ function Cart({ setPage, setIsbn, userData, setCheckoutItems, checkoutItems }) {
       })
       .catch((error) => console.log(error));
   }, [batch]);
-
   return (
     <>
       <h2 id="header">
         Cart
-        <button
-          className="btn btn-success"
-          id="checkout_button"
-          onClick={() => setShowCheckout(true)}
-        >
-          Proceed to Checkout
-        </button>
+        {checkoutItems.length > 0 && (
+          <button
+            className="btn btn-success"
+            id="checkout_button"
+            onClick={() => setShowCheckout(true)}
+          >
+            Proceed to Checkout
+          </button>
+        )}
       </h2>
       <hr />
       <div id="user_cart">

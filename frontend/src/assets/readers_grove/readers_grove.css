@@ -15,9 +15,10 @@
   align-items: left;
   flex-direction: column;
 }
-#user_credits_form * {
+#user_credits_form > div * {
   margin-left: 5px;
   margin-right: 5px;
+  display: inline-block;
 }
 #update_quote_form > input[type="reset"] {
   margin-left: 5px;

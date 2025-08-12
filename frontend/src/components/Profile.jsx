@@ -5,26 +5,13 @@ import getToken from "./getToken";
 function Profile({ userData, setPage, setIsbn, profileView = false }) {
   const urlPrefix = "http://localhost:8000";
   const token = getToken();
-  const [quote, setQuote] = useState(null);
+  const [quote, setQuote] = useState(userData.quote);
   const [activityInfo, setActivityInfo] = useState({});
   const [currently, setCurrently] = useState([]);
   const [want, setWant] = useState([]);
   const [showForm, setShowForm] = useState(false);
-  const [credits, setCredits] = useState(0);
+  const [credits, setCredits] = useState(userData.credits);
   const [showCreditsForm, setShowCreditsForm] = useState(false);
-
-  useEffect(() => {
-    if (userData?.isSuper) return;
-    fetch(`${urlPrefix}/get_user_credits`, {
-      method: "POST",
-      body: JSON.stringify({
-        id: userData?.userId,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => setCredits(data.credits))
-      .catch((error) => console.log(error));
-  }, [userData]);
 
   useEffect(() => {
     if (!userData?.isUser) return;
@@ -71,18 +58,6 @@ function Profile({ userData, setPage, setIsbn, profileView = false }) {
       .catch((error) => console.log(error));
   }, [userData]);
 
-  useEffect(() => {
-    if (!userData?.isUser) return;
-    fetch(`${urlPrefix}/get_quote`, {
-      method: "POST",
-      body: JSON.stringify({
-        id: userData?.userId,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => setQuote(data?.quote))
-      .catch((error) => console.log(error));
-  }, [userData]);
 
   function updateQuote(event) {
     event.preventDefault();
@@ -153,6 +128,7 @@ function Profile({ userData, setPage, setIsbn, profileView = false }) {
     <>
       <div id="user_info">
         <h2>{userData?.user}</h2>
+        {!profileView  && (
         <div id="credits_div">
           <hr />
           {userData?.isSuper ? (
@@ -207,6 +183,7 @@ function Profile({ userData, setPage, setIsbn, profileView = false }) {
           )}
           {!profileView ? <hr /> : null}
         </div>
+        )}
         <div id="quote_div">
           {!showForm ? <p id="quote">{quote}</p> : null}
           {showForm ? (

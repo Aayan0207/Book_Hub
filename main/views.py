@@ -152,6 +152,8 @@ def user_exists(request):
                     "userId": user.id,  # type: ignore
                     "isUser": user.is_authenticated,
                     "isSuper": user.is_superuser,
+                    "credits": user.credits,
+                    "quote": user.quote,
                 }
             )
         except User.DoesNotExist:
@@ -514,9 +516,16 @@ def load_cart(request):
         user_id = data["id"]
         page = data.get("page", 1)
         cart_books = list(
-            Cart.objects.select_related("listing_id").filter(user_id=user_id)
+            Cart.objects.select_related("listing_id")
+            .filter(user_id=user_id)
             .order_by("-timestamp")
-            .values("id", "book_isbn", "listing_id","listing_id__price","listing_id__stock")
+            .values(
+                "id",
+                "book_isbn",
+                "listing_id",
+                "listing_id__price",
+                "listing_id__stock",
+            )
         )
         cart_books = Paginator(cart_books, 10).page(page)
         cart_books.has_next()
@@ -1141,15 +1150,17 @@ def login_view(request):
 
         if user:
             login(request, user)
-            id = User.objects.get(username=username).id  # type: ignore
+            user = User.objects.get(username=username)  # type: ignore
             if request_from == "base":  # Remove this
                 return HttpResponseRedirect(reverse("readers_grove"))
             return JsonResponse(
                 {
                     "user": username,
-                    "userId": id,
+                    "userId": user.id,  # type: ignore
                     "isUser": user.is_authenticated,
                     "isSuper": user.is_superuser,
+                    "credits": user.credits,
+                    "quote": user.quote,
                 }
             )
         else:
@@ -1190,13 +1201,15 @@ def register(request):
                 request, "main/register.html", {"message": "Username already taken."}
             )
         login(request, user)
-        id = User.objects.get(username=username).id  # type: ignore
+        user = User.objects.get(username=username)  # type: ignore
         return JsonResponse(
             {
                 "user": username,
-                "userId": id,
+                "userId": user.id,  # type: ignore
                 "isUser": user.is_authenticated,
                 "isSuper": user.is_superuser,
+                "credits": user.credits,
+                "quote": user.quote,
             }
         )
         return HttpResponseRedirect(reverse("index"))
