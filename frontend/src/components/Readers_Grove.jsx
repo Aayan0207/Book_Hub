@@ -9,12 +9,7 @@ import Invoices from "./Invoices.jsx";
 
 function Readers_Grove({ setPage, userData, setIsbn, setProfile }) {
   const [view, setView] = useState("profile");
-
-  useEffect(() => {
-    if (!userData.isUser) {
-      setPage("login");
-    }
-  }, [userData, setPage]);
+  if (!userData) return setPage("login");
 
   function renderView() {
     switch (view) {
