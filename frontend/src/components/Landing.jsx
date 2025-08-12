@@ -34,7 +34,7 @@ function Landing({ setPage, userData }) {
             onClick={() => setPage("book_crate")}
           >
             <div className="img_container">
-              <img src="/assets/book_crate/Book crate final.png" />
+              <img src="/assets/book_crate/Final.png" />
             </div>
             <p className="app_header">Book Crate</p>
             <p className="app_content">
@@ -53,7 +53,7 @@ function Landing({ setPage, userData }) {
             onClick={() => setPage("readers_grove")}
           >
             <div className="img_container">
-              <img src="/assets/readers_grove/Readers Grove Final.png" />
+              <img src="/assets/readers_grove/Click.png" />
             </div>
             <p className="app_header">Reader's Grove</p>
             <p className="app_content">
@@ -70,7 +70,7 @@ function Landing({ setPage, userData }) {
 
           <button className="btn btn-warning" onClick={() => setPage("codex")}>
             <div className="img_container">
-              <img id="codex_img" src="/assets/codex/Codex 3.png" />
+              <img id="codex_img" src="/assets/codex/Final.png" />
             </div>
             <p className="app_header">Codex</p>
             <p className="app_content">

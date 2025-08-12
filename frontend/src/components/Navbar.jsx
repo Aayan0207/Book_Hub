@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Codex from "./Codex";
 import Landing from "./Landing";
 import Login from "./Login";
@@ -19,6 +19,13 @@ function Navbar({ page, setPage }) {
   const [logout, setLogout] = useState(false);
   const [profile, setProfile] = useState(null);
   const [checkoutItems, setCheckoutItems] = useState([]);
+  const [bookCrateSource, setBookCrateSource] = useState(
+    "/assets/book_crate/Initial.png"
+  );
+  const [readersGroveSource, setReadersGroveSource] = useState(
+    "/assets/readers_grove/Initial.png"
+  );
+  const [codexSource, setCodexSource] = useState("/assets/codex/Initial.png");
 
   useEffect(() => {
     if (!userData || !userData?.isUser) return;
@@ -99,6 +106,96 @@ function Navbar({ page, setPage }) {
         );
     }
   }
+  const bookCrateTimeout = useRef(null);
+  const readersGroveTimeout = useRef(null);
+  const codexTimeout = useRef(null);
+
+  function codexHover() {
+    if (codexTimeout.current) {
+      clearTimeout(codexTimeout.current);
+      codexTimeout.current = null;
+    }
+    setCodexSource("/assets/codex/Animation_1.gif");
+    codexTimeout.current = setTimeout(
+      () => setCodexSource("/assets/codex/Animation_2.gif"),
+      2050
+    );
+  }
+
+  function codexLeave() {
+    if (codexTimeout.current) {
+      clearTimeout(codexTimeout.current);
+      codexTimeout.current = null;
+    }
+    setCodexSource("/assets/codex/Initial.png");
+  }
+
+  function codexClick() {
+    if (codexTimeout.current) {
+      clearTimeout(codexTimeout.current);
+      codexTimeout.current = null;
+    }
+    setCodexSource("/assets/codex/Final.png");
+    setTimeout(() => setPage("codex"), 500);
+  }
+
+  function bookCrateHover() {
+    if (bookCrateTimeout.current) {
+      clearTimeout(bookCrateTimeout.current);
+    }
+    setBookCrateSource("/assets/book_crate/Animation.gif");
+    bookCrateTimeout.current = setTimeout(
+      () => setBookCrateSource("/assets/book_crate/Final.png"),
+      1750
+    );
+  }
+
+  function bookCrateLeave() {
+    if (bookCrateTimeout.current) {
+      clearTimeout(bookCrateTimeout.current);
+      bookCrateTimeout.current = null;
+    }
+    setBookCrateSource("/assets/book_crate/Initial.png");
+  }
+
+  function bookCrateClick() {
+    if (bookCrateTimeout.current) {
+      clearTimeout(bookCrateTimeout.current);
+      bookCrateTimeout.current = null;
+    }
+    setBookCrateSource("/assets/book_crate/Final.png");
+    setTimeout(() => setPage("book_crate"), 500);
+  }
+
+  function readersGroveHover() {
+    if (readersGroveTimeout.current) {
+      clearTimeout(readersGroveTimeout.current);
+      readersGroveTimeout.current = null;
+    }
+    setReadersGroveSource("/assets/readers_grove/Animation.gif");
+    readersGroveTimeout.current = setTimeout(
+      () => setReadersGroveSource("/assets/readers_grove/Final.png"),
+      1450
+    );
+  }
+
+  function readersGroveLeave() {
+    if (readersGroveTimeout.current) {
+      clearTimeout(readersGroveTimeout.current);
+      readersGroveTimeout.current = null;
+    }
+    setReadersGroveSource("/assets/readers_grove/Initial.png");
+  }
+
+  function readersGroveClick() {
+    if (readersGroveTimeout.current) {
+      clearTimeout(readersGroveTimeout.current);
+      readersGroveTimeout.current = null;
+    }
+    setReadersGroveSource("/assets/readers_grove/Click.png");
+    setTimeout(() => setPage("readers_grove"), 500);
+  }
+
   return (
     <>
       <nav className="navbar navbar-expand-lg" id="head_navbar">
@@ -110,27 +207,36 @@ function Navbar({ page, setPage }) {
                 Book Hub
               </span>
             </li>
-            <li className="nav-item" onClick={() => setPage("book_crate")}>
+            <li
+              className="nav-item"
+              onMouseEnter={() => bookCrateHover()}
+              onMouseLeave={() => bookCrateLeave()}
+              onClick={() => bookCrateClick()}
+            >
               <span className="nav-link" id="book_crate_link">
-                <img
-                  id="book_crate_image"
-                  src="/assets/book_crate/Book_crate_base.png"
-                />
+                <img id="book_crate_image" src={bookCrateSource} />
                 Book Crate
               </span>
             </li>
-            <li className="nav-item" onClick={() => setPage("readers_grove")}>
+            <li
+              className="nav-item"
+              onMouseEnter={() => readersGroveHover()}
+              onMouseLeave={() => readersGroveLeave()}
+              onClick={() => readersGroveClick()}
+            >
               <span className="nav-link" id="readers_grove_link">
-                <img
-                  id="readers_grove_image"
-                  src="/assets/readers_grove/Readers_Grove_Initial.png"
-                />
+                <img id="readers_grove_image" src={readersGroveSource} />
                 Reader's Grove
               </span>
             </li>
-            <li className="nav-item" onClick={() => setPage("codex")}>
+            <li
+              className="nav-item"
+              onMouseEnter={() => codexHover()}
+              onMouseLeave={() => codexLeave()}
+              onClick={() => codexClick()}
+            >
               <span className="nav-link" id="codex_link">
-                <img id="codex_image" src="/assets/codex/Codex_base.png" />
+                <img id="codex_image" src={codexSource} />
                 Codex
               </span>
             </li>
