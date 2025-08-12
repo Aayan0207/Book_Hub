@@ -4,8 +4,17 @@
 #donate_form {
   display: flex;
   justify-content: left;
-  align-items: center;
+  align-items: left;
   flex-direction: column;
+}
+.donate_result_book_cover_image_div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  cursor: default;
+  padding-bottom: 10px;
 }
 #donate_form * {
   margin-left: 5px;
@@ -235,6 +244,16 @@
   opacity: 1;
   border: 2px solid black;
   background-color: white;
+}
+#donate_search_form{
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+#donate_search_form > div * {
+  margin-left:5px;
+  margin-right:5px;
 }
 #search_result {
   display: grid;

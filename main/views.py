@@ -409,7 +409,7 @@ def update_donation(request):
         data = loads(request.body)
         delete = data.get("delete", False)
         donation_id = data.get("donation_id", None)
-        quantity = data.get("quantity", 0)
+        quantity = int(data.get("quantity", 0))
         if donation_id:
             donation = Donate.objects.get(id=donation_id)
             if delete:
