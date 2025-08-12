@@ -75,33 +75,35 @@ function Checkout({ userData, setIsbn, setPage, checkoutItems, setUserData }) {
       return;
     }
 
-    for (const item in purchaseData) {
-      const response = await fetch(`${urlPrefix}/purchase_listing`, {
-        method: "POST",
-        body: JSON.stringify({
-          listing_id: item,
-          quantity: purchaseData[item],
-          user_id: userData?.userId,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRFToken": token,
-        },
-        credentials: "include",
-      });
-
-      const data = await response.json();
-
-      if (!data.transaction) {
-        setInvalid(true);
-        return;
+    const purchasePromises = Object.entries(purchaseData).map(
+      ([item, quantity]) => {
+        return fetch(`${urlPrefix}/purchase_listing`, {
+          method: "POST",
+          body: JSON.stringify({
+            listing_id: item,
+            quantity: quantity,
+            user_id: userData?.userId,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": token,
+          },
+          credentials: "include",
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (!data.transaction) {
+              setInvalid(true);
+              throw new Error("Transaction failed");
+            }
+            setUserData((prev) => {
+              return { ...prev, credits: data.credits };
+            });
+          });
       }
+    );
 
-      setUserData((prev) => {
-        return { ...prev, credits: data.credits };
-      });
-    }
-
+    await Promise.all(purchasePromises);
     setShowCart(true);
   }
   return (

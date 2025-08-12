@@ -156,6 +156,12 @@
 .book_info_div {
   grid-column-start: 2;
   cursor: pointer;
+  display:flex;
+  flex-direction: column;
+}
+.transaction_info{
+  display:flex;
+  flex-direction: column;
 }
 .book_info_div > p {
   margin: 2px;

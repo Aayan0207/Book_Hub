@@ -688,7 +688,8 @@ function Card({
               </p>
               <div className="transaction_info">
                 <p>Quantity: {payload.book.info.invoice.quantity.value}</p>
-                Transaction Info:
+                <div>
+                <p>Transaction Info:</p>
                 <p
                   className="transaction_amount_p"
                   style={{
@@ -701,6 +702,7 @@ function Card({
                 >
                   {payload.book.info.invoice.transactionInfo.value}
                 </p>
+                </div>
                 <p>
                   Timestamp:{" "}
                   {new Date(
