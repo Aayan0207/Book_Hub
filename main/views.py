@@ -505,7 +505,7 @@ def purchase_listing(request):
             listing.save()
             if listing.stock == 0:
                 listing.delete()
-            return JsonResponse({"transaction": True})
+            return JsonResponse({"transaction": True, "credits":user.credits})
         return JsonResponse({"transaction": False})
 
 

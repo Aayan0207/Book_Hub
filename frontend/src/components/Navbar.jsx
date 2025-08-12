@@ -62,6 +62,7 @@ function Navbar({ page, setPage }) {
             userData={userData}
             setIsbn={setIsbn}
             setProfile={setProfile}
+            setUserData={setUserData}
           />
         );
       case "admin_donations":
@@ -93,6 +94,7 @@ function Navbar({ page, setPage }) {
             userData={userData}
             setIsbn={setIsbn}
             checkoutItems={checkoutItems}
+            setUserData={setUserData}
           />
         );
     }

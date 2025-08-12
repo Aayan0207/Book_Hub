@@ -7,7 +7,7 @@ import Bookmarks from "./Bookmarks.jsx";
 import Ratings_Reviews from "./Ratings_Reviews.jsx";
 import Invoices from "./Invoices.jsx";
 
-function Readers_Grove({ setPage, userData, setIsbn, setProfile }) {
+function Readers_Grove({ setPage, userData, setIsbn, setProfile, setUserData }) {
   const [view, setView] = useState("profile");
   if (!userData) return setPage("login");
 
@@ -15,7 +15,7 @@ function Readers_Grove({ setPage, userData, setIsbn, setProfile }) {
     switch (view) {
       case "profile":
         return (
-          <Profile userData={userData} setPage={setPage} setIsbn={setIsbn} />
+          <Profile userData={userData} setPage={setPage} setIsbn={setIsbn} setUserData={setUserData}/>
         );
       case "bookshelf":
         return (

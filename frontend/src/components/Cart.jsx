@@ -41,6 +41,7 @@ function Cart({ setPage, setIsbn, userData, setCheckoutItems, checkoutItems }) {
 
   useEffect(() => {
     if (!userData?.userId) return;
+    setCheckoutItems([]);
     fetch(`${urlPrefix}/load_cart`, {
       method: "POST",
       body: JSON.stringify({
@@ -80,6 +81,7 @@ function Cart({ setPage, setIsbn, userData, setCheckoutItems, checkoutItems }) {
       })
       .catch((error) => console.log(error));
   }, [batch]);
+
   return (
     <>
       <h2 id="header">

@@ -2,7 +2,13 @@ import React, { useState, useEffect } from "react";
 import Picture from "./Picture";
 import getToken from "./getToken";
 
-function Profile({ userData, setPage, setIsbn, profileView = false }) {
+function Profile({
+  userData,
+  setPage,
+  setIsbn,
+  setUserData,
+  profileView = false,
+}) {
   const urlPrefix = "http://localhost:8000";
   const token = getToken();
   const [quote, setQuote] = useState(userData.quote);
@@ -58,7 +64,6 @@ function Profile({ userData, setPage, setIsbn, profileView = false }) {
       .catch((error) => console.log(error));
   }, [userData]);
 
-
   function updateQuote(event) {
     event.preventDefault();
     const form = event.target;
@@ -77,6 +82,9 @@ function Profile({ userData, setPage, setIsbn, profileView = false }) {
       .then((response) => response.json())
       .then((data) => {
         setQuote(data.content);
+        setUserData((prev) => {
+          return { ...prev, quote: data.content };
+        });
         setShowForm(false);
       })
       .catch((error) => console.log(error));
@@ -98,6 +106,9 @@ function Profile({ userData, setPage, setIsbn, profileView = false }) {
       .then((response) => response.json())
       .then((_) => {
         setQuote(null);
+        setUserData((prev) => {
+          return { ...prev, quote: "" };
+        });
       })
       .catch((error) => console.log(error));
   }
@@ -121,6 +132,9 @@ function Profile({ userData, setPage, setIsbn, profileView = false }) {
       .then((data) => {
         setCredits(data.credits);
         setShowCreditsForm(false);
+        setUserData((prev) => {
+          return { ...prev, credits: data.credits };
+        });
       })
       .catch((error) => console.log(error));
   }
@@ -128,61 +142,61 @@ function Profile({ userData, setPage, setIsbn, profileView = false }) {
     <>
       <div id="user_info">
         <h2>{userData?.user}</h2>
-        {!profileView  && (
-        <div id="credits_div">
-          <hr />
-          {userData?.isSuper ? (
-            <p id="credits_p">Admin. No Credits required.</p>
-          ) : (
-            <>
-              <p id="credits_p">Your Credits: {credits}</p>
-              <button
-                id="add_credits_button"
-                className="btn btn-success"
-                onClick={() => setShowCreditsForm(true)}
-              >
-                Add Credits
-              </button>
-              {showCreditsForm ? (
-                <form
-                  action="/add_credits"
-                  method="post"
-                  id="user_credits_form"
-                  onReset={() => setShowCreditsForm(false)}
-                  onSubmit={(event) => addCredits(event)}
+        {!profileView && (
+          <div id="credits_div">
+            <hr />
+            {userData?.isSuper ? (
+              <p id="credits_p">Admin. No Credits required.</p>
+            ) : (
+              <>
+                <p id="credits_p">Your Credits: {credits}</p>
+                <button
+                  id="add_credits_button"
+                  className="btn btn-success"
+                  onClick={() => setShowCreditsForm(true)}
                 >
-                  <hr />
-                  <div>
-                    <label htmlFor="id_credit_amount">Add Credits:</label>
-                    <input
-                      type="number"
-                      name="credit_amount"
-                      min="1"
-                      max="10000"
-                      required={true}
-                      id="id_credit_amount"
-                    />
-                  </div>
-                  <div>
-                    <input
-                      type="submit"
-                      class="btn btn-success"
-                      value="Add"
-                      id="submit_credits_button"
-                    />
-                    <input
-                      type="reset"
-                      class="btn btn-danger"
-                      value="Cancel"
-                      id="cancel_credits_button"
-                    />
-                  </div>
-                </form>
-              ) : null}
-            </>
-          )}
-          {!profileView ? <hr /> : null}
-        </div>
+                  Add Credits
+                </button>
+                {showCreditsForm ? (
+                  <form
+                    action="/add_credits"
+                    method="post"
+                    id="user_credits_form"
+                    onReset={() => setShowCreditsForm(false)}
+                    onSubmit={(event) => addCredits(event)}
+                  >
+                    <hr />
+                    <div>
+                      <label htmlFor="id_credit_amount">Add Credits:</label>
+                      <input
+                        type="number"
+                        name="credit_amount"
+                        min="1"
+                        max="10000"
+                        required={true}
+                        id="id_credit_amount"
+                      />
+                    </div>
+                    <div>
+                      <input
+                        type="submit"
+                        class="btn btn-success"
+                        value="Add"
+                        id="submit_credits_button"
+                      />
+                      <input
+                        type="reset"
+                        class="btn btn-danger"
+                        value="Cancel"
+                        id="cancel_credits_button"
+                      />
+                    </div>
+                  </form>
+                ) : null}
+              </>
+            )}
+            {!profileView ? <hr /> : null}
+          </div>
         )}
         <div id="quote_div">
           {!showForm ? <p id="quote">{quote}</p> : null}

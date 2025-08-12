@@ -14,6 +14,7 @@ function Card({
   setBookmarks = {},
   setCheckoutItems = {},
   checkoutItems = {},
+  setPurchaseData = {},
   options = null,
 }) {
   if (!payload || !payload.book.image.source) return;
@@ -42,11 +43,20 @@ function Card({
   const [donationQuantity, setDonationQuantity] = useState(
     payload.book.info?.donation?.quantity?.value
   );
+  const [purchasingQuantity, setPurchasingQuantity] = useState(1);
+
+  useEffect(() => {
+    if (purchasingQuantity === 1) return;
+    const sale_id = payload.book.sale_id;
+    setPurchaseData((prev) => {
+      return { ...prev, [sale_id]: parseInt(purchasingQuantity) };
+    });
+  }, [purchasingQuantity]);
 
   useEffect(() => {
     if (
       !userData?.userId ||
-      (options != "crate" && options != "cart") ||
+      (options !== "crate" && options !== "cart") ||
       userData?.isSuper
     )
       return;
@@ -63,7 +73,7 @@ function Card({
   }, [isbn, options, userData?.userId]);
 
   useEffect(() => {
-    if (!userData?.userId || options != "shelf") return;
+    if (!userData?.userId || options !== "shelf") return;
     fetch(`${urlPrefix}/get_user_rating`, {
       method: "POST",
       body: JSON.stringify({
@@ -101,7 +111,7 @@ function Card({
   }, [viewProfile]);
 
   useEffect(() => {
-    if (!userData?.isUser || options != "shelf") return;
+    if (!userData?.isUser || options !== "shelf") return;
     fetch(`${urlPrefix}/in_bookshelf`, {
       method: "POST",
       body: JSON.stringify({
@@ -421,6 +431,7 @@ function Card({
     }
     setCheckoutItems((prev) => [...prev, id]);
   }
+
   if (payload.book.sale_id && stock === 0) return;
   if (!showCard) return;
 
@@ -504,6 +515,27 @@ function Card({
                 </button>
               )
             ) : null)}
+          {options === "checkout" ? (
+            <>
+              <div>
+                <label htmlFor="id_quantity">Quantity:</label>
+                &nbsp;
+                <input
+                  type="number"
+                  name="quantity"
+                  min="1"
+                  value={purchasingQuantity}
+                  onChange={(event) =>
+                    setPurchasingQuantity(event.target.value)
+                  }
+                  max={stock}
+                  required={true}
+                  id="id_quantity"
+                />
+              </div>
+              Total: {price * purchasingQuantity} Credits
+            </>
+          ) : null}
           {options === "shelf" && (
             <>
               <div id="bookshelf_button_div" className="dropdown">
@@ -595,7 +627,8 @@ function Card({
           <p className={payload.book.info.author.class}>
             by {payload.book.info.author.value?.join(", ")}
           </p>
-          {(payload.book.review || payload.book.sale_id) && (
+          {(payload.book.review ||
+            (payload.book.sale_id && options !== "checkout")) && (
             <div className={payload.book.info?.ratings?.parentClass}>
               <div className={payload.book.info?.ratings?.bar.parentClass}>
                 <div
