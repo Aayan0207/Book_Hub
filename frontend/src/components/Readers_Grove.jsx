@@ -11,8 +11,10 @@ function Readers_Grove({ setPage, userData, setIsbn, setProfile }) {
   const [view, setView] = useState("profile");
 
   useEffect(() => {
-    if (!userData?.isUser) setPage("login");
-  }, [userData]);
+    if (!userData.isUser) {
+      setPage("login");
+    }
+  }, [userData, setPage]);
 
   function renderView() {
     switch (view) {
