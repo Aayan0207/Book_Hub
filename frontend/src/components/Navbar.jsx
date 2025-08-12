@@ -10,6 +10,7 @@ import User from "./User";
 import Admin_Donations from "./Admin_Donations";
 import Cart from "./Cart";
 import Donations from "./Donations";
+import Checkout from "./Checkout";
 
 function Navbar({ page, setPage }) {
   const urlPrefix = "http://localhost:8000";
@@ -17,6 +18,7 @@ function Navbar({ page, setPage }) {
   const [userData, setUserData] = useState(null);
   const [logout, setLogout] = useState(false);
   const [profile, setProfile] = useState(null);
+  const [checkoutItems, setCheckoutItems] = useState([]);
 
   useEffect(() => {
     if (!userData || !userData?.isUser) return;
@@ -72,14 +74,26 @@ function Navbar({ page, setPage }) {
         );
       case "donations":
         return (
-          <Donations
+          <Donations setPage={setPage} userData={userData} setIsbn={setIsbn} />
+        );
+      case "cart":
+        return (
+          <Cart
             setPage={setPage}
             userData={userData}
             setIsbn={setIsbn}
+            setCheckoutItems={setCheckoutItems}
           />
         );
-      case "cart":
-        return <Cart setPage={setPage} userData={userData} setIsbn={setIsbn} />;
+      case "checkout":
+        return (
+          <Checkout
+            setPage={setPage}
+            userData={userData}
+            setIsbn={setIsbn}
+            checkoutItems={checkoutItems}
+          />
+        );
     }
   }
   return (

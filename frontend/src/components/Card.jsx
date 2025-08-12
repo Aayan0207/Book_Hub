@@ -12,6 +12,7 @@ function Card({
   userData = {},
   bookmarks = {},
   setBookmarks = {},
+  setCheckoutItems = {},
   options = null,
 }) {
   if (!payload || !payload.book.image.source) return;
@@ -40,7 +41,7 @@ function Card({
   const [donationQuantity, setDonationQuantity] = useState(
     payload.book.info?.donation?.quantity?.value
   );
-  
+
   useEffect(() => {
     if (
       !userData?.userId ||
@@ -411,6 +412,10 @@ function Card({
       .catch((error) => console.log(error));
   }
 
+  function manageCheckoutItem(){
+    
+  }
+
   if (payload.book.sale_id && stock === 0) return;
   if (!showCard) return;
 
@@ -418,7 +423,7 @@ function Card({
     <>
       <div className={payload.book.parentClass}>
         {options === "cart" ? (
-          <input type="checkbox" className="check_cart_item" />
+          <input type="checkbox" className="check_cart_item" onClick={() => manageCheckoutItem()}/>
         ) : null}
         <div className={payload.book.image.parentClass}>
           <img

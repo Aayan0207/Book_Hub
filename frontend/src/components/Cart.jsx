@@ -2,14 +2,20 @@ import React, { useEffect, useState } from "react";
 import getToken from "./getToken.jsx";
 import Card from "./Card.jsx";
 import Spinner from "./spinner.jsx";
-function Cart({ setPage, setIsbn, userData }) {
+function Cart({ setPage, setIsbn, userData, setCheckoutItems }) {
   const token = getToken();
   const urlPrefix = "http://localhost:8000";
   const [cart, setCart] = useState([]);
   const [cartData, setCartData] = useState({});
   const [more, setMore] = useState(false);
   const [batch, setBatch] = useState(1);
-  const [showSpinner, setShowSpinner] = useState(false);
+  const [showSpinner, setShowSpinner] = useState(true);
+  const [showCheckout, setShowCheckout] = useState(false);
+
+  useEffect(() => {
+    if (!showCheckout) return;
+    setPage("checkout");
+  }, [showCheckout]);
 
   useEffect(() => {
     if (!cart) return;
@@ -45,7 +51,10 @@ function Cart({ setPage, setIsbn, userData }) {
       .then((response) => response.json())
       .then((data) => {
         setCart(data.books);
-        setMore(data.next);
+        setTimeout(() => {
+          setShowSpinner(false);
+          setMore(data.next);
+        }, 2000);
       })
       .catch((error) => console.log(error));
   }, [userData]);
@@ -76,7 +85,11 @@ function Cart({ setPage, setIsbn, userData }) {
     <>
       <h2 id="header">
         Cart
-        <button className="btn btn-success" id="checkout_button">
+        <button
+          className="btn btn-success"
+          id="checkout_button"
+          onClick={() => setShowCheckout(true)}
+        >
           Proceed to Checkout
         </button>
       </h2>
@@ -107,6 +120,16 @@ function Cart({ setPage, setIsbn, userData }) {
                   author: {
                     class: "listing_book_author",
                     value: bookData.authors,
+                  },
+                  listing: {
+                    price: {
+                      class: "listing_book_price",
+                      value: item.listing_id__price,
+                    },
+                    stock: {
+                      class: "listing_book_stock",
+                      value: item.listing_id__stock,
+                    },
                   },
                   ratings: {
                     parentClass: "listing_book_rating_div",
