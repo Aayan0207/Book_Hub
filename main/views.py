@@ -857,6 +857,7 @@ def get_book_reviews(request):
         page = data["page"]
         user_id = data["user_id"]
         flag = data["flag"].lower()
+        user_reviewed=False
         reviews = (
             Review.objects.select_related("user_id")
             .select_related("id")
@@ -906,11 +907,12 @@ def get_book_reviews(request):
                 if user_review:
                     reviews.remove(user_review[0])  # type: ignore
                     reviews.insert(0, user_review[0])  # type: ignore
+                    user_reviewed=True
             except Review.DoesNotExist:
                 pass
         reviews = Paginator(reviews, 10).page(page)
         return JsonResponse(
-            {"reviews": reviews.object_list, "next": reviews.has_next()}
+            {"reviews": reviews.object_list, "next": reviews.has_next(), "user_reviewed":user_reviewed}
         )
 
 

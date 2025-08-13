@@ -16,10 +16,11 @@ function Book({ isbn, userData, setPage, setProfile }) {
   const [batch, setBatch] = useState(1);
   const [more, setMore] = useState(false);
   const [bookmarks, setBookmarks] = useState({});
+  const [userReviewed, setUserReviewed] = useState(false);
+  const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
     if (!reviewsData) return;
-    console.log(reviewsData);
     reviewsData.forEach((review) => {
       const reviewerId = review.user_id;
       fetch(`${urlPrefix}/user_bookmarked`, {
@@ -109,10 +110,14 @@ function Book({ isbn, userData, setPage, setProfile }) {
       .then((data) => {
         setReviewsData(data.reviews);
         setMore(data.next);
+        if (userData?.isUser) {
+          setUserReviewed(data.user_reviewed);
+        }
       })
       .catch((error) => console.log(error));
   }, [isbn, sortBy, refreshReviews]);
 
+  function addReview() {}
   return (
     <>
       {bookData?.volumeInfo ? (
@@ -227,6 +232,46 @@ function Book({ isbn, userData, setPage, setProfile }) {
               </ul>
               <div className="reviews_div">
                 <p className="reviews_div_header">Community Reviews</p>
+                {userData?.isUser && !userReviewed ? (
+                  <div className="user_review_button_div">
+                    <button
+                      className="user_review_button btn btn-outline-light"
+                      onClick={() => setShowForm(true)}
+                    >
+                      <i className="bi bi-pen"></i>
+                      Write a Review
+                    </button>
+                  </div>
+                ) : null}
+                {showForm ? (
+                  <form
+                    action="/manage_review"
+                    method="post"
+                    id="user_review_form"
+                    onSubmit={() => addReview()}
+                    onReset={() => setShowForm(false)}
+                  >
+                    <textarea
+                      name="content"
+                      cols="40"
+                      rows="10"
+                      required=""
+                      id="id_content"
+                    ></textarea>
+                    <input
+                      type="submit"
+                      className="btn btn-success"
+                      value="Give Review"
+                      id="submit_review_button"
+                    />
+                    <input
+                      type="reset"
+                      className="btn btn-danger"
+                      value="Cancel"
+                      id="cancel_review_button"
+                    />
+                  </form>
+                ) : null}
                 <div className="sort_by_div">
                   <select
                     className="sort_by form-select"
@@ -286,6 +331,7 @@ function Book({ isbn, userData, setPage, setProfile }) {
                           setProfile={setProfile}
                           bookmarks={bookmarks}
                           setBookmarks={setBookmarks}
+                          setUserReviewed={setUserReviewed}
                         />
                       );
                     })
