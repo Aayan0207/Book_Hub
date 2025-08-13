@@ -20,6 +20,10 @@ function Book({ isbn, userData, setPage, setProfile }) {
   const [bookmarks, setBookmarks] = useState({});
   const [userReviewed, setUserReviewed] = useState(false);
   const [showForm, setShowForm] = useState(false);
+  const [inBookshelf, setInBookshelf] = useState(false);
+  const [userRating, setUserRating] = useState(0);
+  const [starBar, setStarBar] = useState(0);
+  const [showBookshelfDropdown, setShowBookshelfDropdown] = useState(false);
 
   useEffect(() => {
     if (!reviewsData) return;
@@ -53,9 +57,7 @@ function Book({ isbn, userData, setPage, setProfile }) {
       .then((response) => response.json())
       .then((data) => setSaleData(data.listing[0]))
       .catch((error) => console.log(error));
-  }, [isbn]);
 
-  useEffect(() => {
     fetch(`${urlPrefix}/book_result`, {
       method: "POST",
       body: JSON.stringify({
@@ -65,9 +67,7 @@ function Book({ isbn, userData, setPage, setProfile }) {
       .then((response) => response.json())
       .then((data) => setBookData(data.result.items?.[0]))
       .catch((error) => console.log(error));
-  }, [isbn]);
 
-  useEffect(() => {
     fetch(`${urlPrefix}/get_book_rating`, {
       method: "POST",
       body: JSON.stringify({
@@ -77,6 +77,33 @@ function Book({ isbn, userData, setPage, setProfile }) {
       .then((response) => response.json())
       .then((data) => setRatingsData(data))
       .catch((error) => console.log(error));
+
+    if (userData?.isUser) {
+      fetch(`${urlPrefix}/in_bookshelf`, {
+        method: "POST",
+        body: JSON.stringify({
+          isbn: isbn,
+          user_id: userData.userId,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => setInBookshelf(data.in_bookshelf))
+        .catch((error) => console.log(error));
+
+      fetch(`${urlPrefix}/get_user_rating`, {
+        method: "POST",
+        body: JSON.stringify({
+          isbn: isbn,
+          user_id: userData?.userId,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setStarBar(data.rating * 20);
+          setUserRating(data.rating);
+        })
+        .catch((error) => console.log(error));
+    }
   }, [isbn]);
 
   useEffect(() => {
@@ -121,6 +148,39 @@ function Book({ isbn, userData, setPage, setProfile }) {
       .catch((error) => console.log(error));
   }, [isbn, sortBy, refreshReviews]);
 
+  function updateBookshelf(action = null) {
+    fetch(`${urlPrefix}/update_bookshelf`, {
+      method: "POST",
+      body: JSON.stringify({
+        isbn: isbn,
+        user_id: userData?.userId,
+        action: action,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setInBookshelf(data.in_bookshelf);
+      })
+      .catch((error) => console.log(error));
+  }
+
+  function updateRating(rating) {
+    fetch(`${urlPrefix}/update_rating`, {
+      method: "POST",
+      body: JSON.stringify({
+        isbn: isbn,
+        user_id: userData?.userId,
+        rating: rating,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setUserRating(data.rating);
+        setStarBar(data.rating * 20);
+      })
+      .catch((error) => console.log(error));
+  }
+
   function addReview(event) {
     event.preventDefault();
     const form = event.target;
@@ -164,6 +224,95 @@ function Book({ isbn, userData, setPage, setProfile }) {
                   src={bookData.volumeInfo.imageLinks.thumbnail}
                 />
               </div>
+              {userData.isUser && (
+                <>
+                  <div id="bookshelf_button_div" className="dropdown">
+                    {inBookshelf ? (
+                      <button
+                        className="bookshelf_button btn btn-danger"
+                        type="button"
+                        onClick={() => {
+                          updateBookshelf();
+                          setShowBookshelfDropdown(false);
+                        }}
+                      >
+                        Remove from Bookshelf
+                      </button>
+                    ) : (
+                      <>
+                        <button
+                          className="bookshelf_button btn btn-success dropdown-toggle"
+                          onClick={() =>
+                            setShowBookshelfDropdown(!showBookshelfDropdown)
+                          }
+                          type="button"
+                          aria-expanded={showBookshelfDropdown}
+                        >
+                          Add to Bookshelf
+                        </button>
+                        <ul
+                          className={`dropdown-menu book_menu ${
+                            showBookshelfDropdown ? "show" : ""
+                          }`}
+                        >
+                          <li
+                            className="dropdown-item"
+                            onClick={() => updateBookshelf("read")}
+                          >
+                            Read
+                          </li>
+                          <li
+                            className="dropdown-item"
+                            onClick={() => updateBookshelf("currently reading")}
+                          >
+                            Currently Reading
+                          </li>
+                          <li
+                            className="dropdown-item"
+                            onClick={() => updateBookshelf("want to read")}
+                          >
+                            Want to Read
+                          </li>
+                        </ul>
+                      </>
+                    )}
+                  </div>
+                  <div className="user_rating_div">
+                    <p className="user_rating_content">
+                      {userRating && userRating > 0
+                        ? `Your Rating: ${userRating}`
+                        : "Rate this book:"}
+                    </p>
+                    <div className="user_rating_bar_div">
+                      <div
+                        className="user_rating_bar progress progress-bar bg-warning"
+                        style={{ width: `${starBar}%` }}
+                      ></div>
+                    </div>
+                    <div className="user_ratings_stars">
+                      {Array(5)
+                        .fill()
+                        .map((_, index) => {
+                          return (
+                            <div
+                              className="user_ratings_star"
+                              onMouseOver={() => setStarBar((index + 1) * 20)}
+                              onClick={() => updateRating(index + 1)}
+                            ></div>
+                          );
+                        })}
+                    </div>
+                    <div className="result_clear_rating_div">
+                      <button
+                        className="result_clear_rating_button btn btn-link"
+                        onClick={() => updateRating(0)}
+                      >
+                        Clear Rating
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
             <div className="result_book_info">
               <p className="result_book_title">{bookData.volumeInfo.title}</p>

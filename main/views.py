@@ -855,7 +855,7 @@ def get_book_reviews(request):
         data = loads(request.body)
         isbn = data["isbn"]
         page = data["page"]
-        user_id = data["user_id"]
+        user_id = data.get("user_id", None)
         flag = data["flag"].lower()
         user_reviewed = False
         reviews = (
@@ -1029,7 +1029,6 @@ def update_bookshelf(request):
         if book_in_shelf.exists():
             book_in_shelf.delete()
             return JsonResponse({"in_bookshelf": False})
-
         if not action:
             return JsonResponse({"in_bookshelf": None})
         user = User.objects.get(id=int(user_id))

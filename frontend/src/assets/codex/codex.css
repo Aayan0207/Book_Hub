@@ -5,6 +5,13 @@
   display: flex;
   gap: 5px;
 }
+.book_menu {
+  position: absolute;
+  top: 100%;
+}
+.dropdown-item {
+  cursor: pointer;
+}
 p {
   margin-top: 5px;
   margin-bottom: 5px;
@@ -128,9 +135,9 @@ textarea {
   background-color: #c4bba3;
   color: black;
 }
-.book_review{
-  padding:10px;
-  border-radius:5px;
+.book_review {
+  padding: 10px;
+  border-radius: 5px;
 }
 .review_username_header {
   font-size: 24px;
@@ -365,7 +372,7 @@ textarea {
   grid-row: 2;
 }
 
-#bookshelf_button {
+.bookshelf_button {
   width: 250px;
   border-radius: 5px;
   height: 50px;

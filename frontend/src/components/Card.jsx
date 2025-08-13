@@ -32,6 +32,7 @@ function Card({
   const [price, setPrice] = useState(payload.book.info?.listing?.price?.value);
   const [userLiked, setUserLiked] = useState(false);
   const [likes, setLikes] = useState(payload.book?.review?.likes);
+  const [showBookshelfDropdown, setShowBookshelfDropdown] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [showCard, setShowCard] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -547,28 +548,37 @@ function Card({
                 Total: {price * purchasingQuantity} Credits
               </>
             ) : null}
-            {options === "shelf" && (
+            {options === "shelf" && userData?.isUser && (
               <>
-                <div id="bookshelf_button_div" className="dropdown">
-                  {inBookshelf && userData?.isUser ? (
+                <div className="bookshelf_button_div dropdown">
+                  {inBookshelf ? (
                     <button
                       className="search_bookshelf_button btn btn-danger"
-                      data-bs-toggle=""
                       type="button"
-                      onClick={() => updateBookshelf()}
+                      onClick={() => {
+                        updateBookshelf();
+                        setShowBookshelfDropdown(false);
+                      }}
                     >
                       Remove from Bookshelf
                     </button>
-                  ) : userData?.isUser ? (
+                  ) : (
                     <>
                       <button
                         className="search_bookshelf_button btn btn-success dropdown-toggle"
-                        data-bs-toggle="dropdown"
+                        onClick={() =>
+                          setShowBookshelfDropdown(!showBookshelfDropdown)
+                        }
                         type="button"
+                        aria-expanded={showBookshelfDropdown}
                       >
                         Add to Bookshelf
                       </button>
-                      <ul className="dropdown-menu">
+                      <ul
+                        className={`dropdown-menu ${
+                          showBookshelfDropdown ? "show" : ""
+                        }`}
+                      >
                         <li
                           className="dropdown-item"
                           onClick={() => updateBookshelf("read")}
@@ -589,7 +599,7 @@ function Card({
                         </li>
                       </ul>
                     </>
-                  ) : null}
+                  )}
                 </div>
                 <div className="search_user_rating_div">
                   <p className="search_user_rating_content">
@@ -897,29 +907,30 @@ function Card({
                   )}
                 </div>
               ) : null}
-              {payload.book.review.reviewerId != userData?.userId ? (
-                bookmarks[payload.book.review.reviewerId] ? (
-                  <button
-                    className="bookmark_button btn btn-warning"
-                    onClick={() => handleBookmarkToggle()}
-                  >
-                    <i className="bi bi-bookmark-dash"></i> Remove Bookmark
-                  </button>
-                ) : (
-                  <button
-                    className="bookmark_button btn btn-primary"
-                    onClick={() => handleBookmarkToggle()}
-                  >
-                    <i className="bi bi-bookmark-plus"></i> Bookmark
-                  </button>
-                )
-              ) : null}
+              {userData?.isUser &&
+                (payload.book.review.reviewerId != userData?.userId ? (
+                  bookmarks[payload.book.review.reviewerId] ? (
+                    <button
+                      className="bookmark_button btn btn-warning"
+                      onClick={() => handleBookmarkToggle()}
+                    >
+                      <i className="bi bi-bookmark-dash"></i> Remove Bookmark
+                    </button>
+                  ) : (
+                    <button
+                      className="bookmark_button btn btn-primary"
+                      onClick={() => handleBookmarkToggle()}
+                    >
+                      <i className="bi bi-bookmark-plus"></i> Bookmark
+                    </button>
+                  )
+                ) : null)}
             </div>
             <div className="review_rating_div">
               <div className="review_progress_bar_div">
                 <div
                   className="review_progress_bar progress-bar bg-warning"
-                  style={{ width: `${payload.book.review.rating * 20}` }}
+                  style={{ width: `${payload.book.review.rating * 20}%` }}
                 ></div>
               </div>
               <div className="review_rating_stars_div">

@@ -63,7 +63,6 @@ function Codex({ setPage, setIsbn, userData = {} }) {
           id="search_book_form"
           onSubmit={(event) => submitForm(event)}
         >
-          <input type="hidden" name="csrfmiddlewaretoken" />
           <div>
             <select name="select" id="id_select" className="form-select">
               <option value="title">Title</option>
