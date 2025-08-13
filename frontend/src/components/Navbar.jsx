@@ -62,7 +62,6 @@ function Navbar({ page, setPage }) {
           <User
             setIsbn={setIsbn}
             setPage={setPage}
-            userData={userData}
             profileData={profile}
           />
         );

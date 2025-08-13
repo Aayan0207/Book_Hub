@@ -68,6 +68,11 @@ function Card({
         id: userData?.userId,
         isbn: isbn,
       }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => setInCart(data.status))
@@ -82,6 +87,11 @@ function Card({
         user_id: userData?.userId,
         isbn: isbn,
       }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => {
@@ -120,6 +130,11 @@ function Card({
         isbn: isbn,
         user_id: userData?.userId,
       }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => {
@@ -136,6 +151,11 @@ function Card({
         review_id: payload.book.review.id,
         user_id: userData.userId,
       }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => setUserLiked(data.liked))
@@ -161,6 +181,11 @@ function Card({
       body: JSON.stringify({
         isbn: isbn,
       }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => setRatingsData(data))
@@ -177,6 +202,11 @@ function Card({
         user_id: userData.userId,
         profile_id: reviewerId,
       }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => {
@@ -197,6 +227,11 @@ function Card({
         review_id: payload.book.review.id,
         user_id: userData.userId,
       }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => {
@@ -267,6 +302,11 @@ function Card({
         user_id: userData?.userId,
         action: action,
       }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => {
@@ -283,6 +323,11 @@ function Card({
         user_id: userData?.userId,
         rating: rating,
       }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => {
@@ -330,7 +375,7 @@ function Card({
     })
       .then((response) => response.json())
       .then((data) => {
-        const listing = data.listing[0];
+        const listing = data.listing;
         setStock(listing.stock);
         setPrice(listing.price);
         setShowListingForm(false);
@@ -345,6 +390,11 @@ function Card({
         id: payload.book.donate_id,
         status: true,
       }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((_) => {
@@ -360,6 +410,11 @@ function Card({
         id: payload.book.donate_id,
         status: false,
       }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((_) => {
@@ -422,6 +477,11 @@ function Card({
         id: userData?.userId,
         listing_id: payload.book.sale_id,
       }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => {

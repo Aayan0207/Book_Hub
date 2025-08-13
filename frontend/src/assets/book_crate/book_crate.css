@@ -1,6 +1,3 @@
-/* #search_listing_form, #search_result, #no_search_result_alert, #no_donate_result_alert, #donate_book_spinner, #donate_result, #donate_form, #search_book_spinner, #user_cart, .checkout,#donate_search_form, #checkout_button, #no_items, .checkout_listing, #failed_transaction, #user_donations{
-    display:none;
-} */
 #donate_form {
   display: flex;
   justify-content: left;
@@ -67,15 +64,6 @@
   font-size: 30px;
   border-radius: 100%;
   top: 110px;
-}
-.listing_book_ratings_stars_div {
-  grid-column: 1;
-  grid-row: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 25px;
-  z-index: 1;
 }
 .listing_book_cover_image_div,
 .cover_image_div,

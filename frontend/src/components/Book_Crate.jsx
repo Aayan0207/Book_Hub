@@ -45,7 +45,7 @@ function Book_Crate({ setPage, setIsbn, userData = null }) {
   }, [showAdminDonations]);
 
   useEffect(() => {
-    setPayload({ ...payload, data: { ...payload.data, page: slide } });
+    setPayload({ ...payload, page: slide });
   }, [slide]);
 
   useEffect(() => {
@@ -56,6 +56,7 @@ function Book_Crate({ setPage, setIsbn, userData = null }) {
         "Content-Type": "application/json",
         "X-CSRFToken": token,
       },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => {
@@ -73,6 +74,11 @@ function Book_Crate({ setPage, setIsbn, userData = null }) {
         body: JSON.stringify({
           isbn: listing.book_isbn,
         }),
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": token,
+        },
+        credentials: "include",
       })
         .then((response) => response.json())
         .then((data) => {
@@ -89,11 +95,12 @@ function Book_Crate({ setPage, setIsbn, userData = null }) {
     setListingsData({});
     fetch(`${urlPrefix}/load_listings`, {
       method: "POST",
-      body: JSON.stringify(payload.data),
+      body: JSON.stringify(payload),
       headers: {
         "Content-Type": "application/json",
-        "X-CSRFToken": payload.token,
+        "X-CSRFToken": token,
       },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => setListings(data))
@@ -104,12 +111,9 @@ function Book_Crate({ setPage, setIsbn, userData = null }) {
     event.preventDefault();
     const form = event.target;
     const details = {
-      data: {
-        query: form.querySelector("#id_query").value,
-        select: form.querySelector("#id_select").value,
-        page: 1,
-      },
-      token: token,
+      query: form.querySelector("#id_query").value,
+      select: form.querySelector("#id_select").value,
+      page: 1,
     };
     setPayload(details);
     setSlide(1);
@@ -126,6 +130,11 @@ function Book_Crate({ setPage, setIsbn, userData = null }) {
       body: JSON.stringify({
         isbn: form.querySelector("#id_book_isbn").value,
       }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => {
@@ -162,7 +171,7 @@ function Book_Crate({ setPage, setIsbn, userData = null }) {
     })
       .then((response) => response.json())
       .then((data) => {
-        setIsbn(data.listing[0].book_isbn);
+        setIsbn(data.listing.book_isbn);
         setPage("book");
       })
       .catch((error) => console.log(error));

@@ -2,16 +2,19 @@ import React from "react";
 
 function Paginator({ page, setPage, maxPage }) {
   if (!maxPage) return;
+
   function decrement() {
     if (page === 1) return;
     setPage(page - 1);
     window.scrollTo(0, 0);
   }
+
   function increment() {
     if (page === maxPage) return;
     setPage(page + 1);
     window.scrollTo(0, 0);
   }
+
   return (
     <div id="pagination_div">
       <nav>

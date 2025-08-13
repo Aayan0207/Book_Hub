@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import getToken from "./getToken.jsx";
 import Card from "./Card.jsx";
 import Spinner from "./spinner.jsx";
+
 function Cart({ setPage, setIsbn, userData, setCheckoutItems, checkoutItems }) {
+  if (!userData || userData?.isSuper) return setPage("login");
   const token = getToken();
   const urlPrefix = "http://localhost:8000";
   const [cart, setCart] = useState([]);
@@ -25,6 +27,11 @@ function Cart({ setPage, setIsbn, userData, setCheckoutItems, checkoutItems }) {
         body: JSON.stringify({
           isbn: item.book_isbn,
         }),
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": token,
+        },
+        credentials: "include",
       })
         .then((response) => response.json())
         .then((data) =>
@@ -48,6 +55,11 @@ function Cart({ setPage, setIsbn, userData, setCheckoutItems, checkoutItems }) {
         id: userData?.userId,
         page: 1,
       }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => {
@@ -68,6 +80,11 @@ function Cart({ setPage, setIsbn, userData, setCheckoutItems, checkoutItems }) {
         id: userData?.userId,
         page: batch,
       }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => {

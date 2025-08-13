@@ -1,6 +1,3 @@
-/* #pagination_div, #user_review_form, #search_books_spinner, #listing_form, .checkout, #failed_transaction{
-  display: none;
-} */
 .listing_form {
   display: flex;
   align-items: left;

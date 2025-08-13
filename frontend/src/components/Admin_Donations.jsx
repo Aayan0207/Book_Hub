@@ -2,9 +2,12 @@ import React, { useState, useEffect } from "react";
 import "../assets/book_crate/book_crate.css";
 import Card from "./Card";
 import Spinner from "./spinner";
+import getToken from "./getToken";
 
 function Admin_Donations({ userData, setPage, setIsbn }) {
+  if (!userData || !userData?.isSuper) return setPage("login");
   const urlPrefix = "http://localhost:8000";
+  const token = getToken();
   const [more, setMore] = useState(true);
   const [batch, setBatch] = useState(1);
   const [requests, setRequests] = useState([]);
@@ -17,6 +20,11 @@ function Admin_Donations({ userData, setPage, setIsbn }) {
       body: JSON.stringify({
         page: 1,
       }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => {
@@ -34,6 +42,11 @@ function Admin_Donations({ userData, setPage, setIsbn }) {
       body: JSON.stringify({
         page: batch,
       }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => {
@@ -57,6 +70,11 @@ function Admin_Donations({ userData, setPage, setIsbn }) {
         body: JSON.stringify({
           isbn: isbn,
         }),
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": token,
+        },
+        credentials: "include",
       })
         .then((response) => response.json())
         .then((data) =>

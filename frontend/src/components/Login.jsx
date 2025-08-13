@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import getToken from "./getToken.jsx";
 
-// Complete Setup
 function Login({ setPage, setUserData }) {
   const urlPrefix = "http://localhost:8000";
   const token = getToken();
-  const [payload, setPayload] = useState({});
   const [invalid, setInvalid] = useState(null);
 
-  useEffect(() => {
-    if (!payload?.username || !payload?.password) return;
+  function submitForm(event) {
+    event.preventDefault();
+    setInvalid(null);
+    const form = event.target;
     fetch(`${urlPrefix}/login`, {
       method: "POST",
       headers: {
@@ -17,7 +17,10 @@ function Login({ setPage, setUserData }) {
         "X-CSRFToken": token,
       },
       credentials: "include",
-      body: JSON.stringify(payload),
+      body: JSON.stringify({
+        username: form.querySelector("[name='username']").value.trim(),
+        password: form.querySelector("[name='password']").value.trim(),
+      }),
     })
       .then((response) => response.json())
       .then((data) => {
@@ -29,17 +32,6 @@ function Login({ setPage, setUserData }) {
         setPage("readers_grove");
       })
       .catch((error) => console.log(error));
-  }, [payload]);
-
-  function submitForm(event) {
-    event.preventDefault();
-    setInvalid(null);
-    const form = event.target;
-    const details = {
-      username: form.querySelector("[name='username']").value.trim(),
-      password: form.querySelector("[name='password']").value.trim(),
-    };
-    setPayload(details);
   }
 
   return (

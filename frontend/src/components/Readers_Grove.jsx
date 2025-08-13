@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "../assets/readers_grove/readers_grove.css";
 import Profile from "./Profile.jsx";
 import Bookshelf from "./Bookshelf.jsx";
@@ -7,15 +7,27 @@ import Bookmarks from "./Bookmarks.jsx";
 import Ratings_Reviews from "./Ratings_Reviews.jsx";
 import Invoices from "./Invoices.jsx";
 
-function Readers_Grove({ setPage, userData, setIsbn, setProfile, setUserData }) {
-  const [view, setView] = useState("profile");
+function Readers_Grove({
+  setPage,
+  userData,
+  setIsbn,
+  setProfile,
+  setUserData,
+}) {
   if (!userData) return setPage("login");
+
+  const [view, setView] = useState("profile");
 
   function renderView() {
     switch (view) {
       case "profile":
         return (
-          <Profile userData={userData} setPage={setPage} setIsbn={setIsbn} setUserData={setUserData}/>
+          <Profile
+            userData={userData}
+            setPage={setPage}
+            setIsbn={setIsbn}
+            setUserData={setUserData}
+          />
         );
       case "bookshelf":
         return (

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import Card from "./Card";
+import getToken from "./getToken";
 
 function Feed({ userData, setPage, setIsbn, setProfile }) {
   const urlPrefix = "http://localhost:8000";
+  const token = getToken();
   const [refresh, setRefresh] = useState(false);
   const [reviews, setReviews] = useState([]);
   const [reviewsData, setReviewsData] = useState({});
@@ -11,6 +13,11 @@ function Feed({ userData, setPage, setIsbn, setProfile }) {
   useEffect(() => {
     fetch(`${urlPrefix}/random_reviews`, {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => setReviews(data?.reviews))
@@ -27,6 +34,11 @@ function Feed({ userData, setPage, setIsbn, setProfile }) {
         body: JSON.stringify({
           isbn: review.book_isbn,
         }),
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": token,
+        },
+        credentials: "include",
       })
         .then((response) => response.json())
         .then((data) =>
@@ -42,6 +54,11 @@ function Feed({ userData, setPage, setIsbn, setProfile }) {
           user_id: userData?.userId,
           profile_id: reviewerId,
         }),
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": token,
+        },
+        credentials: "include",
       })
         .then((response) => response.json())
         .then((data) => {

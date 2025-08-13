@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "../assets/readers_grove/readers_grove.css";
 import Profile from "./Profile.jsx";
 import Bookshelf from "./Bookshelf.jsx";
 import Ratings_Reviews from "./Ratings_Reviews.jsx";
 
-function User({ setPage, userData, setIsbn, profileData }) {
+function User({ setPage, setIsbn, profileData }) {
+  if (!profileData) return setPage("login");
   const [view, setView] = useState("profile");
 
   function renderView() {

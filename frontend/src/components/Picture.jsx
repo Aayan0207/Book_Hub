@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
+import getToken from "./getToken";
 
 function Picture({ isbn, setIsbn, setPage, cls }) {
   if (!isbn.match(/(?:\d{10}|\d{13})/)) return;
-  const urlPrefix = "http://localhost:8000";
 
+  const token = getToken();
+  const urlPrefix = "http://localhost:8000";
   const [viewBook, setViewBook] = useState(null);
   const [link, setLink] = useState(null);
 
@@ -20,6 +22,11 @@ function Picture({ isbn, setIsbn, setPage, cls }) {
       body: JSON.stringify({
         isbn: isbn,
       }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) =>

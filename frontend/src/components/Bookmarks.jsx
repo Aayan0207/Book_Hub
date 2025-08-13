@@ -22,6 +22,11 @@ function Bookmarks({ userData, setPage, setIsbn, setProfile }) {
       body: JSON.stringify({
         id: userData?.userId,
       }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => {
@@ -44,6 +49,11 @@ function Bookmarks({ userData, setPage, setIsbn, setProfile }) {
         body: JSON.stringify({
           isbn: review.book_isbn,
         }),
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": token,
+        },
+        credentials: "include",
       })
         .then((response) => response.json())
         .then((data) =>
@@ -59,6 +69,11 @@ function Bookmarks({ userData, setPage, setIsbn, setProfile }) {
           user_id: userData?.userId,
           profile_id: reviewerId,
         }),
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": token,
+        },
+        credentials: "include",
       })
         .then((response) => response.json())
         .then((data) => {
@@ -100,6 +115,11 @@ function Bookmarks({ userData, setPage, setIsbn, setProfile }) {
             user_id: userData?.userId,
             profile_id: found?.userId,
           }),
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": token,
+          },
+          credentials: "include",
         })
           .then((response) => response.json())
           .then((res) => {
@@ -129,6 +149,11 @@ function Bookmarks({ userData, setPage, setIsbn, setProfile }) {
         user_id: userData.userId,
         profile_id: found.id,
       }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => {
@@ -138,6 +163,7 @@ function Bookmarks({ userData, setPage, setIsbn, setProfile }) {
       })
       .catch((error) => console.log(error));
   }
+
   return (
     <>
       <div id="home_div">

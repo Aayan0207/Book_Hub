@@ -9,7 +9,6 @@ function Codex({ setPage, setIsbn, userData = {} }) {
   const urlPrefix = "http://localhost:8000";
   const token = getToken();
   const [viewSpinner, setViewSpinner] = useState(false);
-
   const [data, setData] = useState({});
   const [payload, setPayload] = useState({});
   const [slide, setSlide] = useState(1);
@@ -20,7 +19,7 @@ function Codex({ setPage, setIsbn, userData = {} }) {
 
   useEffect(() => {
     if (!payload || !payload.token || !payload.data) return;
-    fetch(`${urlPrefix}/codex/book_results`, {
+    fetch(`${urlPrefix}/book_results`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

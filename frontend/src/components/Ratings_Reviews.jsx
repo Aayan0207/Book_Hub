@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Card from "./Card";
+import getToken from "./getToken";
+
 function Ratings_Reviews({ userData, setPage, setIsbn, profileView = false }) {
+  const token = getToken();
   const urlPrefix = "http://localhost:8000";
   const [batch, setBatch] = useState(1);
   const [more, setMore] = useState(false);
@@ -14,6 +17,11 @@ function Ratings_Reviews({ userData, setPage, setIsbn, profileView = false }) {
         id: userData?.userId,
         page: 1,
       }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => {
@@ -31,6 +39,11 @@ function Ratings_Reviews({ userData, setPage, setIsbn, profileView = false }) {
         id: userData?.userId,
         page: batch,
       }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => {
@@ -50,6 +63,11 @@ function Ratings_Reviews({ userData, setPage, setIsbn, profileView = false }) {
         body: JSON.stringify({
           isbn: review.book_isbn,
         }),
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": token,
+        },
+        credentials: "include",
       })
         .then((response) => response.json())
         .then((data) =>
@@ -60,6 +78,7 @@ function Ratings_Reviews({ userData, setPage, setIsbn, profileView = false }) {
         .catch((error) => console.log(error));
     });
   }, [reviews]);
+
   return (
     <>
       <div className="reviews_div">

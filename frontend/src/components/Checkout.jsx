@@ -3,6 +3,7 @@ import Card from "./Card";
 import Spinner from "./spinner";
 import getToken from "./getToken";
 function Checkout({ userData, setIsbn, setPage, checkoutItems, setUserData }) {
+  if (!userData || userData?.isSuper) return setPage("login");
   const urlPrefix = "http://localhost:8000";
   const token = getToken();
   const [checkoutItemsData, setCheckoutItemsData] = useState({});
@@ -28,6 +29,11 @@ function Checkout({ userData, setIsbn, setPage, checkoutItems, setUserData }) {
         body: JSON.stringify({
           id: item,
         }),
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": token,
+        },
+        credentials: "include",
       })
         .then((response) => response.json())
         .then((data) => {
@@ -40,6 +46,11 @@ function Checkout({ userData, setIsbn, setPage, checkoutItems, setUserData }) {
             body: JSON.stringify({
               isbn: listing.book_isbn,
             }),
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": token,
+            },
+            credentials: "include",
           })
             .then((response) => response.json())
             .then((data) =>
@@ -106,6 +117,7 @@ function Checkout({ userData, setIsbn, setPage, checkoutItems, setUserData }) {
     await Promise.all(purchasePromises);
     setShowCart(true);
   }
+
   return (
     <>
       <div className="checkout">

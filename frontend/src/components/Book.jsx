@@ -59,6 +59,11 @@ function Book({
           user_id: userData?.userId,
           profile_id: reviewerId,
         }),
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": token,
+        },
+        credentials: "include",
       })
         .then((response) => response.json())
         .then((data) => {
@@ -78,6 +83,11 @@ function Book({
         id: userData.userId,
         isbn: isbn,
       }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => setInCart(data.status))
@@ -90,6 +100,11 @@ function Book({
       body: JSON.stringify({
         isbn: isbn,
       }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => {
@@ -105,6 +120,11 @@ function Book({
       body: JSON.stringify({
         isbn: isbn,
       }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => setBookData(data.result.items?.[0]))
@@ -115,6 +135,11 @@ function Book({
       body: JSON.stringify({
         isbn: isbn,
       }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => setRatingsData(data))
@@ -127,6 +152,11 @@ function Book({
           isbn: isbn,
           user_id: userData.userId,
         }),
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": token,
+        },
+        credentials: "include",
       })
         .then((response) => response.json())
         .then((data) => setInBookshelf(data.in_bookshelf))
@@ -138,6 +168,11 @@ function Book({
           isbn: isbn,
           user_id: userData?.userId,
         }),
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": token,
+        },
+        credentials: "include",
       })
         .then((response) => response.json())
         .then((data) => {
@@ -158,6 +193,11 @@ function Book({
         user_id: userData?.userId,
         flag: sortBy,
       }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => {
@@ -178,6 +218,11 @@ function Book({
         user_id: userData?.userId,
         flag: sortBy,
       }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => {
@@ -198,6 +243,11 @@ function Book({
         id: userData?.userId,
         listing_id: saleData.id,
       }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => {
@@ -234,6 +284,11 @@ function Book({
         user_id: userData?.userId,
         action: action,
       }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => {
@@ -260,7 +315,7 @@ function Book({
     })
       .then((response) => response.json())
       .then((data) => {
-        const listing = data.listing[0];
+        const listing = data.listing;
         setStock(listing.stock);
         setPrice(listing.price);
         setShowListingForm(false);
@@ -276,6 +331,11 @@ function Book({
         user_id: userData?.userId,
         rating: rating,
       }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => {

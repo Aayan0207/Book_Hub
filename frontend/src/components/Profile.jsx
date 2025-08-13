@@ -28,6 +28,11 @@ function Profile({
         page: 1,
         shelf: "want to read",
       }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => {
@@ -44,6 +49,11 @@ function Profile({
         page: 1,
         shelf: "currently reading",
       }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => {
@@ -58,6 +68,11 @@ function Profile({
       body: JSON.stringify({
         id: userData?.userId,
       }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => setActivityInfo(data.activity))
@@ -138,6 +153,7 @@ function Profile({
       })
       .catch((error) => console.log(error));
   }
+
   return (
     <>
       <div id="user_info">

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Picture from "./Picture";
+import getToken from "./getToken";
 function Bookshelf({ userData, setPage, setIsbn }) {
   const urlPrefix = "http://localhost:8000";
+  const token = getToken();
   const [shelf, setShelf] = useState("all");
   const [books, setBooks] = useState([]);
   const [batch, setBatch] = useState(1);
@@ -17,6 +19,11 @@ function Bookshelf({ userData, setPage, setIsbn }) {
         shelf: shelf,
         page: batch,
       }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => {
@@ -54,6 +61,11 @@ function Bookshelf({ userData, setPage, setIsbn }) {
         shelf: shelf,
         page: 1,
       }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => {

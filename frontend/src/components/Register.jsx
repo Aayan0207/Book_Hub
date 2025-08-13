@@ -1,28 +1,29 @@
-import React, { useState,useEffect } from "react";
+import React, { useState } from "react";
 import getToken from "./getToken.jsx";
 
 function Register({ setPage, setUserData }) {
   const urlPrefix = "http://localhost:8000";
   const token = getToken();
-  const [payload, setPayload] = useState({});
   const [invalid, setInvalid] = useState(null);
-  
-  useEffect(() => {
-    if (
-      !payload?.username ||
-      !payload?.password ||
-      !payload?.confirmation ||
-      !payload?.email
-    )
-      return;
+
+  function submitForm(event) {
+    event.preventDefault();
+    setInvalid(null);
+    const form = event.target;
+
     fetch(`${urlPrefix}/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "X-CSRFToken": token,
       },
-      credentials:"include",
-      body: JSON.stringify(payload),
+      credentials: "include",
+      body: JSON.stringify({
+        username: form.querySelector("[name='username']").value,
+        email: form.querySelector("[name='email']").value,
+        password: form.querySelector("[name='password']").value,
+        confirmation: form.querySelector("[name='confirmation']").value,
+      }),
     })
       .then((response) => response.json())
       .then((data) => {
@@ -34,19 +35,6 @@ function Register({ setPage, setUserData }) {
         setPage("readers_grove");
       })
       .catch((error) => console.log(error));
-  }, [payload]);
-
-  function submitForm(event) {
-    event.preventDefault();
-    setInvalid(null);
-    const form = event.target;
-    const details = {
-      username: form.querySelector("[name='username']").value,
-      email: form.querySelector("[name='email']").value,
-      password: form.querySelector("[name='password']").value,
-      confirmation: form.querySelector("[name='confirmation']").value,
-    };
-    setPayload(details);
   }
 
   return (

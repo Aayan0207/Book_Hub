@@ -1,6 +1,3 @@
-/* #bookshelf_all_div,#update_quote_form, #user_credits_form, #user_search_form, #self_user_alert,#user_found, #no_user_alert, #bookshelf_currently_reading_div, #bookshelf_want_to_read_div, #bookshelf_read_div, #reviews_div, #user_review_form, #user_info {
-    display:none;
-} */
 .transaction_amount_p {
   display: inline-block;
   margin-left: 5px;
@@ -67,7 +64,8 @@
   justify-content: center;
   flex-direction: column;
 }
-#user_ratings_info_div > div {
+#user_ratings_info_div > div,
+#user_bookshelf_info_parent > div {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -90,12 +88,6 @@
   grid-column-start: 1;
   grid-column-end: 4;
   grid-row: 1;
-}
-#user_bookshelf_info_parent > div {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
 }
 #user_bookshelf_info_parent > div > p {
   margin: 5px;
@@ -156,11 +148,11 @@
 .book_info_div {
   grid-column-start: 2;
   cursor: pointer;
-  display:flex;
+  display: flex;
   flex-direction: column;
 }
-.transaction_info{
-  display:flex;
+.transaction_info {
+  display: flex;
   flex-direction: column;
 }
 .book_info_div > p {

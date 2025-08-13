@@ -5,6 +5,7 @@ import Spinner from "./spinner";
 import getToken from "./getToken.jsx";
 
 function Donations({ userData, setPage, setIsbn }) {
+  if (!userData || userData?.isSuper) return setPage("login");
   const urlPrefix = "http://localhost:8000";
   const token = getToken();
   const [more, setMore] = useState(true);
@@ -24,6 +25,11 @@ function Donations({ userData, setPage, setIsbn }) {
         id: userData?.userId,
         page: 1,
       }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => {
@@ -42,6 +48,11 @@ function Donations({ userData, setPage, setIsbn }) {
         page: batch,
         id: userData?.userId,
       }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => {
@@ -65,6 +76,11 @@ function Donations({ userData, setPage, setIsbn }) {
         body: JSON.stringify({
           isbn: isbn,
         }),
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": token,
+        },
+        credentials: "include",
       })
         .then((response) => response.json())
         .then((data) =>
@@ -87,6 +103,11 @@ function Donations({ userData, setPage, setIsbn }) {
       body: JSON.stringify({
         isbn: form.querySelector("#id_book_isbn").value,
       }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => {

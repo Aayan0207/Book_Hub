@@ -10,6 +10,7 @@ function Invoices({ userData, setPage, setIsbn }) {
   const [invoices, setInvoices] = useState([]);
   const [invoicesData, setInvoicesData] = useState({});
   const [showSpinner, setShowSpinner] = useState(false);
+
   useEffect(() => {
     fetch(`${urlPrefix}/get_user_invoices`, {
       method: "POST",
@@ -17,6 +18,11 @@ function Invoices({ userData, setPage, setIsbn }) {
         id: userData?.userId,
         page: 1,
       }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => {
@@ -35,6 +41,11 @@ function Invoices({ userData, setPage, setIsbn }) {
         id: userData?.userId,
         page: batch,
       }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => {
@@ -58,6 +69,11 @@ function Invoices({ userData, setPage, setIsbn }) {
         body: JSON.stringify({
           isbn: isbn,
         }),
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": token,
+        },
+        credentials: "include",
       })
         .then((response) => response.json())
         .then((data) => {

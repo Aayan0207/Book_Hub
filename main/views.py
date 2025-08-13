@@ -1,123 +1,19 @@
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.http import (
-    HttpResponseRedirect,
     JsonResponse,
-    HttpResponseNotFound,
 )
-from django.urls import reverse
 from django.db import IntegrityError
-from django import forms
 from json import loads
 from requests import get
-from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Avg, Count
 from .models import *
 from django.utils import timezone
 from django.core.paginator import Paginator
 from django.views.decorators.csrf import ensure_csrf_cookie
 from re import search, IGNORECASE
-
+from django.forms.models import model_to_dict
 
 # Create your views here.
-class ListingSearchForm(forms.Form):
-    select = forms.ChoiceField(
-        choices=[
-            ("title", "Title"),
-            ("author", "Author"),
-            ("isbn", "ISBN"),
-            ("publisher", "Publisher"),
-        ],
-        widget=forms.Select,
-        label="",
-    )
-    query = forms.CharField(
-        label="", widget=forms.TextInput(attrs={"autocomplete": "off"})
-    )
-
-
-class SearchBookForm(forms.Form):
-    select = forms.ChoiceField(
-        choices=[
-            ("title", "Title"),
-            ("author", "Author"),
-            ("isbn", "ISBN"),
-            ("publisher", "Publisher"),
-            ("subject", "Category"),
-        ],
-        widget=forms.Select,
-        label="",
-    )
-    query = forms.CharField(
-        label="", widget=forms.TextInput(attrs={"autocomplete": "off"})
-    )
-
-
-class ReviewForm(forms.Form):
-    content = forms.CharField(label="", widget=forms.Textarea)
-
-
-class ListingFormSearch(forms.Form):
-    book_isbn = forms.CharField(
-        label="ISBN",
-        max_length=13,
-        widget=forms.TextInput(attrs={"autocomplete": "off"}),
-    )
-
-
-class DonateFormSearch(forms.Form):
-    book_isbn = forms.CharField(
-        label="ISBN",
-        max_length=13,
-        widget=forms.TextInput(attrs={"autocomplete": "off"}),
-    )
-
-
-class ListingForm(forms.Form):
-    price = forms.IntegerField(label="Price (Credits)", min_value=1, max_value=100000)
-    stock = forms.IntegerField(label="Stock", min_value=1, max_value=10000)
-    book_isbn = forms.CharField(
-        label="ISBN", max_length=13, widget=forms.TextInput(attrs={"readonly": True})
-    )
-
-
-class CreditsForm(forms.Form):
-    credit_amount = forms.IntegerField(
-        label="Add Credits", min_value=1, max_value=10000
-    )
-
-
-class DonateForm(forms.Form):
-    quantity = forms.IntegerField(label="Quantity", min_value=1, max_value=100)
-    book_isbn = forms.CharField(
-        label="ISBN",
-        max_length=13,
-        widget=forms.TextInput(attrs={"readonly": True, "autocomplete": "off"}),
-    )
-
-
-class PurchaseForm(forms.Form):
-    price = forms.IntegerField(
-        label="Price per book (Credits)",
-        min_value=1,
-        max_value=100000,
-        widget=forms.TextInput(attrs={"readonly": True, "autocomplete": "off"}),
-    )
-    quantity = forms.IntegerField(label="Quantity", min_value=1, max_value=10000)
-    book_isbn = forms.CharField(
-        label="ISBN",
-        max_length=13,
-        widget=forms.TextInput(attrs={"readonly": True, "autocomplete": "off"}),
-    )
-
-
-class BookmarkSearch(forms.Form):
-    username = forms.CharField(max_length=255)
-
-
-class QuoteForm(forms.Form):
-    quote = forms.CharField(label="", max_length=2000, widget=forms.Textarea)
 
 
 @ensure_csrf_cookie
@@ -125,25 +21,10 @@ def csrf_token(request):
     return JsonResponse({"detail": "CSRF cookie set"})
 
 
-def user(request, profile):
-    try:
-        user = User.objects.get(username=profile)
-        return render(
-            request,
-            "main/user.html",
-            {"profile": profile, "add_review_form": ReviewForm()},
-        )
-    except User.DoesNotExist:
-        return HttpResponseNotFound(
-            f'<html lang="en"><body><div align="center"><h1>User {profile} Not Found</h1></div></body></html>'
-        )
-
-
 def user_exists(request):
     if request.method == "POST":
         data = loads(request.body)
         username = data["username"].capitalize()
-        # user = User.objects.filter(username=username).values("id", "username")
         try:
             user = User.objects.get(username=username)
             return JsonResponse(
@@ -171,15 +52,6 @@ def add_credits(request):
         return JsonResponse({"credits": user.credits})
 
 
-@csrf_exempt
-def get_quote(request):
-    if request.method == "POST":
-        data = loads(request.body)
-        user_id = data["id"]
-        user = User.objects.get(id=user_id)
-        return JsonResponse({"quote": user.quote})
-
-
 def update_quote(request):
     if request.method == "POST":
         data = loads(request.body)
@@ -192,18 +64,6 @@ def update_quote(request):
         return JsonResponse({"content": user.quote})
 
 
-@csrf_exempt
-def delete_quote(request):
-    if request.method == "POST":
-        data = loads(request.body)
-        user_id = data["id"]
-        user = User.objects.get(id=user_id)
-        user.quote = ""
-        user.save()
-        return JsonResponse({"content": "deleted"})
-
-
-@csrf_exempt
 def user_activity_info(request):
     if request.method == "POST":
         data = loads(request.body)
@@ -238,7 +98,6 @@ def user_activity_info(request):
         return JsonResponse({"activity": activity})
 
 
-@csrf_exempt
 def random_reviews(request):
     if request.method == "POST":
         reviews = list(
@@ -262,7 +121,6 @@ def random_reviews(request):
         return JsonResponse({"reviews": reviews})
 
 
-@csrf_exempt
 def load_bookmark_reviews(request):
     if request.method == "POST":
         data = loads(request.body)
@@ -292,21 +150,6 @@ def load_bookmark_reviews(request):
         return JsonResponse({"reviews": reviews})
 
 
-@csrf_exempt
-def load_bookmarks(request):
-    if request.method == "POST":
-        data = loads(request.body)
-        user_id = data["id"]
-        bookmarks = list(
-            Bookmark.objects.select_related("bookmark_id")
-            .filter(user_id=user_id)
-            .order_by("?")
-            .values("id", "bookmark_id", "bookmark_id__username")
-        )[:10]
-        return JsonResponse({"bookmarks": bookmarks})
-
-
-@csrf_exempt
 def update_bookmark(request):
     if request.method == "POST":
         data = loads(request.body)
@@ -323,19 +166,15 @@ def update_bookmark(request):
             return JsonResponse({"bookmark": True})
 
 
-@csrf_exempt
 def user_bookmarked(request):
     if request.method == "POST":
         data = loads(request.body)
         user_id = data["user_id"]
         profile_id = data["profile_id"]
-        bookmark = Bookmark.objects.filter(
-            user_id=user_id, bookmark_id=profile_id
-        ).exists()
-        return JsonResponse({"bookmark": bookmark})
+        bookmark = Bookmark.objects.filter(user_id=user_id, bookmark_id=profile_id)
+        return JsonResponse({"bookmark": bookmark.exists()})
 
 
-@csrf_exempt
 def manage_admin_donation(request):
     if request.method == "POST":
         data = loads(request.body)
@@ -365,16 +204,6 @@ def manage_admin_donation(request):
         return JsonResponse({"donation": "managed"})
 
 
-@csrf_exempt
-def delete_donation(request):
-    if request.method == "POST":
-        data = loads(request.body)
-        donation_id = data["id"]
-        Donate.objects.get(id=donation_id).delete()
-        return JsonResponse({"donation": None})
-
-
-@csrf_exempt
 def load_admin_donations(request):
     if request.method == "POST":
         data = loads(request.body)
@@ -390,7 +219,6 @@ def load_admin_donations(request):
         )
 
 
-@csrf_exempt
 def load_donations(request):
     if request.method == "POST":
         data = loads(request.body)
@@ -450,7 +278,6 @@ def update_donation(request):
         )
 
 
-@csrf_exempt
 def get_user_invoices(request):
     if request.method == "POST":
         data = loads(request.body)
@@ -472,15 +299,6 @@ def get_user_invoices(request):
         return JsonResponse(
             {"invoices": invoices.object_list, "next": invoices.has_next()}
         )
-
-
-@csrf_exempt
-def get_user_credits(request):
-    if request.method == "POST":
-        data = loads(request.body)
-        user_id = data["id"]
-        user = User.objects.get(id=user_id)
-        return JsonResponse({"credits": user.credits})
 
 
 def purchase_listing(request):
@@ -510,7 +328,6 @@ def purchase_listing(request):
         return JsonResponse({"transaction": False})
 
 
-@csrf_exempt
 def load_cart(request):
     if request.method == "POST":
         data = loads(request.body)
@@ -529,13 +346,11 @@ def load_cart(request):
             )
         )
         cart_books = Paginator(cart_books, 10).page(page)
-        cart_books.has_next()
         return JsonResponse(
             {"books": cart_books.object_list, "next": cart_books.has_next()}
         )
 
 
-@csrf_exempt
 def update_cart(request):
     if request.method == "POST":
         data = loads(request.body)
@@ -553,7 +368,6 @@ def update_cart(request):
             return JsonResponse({"status": True})
 
 
-@csrf_exempt
 def in_cart(request):
     if request.method == "POST":
         data = loads(request.body)
@@ -563,49 +377,18 @@ def in_cart(request):
         return JsonResponse({"status": book_cart.exists()})
 
 
-@csrf_exempt
 def get_listing(request):
     if request.method == "POST":
         data = loads(request.body)
-        try:
-            listing_id = data["id"]
-            listing = list(
-                Listing.objects.filter(id=listing_id).values(
-                    "id", "book_isbn", "price", "stock", "timestamp"
-                )
+        listing_id = data["id"]
+        listing = list(
+            Listing.objects.filter(id=listing_id).values(
+                "id", "book_isbn", "price", "stock", "timestamp"
             )
-        except:  # Remove this
-            isbn = data["isbn"]
-            listing = list(
-                Listing.objects.filter(book_isbn=isbn).values(
-                    "id", "book_isbn", "price", "stock", "timestamp"
-                )
-            )
+        )
         return JsonResponse({"listing": listing})
 
 
-@csrf_exempt
-def delete_listing(request):
-    if request.method == "POST":
-        data = loads(request.body)
-        listing_id = data["id"]
-        listing = Listing.objects.get(id=listing_id)
-        listing.delete()
-        return JsonResponse({"listing": "deleted"})
-
-
-@csrf_exempt
-def user_status(request):
-    if request.method == "POST":
-        data = loads(request.body)
-        user_id = data["id"]
-        if user_id:
-            user_status = User.objects.get(id=user_id).is_superuser
-            return JsonResponse({"status": user_status})
-        return JsonResponse({"status": "no user"})
-
-
-@csrf_exempt
 def load_listings(request):
     if request.method == "POST":
         data = loads(request.body)
@@ -701,7 +484,7 @@ def update_listing(request):
             publisher = data["publisher"]
             librarian = User.objects.get(id=librarian_id)
             if librarian_id:
-                Listing.objects.create(
+                listing = Listing.objects.create(
                     librarian_id=librarian,
                     book_isbn=isbn,
                     stock=stock,
@@ -710,22 +493,9 @@ def update_listing(request):
                     author=author,
                     publisher=publisher,
                 )
-        listing = list(
-            Listing.objects.filter(book_isbn=isbn).values(
-                "id",
-                "book_isbn",
-                "price",
-                "stock",
-                "timestamp",
-                "title",
-                "author",
-                "publisher",
-            )
-        )
-        return JsonResponse({"listing": listing})
+        return JsonResponse({"listing": model_to_dict(listing)})  # type: ignore
 
 
-@csrf_exempt
 def get_user_reviews(request):
     if request.method == "POST":
         data = loads(request.body)
@@ -758,7 +528,6 @@ def get_user_reviews(request):
         )
 
 
-@csrf_exempt
 def get_book_rating(request):
     if request.method == "POST":
         data = loads(request.body)
@@ -777,7 +546,6 @@ def get_book_rating(request):
         )
 
 
-@csrf_exempt
 def update_rating(request):
     if request.method == "POST":
         data = loads(request.body)
@@ -791,20 +559,12 @@ def update_rating(request):
                 user_rating.rating = new_rating
                 user_rating.save()
         except Review.DoesNotExist:
-            Review.objects.create(user_id=user, book_isbn=book_isbn, rating=new_rating)
-        return JsonResponse({"rating": new_rating})
+            user_rating = Review.objects.create(
+                user_id=user, book_isbn=book_isbn, rating=new_rating
+            )
+        return JsonResponse({"rating": user_rating.rating})
 
 
-@csrf_exempt
-def get_review_likes(request):
-    if request.method == "POST":
-        data = loads(request.body)
-        review_id = data["review_id"]
-        review_likes = Like.objects.filter(review_id=review_id).count()
-        return JsonResponse({"like_count": review_likes})
-
-
-@csrf_exempt
 def update_like(request):
     if request.method == "POST":
         data = loads(request.body)
@@ -821,35 +581,15 @@ def update_like(request):
             return JsonResponse({"liked": True})
 
 
-@csrf_exempt
 def user_liked(request):
     if request.method == "POST":
         data = loads(request.body)
         review_id = data["review_id"]
         user_id = data["user_id"]
-        like = Like.objects.filter(review_id=review_id, user_id=user_id).exists()
-        return JsonResponse({"liked": like})
+        like = Like.objects.filter(review_id=review_id, user_id=user_id)
+        return JsonResponse({"liked": like.exists()})
 
 
-@csrf_exempt
-def delete_review(request):
-    if request.method == "POST":
-        data = loads(request.body)
-        book_isbn = data["isbn"]
-        user_id = data["user_id"]
-        try:
-            review = Review.objects.get(user_id=user_id, book_isbn=book_isbn)
-            review.content = ""
-            review.timestamp = None
-            review.save()
-            for like in Like.objects.filter(review_id=review.id):
-                like.delete()
-            return JsonResponse({"deleted": True})
-        except Review.DoesNotExist:
-            return JsonResponse({"deleted": False})
-
-
-@csrf_exempt
 def get_book_reviews(request):
     if request.method == "POST":
         data = loads(request.body)
@@ -920,7 +660,6 @@ def get_book_reviews(request):
         )
 
 
-@csrf_exempt
 def get_user_rating(request):
     if request.method == "POST":
         data = loads(request.body)
@@ -933,7 +672,6 @@ def get_user_rating(request):
             return JsonResponse({"rating": None})
 
 
-@csrf_exempt
 def get_bookshelf(request):
     if request.method == "POST":
         data = loads(request.body)
@@ -1004,21 +742,10 @@ def manage_review(request):
             )
 
         return JsonResponse(
-            {
-                "review": {
-                    "id": user_review.id,
-                    "user_id": user_id,
-                    "rating": user_review.rating,
-                    "timestamp": user_review.timestamp,
-                    "likes_count": 0,
-                    "content": user_review.content,
-                    "user_id__username": None,
-                }
-            }
+            {"review": {**model_to_dict(user_review), "user_id__username": None}}
         )
 
 
-@csrf_exempt
 def update_bookshelf(request):
     if request.method == "POST":
         data = loads(request.body)
@@ -1036,7 +763,6 @@ def update_bookshelf(request):
         return JsonResponse({"in_bookshelf": True})
 
 
-@csrf_exempt
 def in_bookshelf(request):
     if request.method == "POST":
         data = loads(request.body)
@@ -1046,24 +772,11 @@ def in_bookshelf(request):
         return JsonResponse({"in_bookshelf": shelf.exists()})
 
 
-@csrf_exempt
-def get_user_id(request):
-    if request.method == "POST":
-        data = loads(request.body)
-        username = data["username"]
-        try:
-            return JsonResponse({"user_id": User.objects.get(username=username).id})  # type: ignore
-        except:
-            return JsonResponse({"user_id": None})
-
-
-@csrf_exempt
 def book_result(request):
     if request.method == "POST":
         data = loads(request.body)
         book_isbn = data["isbn"]
         query = rf"https://www.googleapis.com/books/v1/volumes?q=isbn:{book_isbn}&projection=full"
-        print(query)
         result = get(query).json()
         return JsonResponse({"result": result})
 
@@ -1071,12 +784,11 @@ def book_result(request):
 def book_results(request):
     if request.method == "POST":
         data = loads(request.body)
-        form_result = SearchBookForm(data)
         query = data["query"]
         select = data["select"]
-        if form_result.is_valid():
-            query = form_result.cleaned_data["query"].replace(" ", "+")
-            select = form_result.cleaned_data["select"].lower().replace(" ", "+")
+
+        query = data["query"].replace(" ", "+")
+        select = data["select"].lower().replace(" ", "+")
         page = (int(data["page"]) - 1) * 10
         if select == "title":
             query = rf"https://www.googleapis.com/books/v1/volumes?q=intitle:{query}&printType=books&startIndex={page}"
@@ -1088,76 +800,23 @@ def book_results(request):
             query = rf"https://www.googleapis.com/books/v1/volumes?q=inpublisher:{query}&printType=books&startIndex={page}"
         elif select == "subject":
             query = rf"https://www.googleapis.com/books/v1/volumes?q=subject:{query}&printType=books&startIndex={page}"
-        print(query)
         results = get(query).json()
         return JsonResponse({"results": results})
 
 
-def codex(request, isbn=None, sale=None):
-    return render(
-        request,
-        "codex/codex.html",
-        {
-            "search_book_form": SearchBookForm(),
-            "add_review_form": ReviewForm(),
-            "listing_form": ListingForm(),
-            "purchase_form": PurchaseForm(),
-        },
-    )
-
-
-@login_required
-def readers_grove(request):
-    return render(
-        request,
-        "readers_grove/readers_grove.html",
-        {
-            "add_review_form": ReviewForm(),
-            "search_bookmark_form": BookmarkSearch(),
-            "add_credits_form": CreditsForm(),
-            "quote_form": QuoteForm(),
-        },
-    )
-
-
-def book_crate(request):
-    return render(
-        request,
-        "book_crate/book_crate.html",
-        {
-            "search_listing_form": ListingFormSearch(),
-            "listing_form": ListingForm(),
-            "purchase_form": PurchaseForm(),
-            "search_donate_form": DonateFormSearch(),
-            "donate_form": DonateForm(),
-            "search_book_form": ListingSearchForm(),
-        },
-    )
-
-
-def index(request):
-    return render(request, "main/index.html")
-
-
 def login_view(request):
     if request.method == "POST":
-        try:
-            data = loads(request.body)
-            username = data["username"]
-            password = data["password"]
-            request_from = "react"
-        except:  # Remove this later
-            username = request.POST["username"]
-            password = request.POST["password"]
-            request_from = "base"
+
+        data = loads(request.body)
+        username = data["username"]
+        password = data["password"]
+        request_from = "react"
 
         user = authenticate(request, username=username, password=password)
 
         if user:
             login(request, user)
             user = User.objects.get(username=username)  # type: ignore
-            if request_from == "base":  # Remove this
-                return HttpResponseRedirect(reverse("readers_grove"))
             return JsonResponse(
                 {
                     "user": username,
@@ -1170,18 +829,11 @@ def login_view(request):
             )
         else:
             return JsonResponse({"message": "Invalid username and/or password"})
-            return render(
-                request,
-                "main/login.html",
-                {"message": "Invalid username and/or password."},
-            )
-    else:
-        return render(request, "main/login.html")
 
 
 def logout_view(request):
     logout(request)
-    return HttpResponseRedirect(reverse("index"))
+    return JsonResponse({"message": "Logged Out"})
 
 
 def register(request):
@@ -1193,18 +845,11 @@ def register(request):
         confirmation = data["confirmation"]
         if password != confirmation:
             return JsonResponse({"message": "Passwords must match"})
-            return render(
-                request, "main/register.html", {"message": "Passwords must match."}
-            )
-
         try:
             user = User.objects.create_user(username, email, password)
             user.save()
         except IntegrityError:
             return JsonResponse({"message": "Username already taken"})
-            return render(
-                request, "main/register.html", {"message": "Username already taken."}
-            )
         login(request, user)
         user = User.objects.get(username=username)  # type: ignore
         return JsonResponse(
@@ -1217,6 +862,3 @@ def register(request):
                 "quote": user.quote,
             }
         )
-        return HttpResponseRedirect(reverse("index"))
-    else:
-        return render(request, "main/register.html")
