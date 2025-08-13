@@ -32,6 +32,15 @@ function Book({
   const [showBookshelfDropdown, setShowBookshelfDropdown] = useState(false);
   const [showPurchase, setShowPurchase] = useState(false);
   const [inCart, setInCart] = useState(false);
+  const [showListingForm, setShowListingForm] = useState(false);
+  const [showCrate, setShowCrate] = useState(false);
+  const [stock, setStock] = useState(0);
+  const [price, setPrice] = useState(0);
+
+  useEffect(() => {
+    if (!showCrate) return;
+    setPage("book_crate");
+  }, [showCrate]);
 
   useEffect(() => {
     if (!showPurchase) return;
@@ -83,7 +92,12 @@ function Book({
       }),
     })
       .then((response) => response.json())
-      .then((data) => setSaleData(data.listing[0]))
+      .then((data) => {
+        const listing = data.listing[0];
+        setSaleData(listing);
+        setPrice(listing.price);
+        setStock(listing.stock);
+      })
       .catch((error) => console.log(error));
 
     fetch(`${urlPrefix}/book_result`, {
@@ -192,6 +206,26 @@ function Book({
       .catch((error) => console.log(error));
   }
 
+  function deleteListing() {
+    fetch(`${urlPrefix}/update_listing`, {
+      method: "POST",
+      body: JSON.stringify({
+        isbn: isbn,
+        delete: true,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
+    })
+      .then((response) => response.json())
+      .then((_) => {
+        setShowCrate(true);
+      })
+      .catch((error) => console.log(error));
+  }
+
   function updateBookshelf(action = null) {
     fetch(`${urlPrefix}/update_bookshelf`, {
       method: "POST",
@@ -204,6 +238,32 @@ function Book({
       .then((response) => response.json())
       .then((data) => {
         setInBookshelf(data.in_bookshelf);
+      })
+      .catch((error) => console.log(error));
+  }
+
+  function updateListing(event) {
+    event.preventDefault();
+    const form = event.target;
+    fetch(`${urlPrefix}/update_listing`, {
+      method: "POST",
+      body: JSON.stringify({
+        isbn: isbn,
+        price: form.querySelector("#id_price").value,
+        stock: form.querySelector("#id_stock").value,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        const listing = data.listing[0];
+        setStock(listing.stock);
+        setPrice(listing.price);
+        setShowListingForm(false);
       })
       .catch((error) => console.log(error));
   }
@@ -400,17 +460,83 @@ function Book({
               {saleData?.stock > 0 ? (
                 <div className="result_sale_info">
                   <div>
-                    <p className="result_price">
-                      Price: {saleData.price} Credits
-                    </p>
+                    <p className="result_price">Price: {price} Credits</p>
                     <p className="result_stock">
-                      (
-                      {saleData.stock > 1
-                        ? `${saleData.stock} Copies`
-                        : `1 Copy`}{" "}
-                      Available at the Book Crate)
+                      ({stock > 1 ? `${stock} Copies` : `1 Copy`} Available at
+                      the Book Crate)
                     </p>
                   </div>
+                  {userData?.isUser && userData?.isSuper && (
+                    <>
+                      <div>
+                        <button
+                          className="update_listing_button btn btn-info"
+                          onClick={() => setShowListingForm(true)}
+                        >
+                          Update Listing
+                        </button>
+                        <button
+                          className="delete_listing_button btn btn-danger"
+                          onClick={() => deleteListing()}
+                        >
+                          Delete Listing
+                        </button>
+                      </div>
+                      {showListingForm && (
+                        <form
+                          action="/update_listing"
+                          method="POST"
+                          className="listing_form"
+                          onSubmit={(event) => updateListing(event)}
+                          onReset={() => setShowListingForm(false)}
+                        >
+                          <hr />
+                          <label htmlFor="id_price">Price (Credits):</label>
+                          <input
+                            type="number"
+                            name="price"
+                            min="1"
+                            max="100000"
+                            required={true}
+                            id="id_price"
+                            defaultValue={price}
+                          />
+                          <label htmlFor="id_stock">Stock:</label>
+                          <input
+                            type="number"
+                            name="stock"
+                            min="1"
+                            max="10000"
+                            required={true}
+                            id="id_stock"
+                            defaultValue={stock}
+                          />
+                          <input
+                            type="hidden"
+                            name="book_isbn"
+                            readOnly={true}
+                            maxLength="13"
+                            id="id_book_isbn"
+                            value={isbn}
+                          />
+                          <input
+                            type="submit"
+                            value="List"
+                            className="btn btn-success"
+                            id="create_listing_button"
+                          />
+                          <input
+                            type="reset"
+                            value="Cancel"
+                            className="btn btn-danger"
+                            id="cancel_create_listing_button"
+                          />
+                          <hr />
+                        </form>
+                      )}
+                    </>
+                  )}
+
                   {userData?.isUser && !userData?.isSuper && (
                     <div>
                       <button
@@ -438,6 +564,7 @@ function Book({
                   )}
                 </div>
               ) : null}
+
               <p className="result_book_description">
                 {bookData.volumeInfo?.description}
               </p>

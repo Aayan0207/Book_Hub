@@ -826,7 +826,7 @@ function Card({
             <form
               action="/update_listing"
               method="POST"
-              id="listing_form"
+              className="listing_form"
               onSubmit={(event) => updateListing(event)}
               onReset={() => setShowForm(false)}
             >

@@ -1,13 +1,20 @@
 /* #pagination_div, #user_review_form, #search_books_spinner, #listing_form, .checkout, #failed_transaction{
   display: none;
 } */
+.listing_form {
+  display: flex;
+  align-items: left;
+  margin: 5px;
+  justify-content: center;
+  flex-direction: column;
+}
 .result_sale_info {
   display: flex;
   gap: 5px;
   flex-direction: column;
 }
-.result_price{
-  margin-right:5px;
+.result_price {
+  margin-right: 5px;
 }
 .book_menu {
   position: absolute;
