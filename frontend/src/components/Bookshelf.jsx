@@ -11,6 +11,7 @@ function Bookshelf({ userData, setPage, setIsbn }) {
   const [showMore, setShowMore] = useState(false);
 
   useEffect(() => {
+    if (!token) return;
     if (!loadMore || batch === 1) return;
     fetch(`${urlPrefix}/get_bookshelf`, {
       method: "POST",
@@ -34,7 +35,7 @@ function Bookshelf({ userData, setPage, setIsbn }) {
         setShowMore(data.next);
       })
       .catch((error) => console.log(error));
-  }, [batch]);
+  }, [batch, token]);
 
   function chunkedArray(books) {
     let chunks = [];
@@ -53,6 +54,7 @@ function Bookshelf({ userData, setPage, setIsbn }) {
   }
 
   useEffect(() => {
+    if (!token) return;
     setBatch(1);
     fetch(`${urlPrefix}/get_bookshelf`, {
       method: "POST",
@@ -74,7 +76,7 @@ function Bookshelf({ userData, setPage, setIsbn }) {
         setShowMore(data.next);
       })
       .catch((error) => console.log(error));
-  }, [shelf]);
+  }, [shelf, token]);
 
   return (
     <>

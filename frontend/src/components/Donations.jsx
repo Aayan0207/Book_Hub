@@ -19,6 +19,7 @@ function Donations({ userData, setPage, setIsbn }) {
   const [showAddForm, setShowAddForm] = useState(false);
 
   useEffect(() => {
+    if (!token) return;
     fetch(`${urlPrefix}/load_donations`, {
       method: "POST",
       body: JSON.stringify({
@@ -38,9 +39,10 @@ function Donations({ userData, setPage, setIsbn }) {
         setTimeout(() => setShowSpinner(false), 2000);
       })
       .catch((error) => console.log(error));
-  }, []);
+  }, [token]);
 
   useEffect(() => {
+    if (!token) return;
     if (batch === 1) return;
     fetch(`${urlPrefix}/load_donations`, {
       method: "POST",
@@ -65,9 +67,10 @@ function Donations({ userData, setPage, setIsbn }) {
         }, 2000);
       })
       .catch((error) => console.log(error));
-  }, [batch]);
+  }, [batch, token]);
 
   useEffect(() => {
+    if (!token) return;
     if (!requests || requests.length === 0) return;
     requests.forEach((request) => {
       const isbn = request.book_isbn;
@@ -90,7 +93,7 @@ function Donations({ userData, setPage, setIsbn }) {
         )
         .catch((error) => console.log(error));
     });
-  }, [requests]);
+  }, [requests, token]);
 
   function fetchBook(event) {
     event.preventDefault();

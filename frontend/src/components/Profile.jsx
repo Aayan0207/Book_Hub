@@ -20,6 +20,7 @@ function Profile({
   const [showCreditsForm, setShowCreditsForm] = useState(false);
 
   useEffect(() => {
+    if (!token) return;
     if (!userData?.isUser) return;
     fetch(`${urlPrefix}/get_bookshelf`, {
       method: "POST",
@@ -38,9 +39,10 @@ function Profile({
       .then((data) => {
         setWant(data.bookshelf.slice(0, 3));
       });
-  }, [userData]);
+  }, [userData, token]);
 
   useEffect(() => {
+    if (!token) return;
     if (!userData?.isUser) return;
     fetch(`${urlPrefix}/get_bookshelf`, {
       method: "POST",
@@ -59,9 +61,10 @@ function Profile({
       .then((data) => {
         setCurrently(data.bookshelf.slice(0, 3));
       });
-  }, [userData]);
+  }, [userData, token]);
 
   useEffect(() => {
+    if (!token) return;
     if (!userData?.isUser) return;
     fetch(`${urlPrefix}/user_activity_info`, {
       method: "POST",
@@ -77,7 +80,7 @@ function Profile({
       .then((response) => response.json())
       .then((data) => setActivityInfo(data.activity))
       .catch((error) => console.log(error));
-  }, [userData]);
+  }, [userData, token]);
 
   function updateQuote(event) {
     event.preventDefault();

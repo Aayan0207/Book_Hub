@@ -19,6 +19,7 @@ function Checkout({ userData, setIsbn, setPage, checkoutItems, setUserData }) {
   }, [showCart]);
 
   useEffect(() => {
+    if (!token) return;
     if (!checkoutItems) return;
 
     setPurchaseData(Object.fromEntries(checkoutItems.map((item) => [item, 1])));
@@ -65,9 +66,10 @@ function Checkout({ userData, setIsbn, setPage, checkoutItems, setUserData }) {
         })
         .catch((error) => console.log(error));
     });
-  }, [checkoutItems]);
+  }, [checkoutItems, token]);
 
   useEffect(() => {
+    if (!token) return;
     if (!purchaseData || Object.keys(checkoutItemsListingData).length === 0)
       return;
     setTotal(() => {
@@ -78,7 +80,7 @@ function Checkout({ userData, setIsbn, setPage, checkoutItems, setUserData }) {
       }
       return tmp;
     });
-  }, [purchaseData, checkoutItemsListingData]);
+  }, [purchaseData, checkoutItemsListingData, token]);
 
   async function purchaseItems() {
     if (userData.credits < total) {

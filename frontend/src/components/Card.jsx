@@ -48,14 +48,16 @@ function Card({
   const [purchasingQuantity, setPurchasingQuantity] = useState(1);
 
   useEffect(() => {
+    if (!token) return;
     if (purchasingQuantity === 1) return;
     const sale_id = payload.book.sale_id;
     setPurchaseData((prev) => {
       return { ...prev, [sale_id]: parseInt(purchasingQuantity) };
     });
-  }, [purchasingQuantity]);
+  }, [purchasingQuantity, token]);
 
   useEffect(() => {
+    if (!token) return;
     if (
       !userData?.userId ||
       (options !== "crate" && options !== "cart") ||
@@ -77,9 +79,10 @@ function Card({
       .then((response) => response.json())
       .then((data) => setInCart(data.status))
       .catch((error) => console.log(error));
-  }, [isbn, options, userData?.userId]);
+  }, [isbn, options, userData?.userId, token]);
 
   useEffect(() => {
+    if (!token) return;
     if (!userData?.userId || options !== "shelf") return;
     fetch(`${urlPrefix}/get_user_rating`, {
       method: "POST",
@@ -99,9 +102,10 @@ function Card({
         setUserRating(data.rating);
       })
       .catch((error) => console.log(error));
-  }, [isbn, options, userData?.userId]);
+  }, [isbn, options, userData?.userId, token]);
 
   useEffect(() => {
+    if (!token) return;
     if (!viewProfile || reviewer === userData?.user) return;
     fetch(`${urlPrefix}/user_exists`, {
       method: "POST",
@@ -120,9 +124,10 @@ function Card({
         setPage("user");
       })
       .catch((error) => console.log(error));
-  }, [viewProfile]);
+  }, [viewProfile, token]);
 
   useEffect(() => {
+    if (!token) return;
     if (!userData?.isUser || options !== "shelf") return;
     fetch(`${urlPrefix}/in_bookshelf`, {
       method: "POST",
@@ -141,9 +146,10 @@ function Card({
         setInBookshelf(data.in_bookshelf);
       })
       .catch((error) => console.log(error));
-  }, [isbn, options, userData?.isUser]);
+  }, [isbn, options, userData?.isUser, token]);
 
   useEffect(() => {
+    if (!token) return;
     if (!userData || !payload.book.review) return;
     fetch(`${urlPrefix}/user_liked`, {
       method: "POST",
@@ -160,7 +166,7 @@ function Card({
       .then((response) => response.json())
       .then((data) => setUserLiked(data.liked))
       .catch((error) => console.log(error));
-  }, [isbn, userData]);
+  }, [isbn, userData, token]);
 
   useEffect(() => {
     if (viewBook) {
@@ -170,6 +176,7 @@ function Card({
   }, [viewBook]);
 
   useEffect(() => {
+    if (!token) return;
     if (
       !payload.book.review &&
       !payload.book.sale_id &&
@@ -190,7 +197,7 @@ function Card({
       .then((response) => response.json())
       .then((data) => setRatingsData(data))
       .catch((error) => console.log(error));
-  }, [isbn]);
+  }, [isbn, token]);
 
   function handleBookmarkToggle() {
     if (!userData || !payload.book.review) return;

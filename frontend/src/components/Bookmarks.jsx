@@ -17,6 +17,7 @@ function Bookmarks({ userData, setPage, setIsbn, setProfile }) {
   const [showSpinner, setShowSpinner] = useState(true);
 
   useEffect(() => {
+    if (!token) return;
     fetch(`${urlPrefix}/load_bookmark_reviews`, {
       method: "POST",
       body: JSON.stringify({
@@ -36,10 +37,11 @@ function Bookmarks({ userData, setPage, setIsbn, setProfile }) {
         }, 2000);
       })
       .catch((error) => console.log(error));
-  }, [refresh]);
+  }, [refresh, token]);
 
   useEffect(() => {
     if (!reviews) return;
+    if (!token) return;
     setReviewsData({});
     setBookmarks({});
     reviews.forEach((review) => {
@@ -83,9 +85,10 @@ function Bookmarks({ userData, setPage, setIsbn, setProfile }) {
         })
         .catch((error) => console.log(error));
     });
-  }, [reviews]);
+  }, [reviews, token]);
 
   useEffect(() => {
+    if (!token) return;
     if (!payload?.username) return;
     setSame(false);
     setInvalid(false);
@@ -130,7 +133,7 @@ function Bookmarks({ userData, setPage, setIsbn, setProfile }) {
           .catch((error) => console.log(error));
       })
       .catch((error) => console.log(error));
-  }, [payload]);
+  }, [payload, token]);
 
   function submitForm(event) {
     event.preventDefault();
@@ -140,6 +143,7 @@ function Bookmarks({ userData, setPage, setIsbn, setProfile }) {
     };
     setPayload(details);
   }
+
   function handleBookmarkToggle() {
     if (!userData || !found?.id) return;
 

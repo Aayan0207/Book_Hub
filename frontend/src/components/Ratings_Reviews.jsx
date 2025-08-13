@@ -11,6 +11,7 @@ function Ratings_Reviews({ userData, setPage, setIsbn, profileView = false }) {
   const [reviewsData, setReviewsData] = useState({});
 
   useEffect(() => {
+    if (!token) return;
     fetch(`${urlPrefix}/get_user_reviews`, {
       method: "POST",
       body: JSON.stringify({
@@ -29,9 +30,10 @@ function Ratings_Reviews({ userData, setPage, setIsbn, profileView = false }) {
         setMore(data.next);
       })
       .catch((error) => console.log(error));
-  }, []);
+  }, [token]);
 
   useEffect(() => {
+    if (!token) return;
     if (batch === 1) return;
     fetch(`${urlPrefix}/get_user_reviews`, {
       method: "POST",
@@ -53,9 +55,10 @@ function Ratings_Reviews({ userData, setPage, setIsbn, profileView = false }) {
         setMore(data.next);
       })
       .catch((error) => console.log(error));
-  }, [batch]);
+  }, [batch, token]);
 
   useEffect(() => {
+    if (!token) return;
     if (!reviews) return;
     reviews.forEach((review) => {
       fetch(`${urlPrefix}/book_result`, {
@@ -77,7 +80,7 @@ function Ratings_Reviews({ userData, setPage, setIsbn, profileView = false }) {
         )
         .catch((error) => console.log(error));
     });
-  }, [reviews]);
+  }, [reviews, token]);
 
   return (
     <>

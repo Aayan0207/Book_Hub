@@ -49,6 +49,7 @@ function Book_Crate({ setPage, setIsbn, userData = null }) {
   }, [slide]);
 
   useEffect(() => {
+    if (!token) return;
     fetch(`${urlPrefix}/load_listings`, {
       method: "POST",
       body: JSON.stringify({ page: 1, query: "", select: "" }),
@@ -64,9 +65,10 @@ function Book_Crate({ setPage, setIsbn, userData = null }) {
         setTimeout(() => setShowSpinner(false), 3000);
       })
       .catch((error) => console.log(error));
-  }, [refreshListings]);
+  }, [refreshListings, token]);
 
   useEffect(() => {
+    if (!token) return;
     if (!listings.listings) return;
     listings.listings.forEach((listing) => {
       fetch(`${urlPrefix}/book_result`, {
@@ -88,9 +90,10 @@ function Book_Crate({ setPage, setIsbn, userData = null }) {
         })
         .catch((error) => console.log(error));
     });
-  }, [listings]);
+  }, [listings, token]);
 
   useEffect(() => {
+    if (!token) return;
     if (!payload) return;
     setListingsData({});
     fetch(`${urlPrefix}/load_listings`, {
@@ -105,7 +108,7 @@ function Book_Crate({ setPage, setIsbn, userData = null }) {
       .then((response) => response.json())
       .then((data) => setListings(data))
       .catch((error) => console.log(error));
-  }, [payload]);
+  }, [payload, token]);
 
   function submitForm(event) {
     event.preventDefault();

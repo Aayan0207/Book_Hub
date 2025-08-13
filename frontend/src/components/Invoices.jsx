@@ -12,6 +12,7 @@ function Invoices({ userData, setPage, setIsbn }) {
   const [showSpinner, setShowSpinner] = useState(false);
 
   useEffect(() => {
+    if (!token) return;
     fetch(`${urlPrefix}/get_user_invoices`, {
       method: "POST",
       body: JSON.stringify({
@@ -30,9 +31,10 @@ function Invoices({ userData, setPage, setIsbn }) {
         setInvoices(data.invoices);
       })
       .catch((error) => console.log(error));
-  }, [userData]);
+  }, [userData, token]);
 
   useEffect(() => {
+    if (!token) return;
     if (batch === 1) return;
     setShowSpinner(true);
     fetch(`${urlPrefix}/get_user_invoices`, {
@@ -58,9 +60,10 @@ function Invoices({ userData, setPage, setIsbn }) {
     setTimeout(() => {
       setShowSpinner(false);
     }, 3000);
-  }, [batch]);
+  }, [batch, token]);
 
   useEffect(() => {
+    if (!token) return;
     if (!invoices) return;
     invoices.forEach((invoice) => {
       const isbn = invoice.book_isbn;
@@ -86,7 +89,7 @@ function Invoices({ userData, setPage, setIsbn }) {
         })
         .catch((error) => console.log(error));
     });
-  }, [invoices]);
+  }, [invoices, token]);
 
   return (
     <>

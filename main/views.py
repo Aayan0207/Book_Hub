@@ -392,10 +392,8 @@ def get_listing(request):
 def load_listings(request):
     if request.method == "POST":
         data = loads(request.body)
-        query = data["query"]
-        if query:
-            query = query.strip()
-        select = data["select"]
+        query = data.get("query", "")
+        select = data.get("select", None)
         if select:
             select = select.lower()
         page = data["page"]

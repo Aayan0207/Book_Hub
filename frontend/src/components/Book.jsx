@@ -49,7 +49,8 @@ function Book({
   }, [showPurchase]);
 
   useEffect(() => {
-    if (!reviewsData) return;
+    if (!token) return;
+    if (!reviewsData || !userData) return;
     reviewsData.forEach((review) => {
       const reviewerId = review.user_id;
       if (reviewerId === userData?.userId) return;
@@ -73,9 +74,10 @@ function Book({
         })
         .catch((error) => console.log(error));
     });
-  }, [reviewsData]);
+  }, [reviewsData, token]);
 
   useEffect(() => {
+    if (!token) return;
     if (!saleData || !userData?.userId) return;
     fetch(`${urlPrefix}/in_cart`, {
       method: "POST",
@@ -92,28 +94,31 @@ function Book({
       .then((response) => response.json())
       .then((data) => setInCart(data.status))
       .catch((error) => console.log(error));
-  }, [isbn, saleData]);
+  }, [isbn, saleData, token]);
 
   useEffect(() => {
-    fetch(`${urlPrefix}/get_listing`, {
-      method: "POST",
-      body: JSON.stringify({
-        isbn: isbn,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRFToken": token,
-      },
-      credentials: "include",
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        const listing = data.listing[0];
-        setSaleData(listing);
-        setPrice(listing.price);
-        setStock(listing.stock);
+    if (!token) return;
+    if (saleData?.id) {
+      fetch(`${urlPrefix}/get_listing`, {
+        method: "POST",
+        body: JSON.stringify({
+          id: saleData.id,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": token,
+        },
+        credentials: "include",
       })
-      .catch((error) => console.log(error));
+        .then((response) => response.json())
+        .then((data) => {
+          const listing = data.listing[0];
+          setSaleData(listing);
+          setPrice(listing.price);
+          setStock(listing.stock);
+        })
+        .catch((error) => console.log(error));
+    }
 
     fetch(`${urlPrefix}/book_result`, {
       method: "POST",
@@ -181,9 +186,10 @@ function Book({
         })
         .catch((error) => console.log(error));
     }
-  }, [isbn]);
+  }, [isbn, token, saleData, userData]);
 
   useEffect(() => {
+    if (!token) return;
     if (batch === 1) return;
     fetch(`${urlPrefix}/get_book_reviews`, {
       method: "POST",
@@ -205,9 +211,10 @@ function Book({
         setMore(data.next);
       })
       .catch((error) => console.log(error));
-  }, [batch, sortBy, refreshReviews]);
+  }, [batch, sortBy, refreshReviews, token]);
 
   useEffect(() => {
+    if (!token) return;
     setBatch(1);
     setMore(false);
     fetch(`${urlPrefix}/get_book_reviews`, {
@@ -233,7 +240,7 @@ function Book({
         }
       })
       .catch((error) => console.log(error));
-  }, [isbn, sortBy, refreshReviews]);
+  }, [isbn, sortBy, refreshReviews, token]);
 
   function updateCart() {
     fetch(`${urlPrefix}/update_cart`, {
@@ -388,7 +395,7 @@ function Book({
                   src={bookData.volumeInfo.imageLinks.thumbnail}
                 />
               </div>
-              {userData.isUser && (
+              {userData?.isUser && (
                 <>
                   <div id="bookshelf_button_div" className="dropdown">
                     {inBookshelf ? (

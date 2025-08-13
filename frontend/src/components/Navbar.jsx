@@ -59,11 +59,7 @@ function Navbar({ page, setPage }) {
         );
       case "user":
         return (
-          <User
-            setIsbn={setIsbn}
-            setPage={setPage}
-            profileData={profile}
-          />
+          <User setIsbn={setIsbn} setPage={setPage} profileData={profile} />
         );
       case "book_crate":
         return (

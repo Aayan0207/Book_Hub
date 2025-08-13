@@ -20,6 +20,7 @@ function Cart({ setPage, setIsbn, userData, setCheckoutItems, checkoutItems }) {
   }, [showCheckout]);
 
   useEffect(() => {
+    if (!token) return;
     if (!cart) return;
     cart.forEach((item) => {
       fetch(`${urlPrefix}/book_result`, {
@@ -44,9 +45,10 @@ function Cart({ setPage, setIsbn, userData, setCheckoutItems, checkoutItems }) {
         )
         .catch((error) => console.log(error));
     });
-  }, [cart]);
+  }, [cart, token]);
 
   useEffect(() => {
+    if (!token) return;
     if (!userData?.userId) return;
     setCheckoutItems([]);
     fetch(`${urlPrefix}/load_cart`, {
@@ -70,9 +72,10 @@ function Cart({ setPage, setIsbn, userData, setCheckoutItems, checkoutItems }) {
         }, 2000);
       })
       .catch((error) => console.log(error));
-  }, [userData]);
+  }, [userData, token]);
 
   useEffect(() => {
+    if (!token) return;
     if (batch === 1) return;
     fetch(`${urlPrefix}/load_cart`, {
       method: "POST",
@@ -97,7 +100,7 @@ function Cart({ setPage, setIsbn, userData, setCheckoutItems, checkoutItems }) {
         }, 2000);
       })
       .catch((error) => console.log(error));
-  }, [batch]);
+  }, [batch, token]);
 
   return (
     <>

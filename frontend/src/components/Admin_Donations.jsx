@@ -15,6 +15,7 @@ function Admin_Donations({ userData, setPage, setIsbn }) {
   const [showSpinner, setShowSpinner] = useState(true);
 
   useEffect(() => {
+    if (!token) return;
     fetch(`${urlPrefix}/load_admin_donations`, {
       method: "POST",
       body: JSON.stringify({
@@ -33,9 +34,10 @@ function Admin_Donations({ userData, setPage, setIsbn }) {
         setTimeout(() => setShowSpinner(false), 2000);
       })
       .catch((error) => console.log(error));
-  }, []);
+  }, [token]);
 
   useEffect(() => {
+    if (!token) return;
     if (batch === 1) return;
     fetch(`${urlPrefix}/load_admin_donations`, {
       method: "POST",
@@ -59,9 +61,10 @@ function Admin_Donations({ userData, setPage, setIsbn }) {
         }, 2000);
       })
       .catch((error) => console.log(error));
-  }, [batch]);
+  }, [batch, token]);
 
   useEffect(() => {
+    if (!token) return;
     if (!requests || requests.length === 0) return;
     requests.forEach((request) => {
       const isbn = request.book_isbn;
@@ -84,7 +87,7 @@ function Admin_Donations({ userData, setPage, setIsbn }) {
         )
         .catch((error) => console.log(error));
     });
-  }, [requests]);
+  }, [requests, token]);
 
   return (
     <>

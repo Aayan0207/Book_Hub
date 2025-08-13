@@ -11,6 +11,7 @@ function Feed({ userData, setPage, setIsbn, setProfile }) {
   const [bookmarks, setBookmarks] = useState({});
 
   useEffect(() => {
+    if (!token) return;
     fetch(`${urlPrefix}/random_reviews`, {
       method: "POST",
       headers: {
@@ -22,9 +23,10 @@ function Feed({ userData, setPage, setIsbn, setProfile }) {
       .then((response) => response.json())
       .then((data) => setReviews(data?.reviews))
       .catch((error) => console.log(error));
-  }, [refresh]);
+  }, [refresh, token]);
 
   useEffect(() => {
+    if (!token) return;
     if (!reviews) return;
     setReviewsData({});
     reviews.forEach((review) => {
@@ -68,7 +70,7 @@ function Feed({ userData, setPage, setIsbn, setProfile }) {
         })
         .catch((error) => console.log(error));
     });
-  }, [reviews]);
+  }, [reviews, token]);
 
   return (
     <>
