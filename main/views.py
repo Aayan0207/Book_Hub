@@ -385,8 +385,9 @@ def load_admin_donations(request):
             .values("id", "book_isbn", "quantity", "timestamp", "user_id__username")
         )
         donations = Paginator(donations, 10).page(page)
-        next_page = donations.has_next()
-        return JsonResponse({"donations": donations.object_list, "next": next_page})
+        return JsonResponse(
+            {"donations": donations.object_list, "next": donations.has_next()}
+        )
 
 
 @csrf_exempt
@@ -467,10 +468,10 @@ def get_user_invoices(request):
                 "timestamp",
             )
         )
-        invoices = Paginator(invoices, 10)
-        invoices = invoices.page(page)
-        next_page = invoices.has_next()
-        return JsonResponse({"invoices": invoices.object_list, "next": next_page})
+        invoices = Paginator(invoices, 10).page(page)
+        return JsonResponse(
+            {"invoices": invoices.object_list, "next": invoices.has_next()}
+        )
 
 
 @csrf_exempt
@@ -505,7 +506,7 @@ def purchase_listing(request):
             listing.save()
             if listing.stock == 0:
                 listing.delete()
-            return JsonResponse({"transaction": True, "credits":user.credits})
+            return JsonResponse({"transaction": True, "credits": user.credits})
         return JsonResponse({"transaction": False})
 
 
@@ -751,10 +752,10 @@ def get_user_reviews(request):
                 "likes_count",
             )
         )
-        reviews = Paginator(reviews, 10)
-        reviews = reviews.page(page)
-        next_page = reviews.has_next()
-        return JsonResponse({"reviews": reviews.object_list, "next": next_page})
+        reviews = Paginator(reviews, 10).page(page)
+        return JsonResponse(
+            {"reviews": reviews.object_list, "next": reviews.has_next()}
+        )
 
 
 @csrf_exempt
@@ -858,6 +859,8 @@ def get_book_reviews(request):
         flag = data["flag"].lower()
         reviews = (
             Review.objects.select_related("user_id")
+            .select_related("id")
+            .annotate(likes_count=Count("like"))
             .filter(book_isbn=isbn)
             .exclude(content="")
         )
@@ -870,43 +873,33 @@ def get_book_reviews(request):
         elif flag == "oldest":
             reviews = reviews.order_by("timestamp")
         elif flag == "most liked":
-            reviews = list(
-                reviews.values(
-                    "user_id",
-                    "user_id__username",
-                    "rating",
-                    "content",
-                    "timestamp",
-                    "id",
-                )
+            reviews = reviews.order_by("-likes_count")
+        reviews = list(
+            reviews.values(
+                "user_id",
+                "user_id__username",
+                "rating",
+                "content",
+                "timestamp",
+                "likes_count",
+                "id",
             )
-            reviews.sort(
-                key=lambda x: Like.objects.filter(review_id=x["id"]).count(),
-                reverse=True,
-            )
-        if flag != "most liked":
-            reviews = list(
-                reviews.values(  # type: ignore
-                    "user_id",
-                    "user_id__username",
-                    "rating",
-                    "content",
-                    "timestamp",
-                    "id",
-                )
-            )
+        )
         if user_id:
             try:
                 user_review = list(
                     Review.objects.select_related("user_id")
+                    .select_related("id")
                     .filter(book_isbn=isbn, user_id=user_id)
                     .exclude(content="")
+                    .annotate(likes_count=Count("like"))
                     .values(
                         "user_id",
                         "user_id__username",
                         "rating",
                         "content",
                         "timestamp",
+                        "likes_count",
                         "id",
                     )
                 )
@@ -915,10 +908,10 @@ def get_book_reviews(request):
                     reviews.insert(0, user_review[0])  # type: ignore
             except Review.DoesNotExist:
                 pass
-        reviews = Paginator(reviews, 10)
-        reviews = reviews.page(page)
-        next_page = reviews.has_next()
-        return JsonResponse({"reviews": reviews.object_list, "next": next_page})
+        reviews = Paginator(reviews, 10).page(page)
+        return JsonResponse(
+            {"reviews": reviews.object_list, "next": reviews.has_next()}
+        )
 
 
 @csrf_exempt
@@ -967,11 +960,8 @@ def get_bookshelf(request):
                 .order_by("timestamp")
                 .values("book_isbn", "tag")
             )
-        query = list(query)
-        query = Paginator(query, limit)
-        query = query.page(page)
-        next_page = query.has_next()
-        return JsonResponse({"bookshelf": query.object_list, "next": next_page})  # type: ignore
+        query = Paginator(list(query), limit).page(page)
+        return JsonResponse({"bookshelf": query.object_list, "next": query.has_next()})  # type: ignore
 
 
 def manage_review(request):

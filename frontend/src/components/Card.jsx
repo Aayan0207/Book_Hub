@@ -7,7 +7,7 @@ import getToken from "./getToken";
 function Card({
   payload,
   setPage,
-  setIsbn,
+  setIsbn = {},
   setProfile = null,
   userData = {},
   bookmarks = {},
@@ -17,7 +17,7 @@ function Card({
   setPurchaseData = {},
   options = null,
 }) {
-  if (!payload || !payload.book.image.source) return;
+  if (!payload || (options !== "book" && !payload.book.image.source)) return;
   if (!payload.book.isbn.match(/^(?:\d{10}|\d{13})$/)) return;
   const token = getToken();
   const urlPrefix = "http://localhost:8000";
@@ -148,7 +148,12 @@ function Card({
   }, [viewBook]);
 
   useEffect(() => {
-    if (!payload.book.review && !payload.book.sale_id) return;
+    if (
+      !payload.book.review &&
+      !payload.book.sale_id &&
+      !payload.book.info.ratings
+    )
+      return;
     fetch(`${urlPrefix}/get_book_rating`, {
       method: "POST",
       body: JSON.stringify({
@@ -445,307 +450,316 @@ function Card({
             onChange={() => manageCheckoutItem()}
           />
         ) : null}
-        <div className={payload.book.image.parentClass}>
-          <img
-            className={payload.book.image.class}
-            src={payload.book.image.source}
-          ></img>
-          {options === "admin_donation" && userData.isSuper && (
-            <>
-              <button
-                className="accept_donation_button btn btn-success"
-                onClick={() => acceptDonation()}
-              >
-                <i className="bi bi-journal-check"></i> Accept
-              </button>
-              <button
-                className="reject_donation_button btn btn-danger"
-                onClick={() => rejectDonation()}
-              >
-                <i className="bi bi-journal-x"></i> Reject
-              </button>
-            </>
-          )}
-          {options === "donation" && !userData.isSuper && (
-            <>
-              <button
-                className="update_donation_button btn btn-info"
-                onClick={() => setShowDonationForm(true)}
-              >
-                Update Donation
-              </button>
-              <button
-                className="delete_donation_button btn btn-danger"
-                onClick={() => deleteDonation()}
-              >
-                Delete Donation
-              </button>
-            </>
-          )}
-          {(options === "crate" || options === "cart") &&
-            (userData?.isUser && userData?.isSuper ? (
+        {payload.book.image?.source && (
+          <div className={payload.book.image.parentClass}>
+            <img
+              className={payload.book.image.class}
+              src={payload.book.image.source}
+            ></img>
+            {options === "admin_donation" && userData.isSuper && (
               <>
                 <button
-                  className="update_listing_button btn btn-info"
-                  onClick={() => setShowListingForm(true)}
+                  className="accept_donation_button btn btn-success"
+                  onClick={() => acceptDonation()}
                 >
-                  Update Listing
+                  <i className="bi bi-journal-check"></i> Accept
                 </button>
                 <button
-                  className="delete_listing_button btn btn-danger"
-                  onClick={() => deleteListing()}
+                  className="reject_donation_button btn btn-danger"
+                  onClick={() => rejectDonation()}
                 >
-                  Delete Listing
+                  <i className="bi bi-journal-x"></i> Reject
                 </button>
               </>
-            ) : userData?.isUser ? (
-              inCart ? (
+            )}
+            {options === "donation" && !userData.isSuper && (
+              <>
                 <button
-                  className="cart_button btn btn-info"
-                  onClick={() => updateCart()}
+                  className="update_donation_button btn btn-info"
+                  onClick={() => setShowDonationForm(true)}
                 >
-                  <i className="bi bi-cart-dash"></i> Remove From Cart
+                  Update Donation
                 </button>
-              ) : (
                 <button
-                  className="cart_button btn btn-warning"
-                  onClick={() => updateCart()}
+                  className="delete_donation_button btn btn-danger"
+                  onClick={() => deleteDonation()}
                 >
-                  <i className="bi bi-cart-plus"></i> Add to Cart
+                  Delete Donation
                 </button>
-              )
-            ) : null)}
-          {options === "checkout" ? (
-            <>
-              <div>
-                <label htmlFor="id_quantity">Quantity:</label>
-                &nbsp;
-                <input
-                  type="number"
-                  name="quantity"
-                  min="1"
-                  value={purchasingQuantity}
-                  onChange={(event) =>
-                    setPurchasingQuantity(event.target.value)
-                  }
-                  max={stock}
-                  required={true}
-                  id="id_quantity"
-                />
-              </div>
-              Total: {price * purchasingQuantity} Credits
-            </>
-          ) : null}
-          {options === "shelf" && (
-            <>
-              <div id="bookshelf_button_div" className="dropdown">
-                {inBookshelf && userData?.isUser ? (
+              </>
+            )}
+            {(options === "crate" || options === "cart") &&
+              (userData?.isUser && userData?.isSuper ? (
+                <>
                   <button
-                    className="search_bookshelf_button btn btn-danger"
-                    data-bs-toggle=""
-                    type="button"
-                    onClick={() => updateBookshelf()}
+                    className="update_listing_button btn btn-info"
+                    onClick={() => setShowListingForm(true)}
                   >
-                    Remove from Bookshelf
+                    Update Listing
                   </button>
-                ) : userData?.isUser ? (
-                  <>
+                  <button
+                    className="delete_listing_button btn btn-danger"
+                    onClick={() => deleteListing()}
+                  >
+                    Delete Listing
+                  </button>
+                </>
+              ) : userData?.isUser ? (
+                inCart ? (
+                  <button
+                    className="cart_button btn btn-info"
+                    onClick={() => updateCart()}
+                  >
+                    <i className="bi bi-cart-dash"></i> Remove From Cart
+                  </button>
+                ) : (
+                  <button
+                    className="cart_button btn btn-warning"
+                    onClick={() => updateCart()}
+                  >
+                    <i className="bi bi-cart-plus"></i> Add to Cart
+                  </button>
+                )
+              ) : null)}
+            {options === "checkout" ? (
+              <>
+                <div>
+                  <label htmlFor="id_quantity">Quantity:</label>
+                  &nbsp;
+                  <input
+                    type="number"
+                    name="quantity"
+                    min="1"
+                    value={purchasingQuantity}
+                    onChange={(event) =>
+                      setPurchasingQuantity(event.target.value)
+                    }
+                    max={stock}
+                    required={true}
+                    id="id_quantity"
+                  />
+                </div>
+                Total: {price * purchasingQuantity} Credits
+              </>
+            ) : null}
+            {options === "shelf" && (
+              <>
+                <div id="bookshelf_button_div" className="dropdown">
+                  {inBookshelf && userData?.isUser ? (
                     <button
-                      className="search_bookshelf_button btn btn-success dropdown-toggle"
-                      data-bs-toggle="dropdown"
+                      className="search_bookshelf_button btn btn-danger"
+                      data-bs-toggle=""
                       type="button"
+                      onClick={() => updateBookshelf()}
                     >
-                      Add to Bookshelf
+                      Remove from Bookshelf
                     </button>
-                    <ul className="dropdown-menu">
-                      <li
-                        className="dropdown-item"
-                        onClick={() => updateBookshelf("read")}
+                  ) : userData?.isUser ? (
+                    <>
+                      <button
+                        className="search_bookshelf_button btn btn-success dropdown-toggle"
+                        data-bs-toggle="dropdown"
+                        type="button"
                       >
-                        Read
-                      </li>
-                      <li
-                        className="dropdown-item"
-                        onClick={() => updateBookshelf("currently reading")}
-                      >
-                        Currently Reading
-                      </li>
-                      <li
-                        className="dropdown-item"
-                        onClick={() => updateBookshelf("want to read")}
-                      >
-                        Want to Read
-                      </li>
-                    </ul>
-                  </>
-                ) : null}
-              </div>
-              <div className="search_user_rating_div">
-                <p className="search_user_rating_content">
-                  {userRating && userRating > 0
-                    ? `Your Rating: ${userRating}`
-                    : "Rate this book:"}
-                </p>
-                <div className="search_user_rating_bar_div">
+                        Add to Bookshelf
+                      </button>
+                      <ul className="dropdown-menu">
+                        <li
+                          className="dropdown-item"
+                          onClick={() => updateBookshelf("read")}
+                        >
+                          Read
+                        </li>
+                        <li
+                          className="dropdown-item"
+                          onClick={() => updateBookshelf("currently reading")}
+                        >
+                          Currently Reading
+                        </li>
+                        <li
+                          className="dropdown-item"
+                          onClick={() => updateBookshelf("want to read")}
+                        >
+                          Want to Read
+                        </li>
+                      </ul>
+                    </>
+                  ) : null}
+                </div>
+                <div className="search_user_rating_div">
+                  <p className="search_user_rating_content">
+                    {userRating && userRating > 0
+                      ? `Your Rating: ${userRating}`
+                      : "Rate this book:"}
+                  </p>
+                  <div className="search_user_rating_bar_div">
+                    <div
+                      className="search_user_rating_bar progress progress-bar bg-warning"
+                      style={{ width: `${starBar}%` }}
+                    ></div>
+                  </div>
+                  <div className="search_user_ratings_stars">
+                    {Array(5)
+                      .fill()
+                      .map((_, index) => {
+                        return (
+                          <div
+                            className="search_user_ratings_star"
+                            onMouseOver={() => setStarBar((index + 1) * 20)}
+                            onClick={() => updateRating(index + 1)}
+                          ></div>
+                        );
+                      })}
+                  </div>
+                  <div className="search_clear_rating_div">
+                    <button
+                      className="search_clear_rating_button btn btn-link"
+                      onClick={() => updateRating(0)}
+                    >
+                      Clear Rating
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+        {payload.book?.info && (
+          <div
+            className={payload.book.info.parentClass}
+            onClick={() => setViewBook(true)}
+          >
+            <p className={payload.book.info.title?.class}>
+              {payload.book.info.title?.value}
+            </p>
+            {payload.book.info.author?.class ? (
+              <p className={payload.book.info.author.class}>
+                by {payload.book.info.author.value?.join(", ")}
+              </p>
+            ) : null}
+            {((payload.book.review && options !== "book") ||
+              payload.book.info.ratings ||
+              (payload.book.sale_id && options !== "checkout")) && (
+              <div className={payload.book.info?.ratings?.parentClass}>
+                <div className={payload.book.info?.ratings?.bar.parentClass}>
                   <div
-                    className="search_user_rating_bar progress progress-bar bg-warning"
-                    style={{ width: `${starBar}%` }}
+                    className={`${payload.book.info?.ratings?.bar.class} progress progress-bar bg-warning`}
+                    style={{
+                      width: `${
+                        ratingsData?.avg_rating
+                          ? ratingsData.avg_rating * 20
+                          : 0
+                      }%`,
+                    }}
                   ></div>
                 </div>
-                <div className="search_user_ratings_stars">
+                <div className={payload.book.info?.ratings?.stars.parentClass}>
                   {Array(5)
                     .fill()
                     .map((_, index) => {
                       return (
                         <div
-                          className="search_user_ratings_star"
-                          onMouseOver={() => setStarBar((index + 1) * 20)}
-                          onClick={() => updateRating(index + 1)}
+                          key={index}
+                          className={payload.book.info?.ratings?.stars.class}
                         ></div>
                       );
                     })}
                 </div>
-                <div className="search_clear_rating_div">
-                  <button
-                    className="search_clear_rating_button btn btn-link"
-                    onClick={() => updateRating(0)}
-                  >
-                    Clear Rating
-                  </button>
+                <div className={payload.book.info?.ratings?.data.parentClass}>
+                  <p className={payload.book.info?.ratings?.data.class}>
+                    {ratingsData?.avg_rating ? ratingsData.avg_rating : 0} (
+                    {ratingsData ? ratingsData.ratings_count : 0} Ratings)
+                  </p>
                 </div>
               </div>
-            </>
-          )}
-        </div>
-        <div
-          className={payload.book.info.parentClass}
-          onClick={() => setViewBook(true)}
-        >
-          <p className={payload.book.info.title.class}>
-            {payload.book.info.title.value}
-          </p>
-          <p className={payload.book.info.author.class}>
-            by {payload.book.info.author.value?.join(", ")}
-          </p>
-          {(payload.book.review ||
-            (payload.book.sale_id && options !== "checkout")) && (
-            <div className={payload.book.info?.ratings?.parentClass}>
-              <div className={payload.book.info?.ratings?.bar.parentClass}>
-                <div
-                  className={`${payload.book.info?.ratings?.bar.class} progress progress-bar bg-warning`}
-                  style={{
-                    width: `${
-                      ratingsData?.avg_rating ? ratingsData.avg_rating * 20 : 0
-                    }%`,
-                  }}
-                ></div>
-              </div>
-              <div className={payload.book.info?.ratings?.stars.parentClass}>
-                {Array(5)
-                  .fill()
-                  .map((_, index) => {
-                    return (
-                      <div
-                        key={index}
-                        className={payload.book.info?.ratings?.stars.class}
-                      ></div>
-                    );
-                  })}
-              </div>
-              <div className={payload.book.info?.ratings?.data.parentClass}>
-                <p className={payload.book.info?.ratings?.data.class}>
-                  {ratingsData?.avg_rating ? ratingsData.avg_rating : 0} (
-                  {ratingsData ? ratingsData.ratings_count : 0} Ratings)
+            )}
+            {payload.book.info.publishInfo ? (
+              <p className={payload.book.info.publishInfo?.class}>
+                Published on: {payload.book.info.publishInfo?.value}
+              </p>
+            ) : null}
+            {payload.book.info.snippet ? (
+              <p className={payload.book.info.snippet?.class}>
+                {payload.book.info.snippet?.value}
+              </p>
+            ) : null}
+            {payload.book.sale_id ? (
+              <>
+                <p className={payload.book.info.listing.price.class}>
+                  Price: {price} Credits
                 </p>
-              </div>
-            </div>
-          )}
-          {payload.book.info.publishInfo ? (
-            <p className={payload.book.info.publishInfo?.class}>
-              Published on: {payload.book.info.publishInfo?.value}
-            </p>
-          ) : null}
-          {payload.book.info.snippet ? (
-            <p className={payload.book.info.snippet?.class}>
-              {payload.book.info.snippet?.value}
-            </p>
-          ) : null}
-          {payload.book.sale_id ? (
-            <>
-              <p className={payload.book.info.listing.price.class}>
-                Price: {price} Credits
-              </p>
-              <p className={payload.book.info.listing.stock.class}>
-                {stock > 1 ? `${stock} copies` : "1 copy"} Available
-              </p>
-            </>
-          ) : null}
-          {payload.book.invoice_id ? (
-            <>
-              <hr />
-              <p className="invoice_id_p">
-                Invoice ID: {payload.book.invoice_id}
-              </p>
-              <div className="transaction_info">
-                <p>Quantity: {payload.book.info.invoice.quantity.value}</p>
-                <div>
-                <p>Transaction Info:</p>
-                <p
-                  className="transaction_amount_p"
-                  style={{
-                    color:
-                      payload.book.info.invoice.transactionInfo.type ===
-                      "purchase"
-                        ? "red"
-                        : "green",
-                  }}
-                >
-                  {payload.book.info.invoice.transactionInfo.value}
+                <p className={payload.book.info.listing.stock.class}>
+                  {stock > 1 ? `${stock} copies` : "1 copy"} Available
                 </p>
+              </>
+            ) : null}
+            {payload.book.invoice_id ? (
+              <>
+                <hr />
+                <p className="invoice_id_p">
+                  Invoice ID: {payload.book.invoice_id}
+                </p>
+                <div className="transaction_info">
+                  <p>Quantity: {payload.book.info.invoice.quantity.value}</p>
+                  <div>
+                    <p>Transaction Info:</p>
+                    <p
+                      className="transaction_amount_p"
+                      style={{
+                        color:
+                          payload.book.info.invoice.transactionInfo.type ===
+                          "purchase"
+                            ? "red"
+                            : "green",
+                      }}
+                    >
+                      {payload.book.info.invoice.transactionInfo.value}
+                    </p>
+                  </div>
+                  <p>
+                    Timestamp:{" "}
+                    {new Date(
+                      payload.book.info.invoice.timestamp.value
+                    ).toLocaleString(
+                      "en-US",
+                      (options = {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                        hour: "numeric",
+                        minute: "numeric",
+                      })
+                    )}
+                  </p>
                 </div>
+              </>
+            ) : null}
+            {payload.book.donate_id ? (
+              <>
+                <p className={payload.book.info.donation.quantity.class}>
+                  Quantity: {donationQuantity}
+                </p>
+                {payload.book.info.donation.from?.value && (
+                  <p className={payload.book.info.donation.from.class}>
+                    Request By: {payload.book.info.donation.from.value}
+                  </p>
+                )}
                 <p>
                   Timestamp:{" "}
                   {new Date(
-                    payload.book.info.invoice.timestamp.value
-                  ).toLocaleString(
-                    "en-US",
-                    (options = {
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric",
-                      hour: "numeric",
-                      minute: "numeric",
-                    })
-                  )}
+                    payload.book.info.donation.timestamp.value
+                  ).toLocaleString("en-US", {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                    hour: "numeric",
+                    minute: "numeric",
+                  })}
                 </p>
-              </div>
-            </>
-          ) : null}
-          {payload.book.donate_id ? (
-            <>
-              <p className={payload.book.info.donation.quantity.class}>
-                Quantity: {donationQuantity}
-              </p>
-              {payload.book.info.donation.from?.value && (
-                <p className={payload.book.info.donation.from.class}>
-                  Request By: {payload.book.info.donation.from.value}
-                </p>
-              )}
-              <p>
-                Timestamp:{" "}
-                {new Date(
-                  payload.book.info.donation.timestamp.value
-                ).toLocaleString("en-US", {
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-                  hour: "numeric",
-                  minute: "numeric",
-                })}
-              </p>
-            </>
-          ) : null}
-        </div>
+              </>
+            ) : null}
+          </div>
+        )}
         {options === "donation" &&
           (showDonationForm ? (
             <>

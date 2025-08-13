@@ -48,7 +48,7 @@ function Navbar({ page, setPage }) {
       case "default":
         return <Landing setPage={setPage} userData={userData} />;
       case "book":
-        return <Book isbn={isbn} />;
+        return <Book isbn={isbn} setPage={setPage} userData={userData} setProfile={setProfile}/>;
       case "user":
         return (
           <User

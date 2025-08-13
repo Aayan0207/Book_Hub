@@ -5,7 +5,7 @@ import Spinner from "./spinner.jsx";
 import Paginator from "./Pagination.jsx";
 import "../assets/codex/codex.css";
 
-function Codex({ setPage, setIsbn, userData={} }) {
+function Codex({ setPage, setIsbn, userData = {} }) {
   const urlPrefix = "http://localhost:8000";
   const token = getToken();
   const [viewSpinner, setViewSpinner] = useState(false);
@@ -94,12 +94,9 @@ function Codex({ setPage, setIsbn, userData={} }) {
       <div id="book_results">
         {!viewSpinner && data?.results?.totalItems > 0
           ? data.results.items.map((item) => {
-              let isbn = "";
-              try {
-                isbn = item.volumeInfo.industryIdentifiers[0].identifier;
-              } catch {
-                return;
-              }
+              const isbn =
+                item?.volumeInfo?.industryIdentifiers?.[0]?.identifier;
+              if (!isbn) return;
               const cardData = {
                 user: { isuser: false, issuper: false },
                 book: {
@@ -153,7 +150,7 @@ function Codex({ setPage, setIsbn, userData={} }) {
               };
               return (
                 <Card
-                  key={item.id}
+                  key={isbn}
                   payload={cardData}
                   setPage={setPage}
                   setIsbn={setIsbn}

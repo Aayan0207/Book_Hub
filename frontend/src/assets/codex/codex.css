@@ -128,6 +128,10 @@ textarea {
   background-color: #c4bba3;
   color: black;
 }
+.book_review{
+  padding:10px;
+  border-radius:5px;
+}
 .review_username_header {
   font-size: 24px;
   font-weight: bold;
@@ -307,6 +311,8 @@ textarea {
 .search_book_info {
   font-size: 22px;
   grid-column-start: 2;
+  display: flex;
+  flex-direction: column;
 }
 .search_book_info > p {
   margin: 5px;
