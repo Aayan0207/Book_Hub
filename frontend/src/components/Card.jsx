@@ -16,6 +16,7 @@ function Card({
   checkoutItems = {},
   setPurchaseData = {},
   setUserReviewed = {},
+  userReviewed = {},
   options = null,
 }) {
   if (!payload || (options !== "book" && !payload.book.image.source)) return;
@@ -228,7 +229,7 @@ function Card({
     })
       .then((response) => response.json())
       .then((data) => {
-        setContent(data.review);
+        setContent(data.review.content);
         setShowForm(false);
       })
       .catch((error) => console.log(error));
@@ -251,7 +252,9 @@ function Card({
       .then((response) => response.json())
       .then((_) => {
         setShowCard(false);
-        setUserReviewed(false);
+        if (setUserReviewed) {
+          setUserReviewed(false);
+        }
       })
       .catch((error) => console.log(error));
   }

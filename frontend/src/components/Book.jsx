@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 import "../assets/codex/codex.css";
 import Spinner from "./spinner";
 import Card from "./Card";
+import getToken from "./getToken";
 
 function Book({ isbn, userData, setPage, setProfile }) {
   if (!isbn?.trim().match(/^(?:\d{10}|\d{13})$/)) return <p>Invalid ISBN.</p>;
 
   const urlPrefix = "http://localhost:8000";
+  const token = getToken();
   const [bookData, setBookData] = useState({});
   const [ratingsData, setRatingsData] = useState({});
   const [sortBy, setSortBy] = useState("highest rated");
@@ -23,6 +25,7 @@ function Book({ isbn, userData, setPage, setProfile }) {
     if (!reviewsData) return;
     reviewsData.forEach((review) => {
       const reviewerId = review.user_id;
+      if (reviewerId === userData?.userId) return;
       fetch(`${urlPrefix}/user_bookmarked`, {
         method: "POST",
         body: JSON.stringify({
@@ -39,6 +42,7 @@ function Book({ isbn, userData, setPage, setProfile }) {
         .catch((error) => console.log(error));
     });
   }, [reviewsData]);
+
   useEffect(() => {
     fetch(`${urlPrefix}/get_listing`, {
       method: "POST",
@@ -117,7 +121,37 @@ function Book({ isbn, userData, setPage, setProfile }) {
       .catch((error) => console.log(error));
   }, [isbn, sortBy, refreshReviews]);
 
-  function addReview() {}
+  function addReview(event) {
+    event.preventDefault();
+    const form = event.target;
+    fetch(`${urlPrefix}/manage_review`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      body: JSON.stringify({
+        user_id: userData?.userId,
+        isbn: isbn,
+        content: form.querySelector("#id_content").value,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        data.review.user_id__username = userData.user;
+        setReviewsData((prev) => {
+          const filtered = prev.filter(
+            (item) => item.user_id !== userData.userId
+          );
+          return [data.review, ...filtered];
+        });
+        setUserReviewed(true);
+        setShowForm(false);
+      })
+      .catch((error) => console.log(error));
+  }
+
   return (
     <>
       {bookData?.volumeInfo ? (
@@ -248,7 +282,7 @@ function Book({ isbn, userData, setPage, setProfile }) {
                     action="/manage_review"
                     method="post"
                     id="user_review_form"
-                    onSubmit={() => addReview()}
+                    onSubmit={(event) => addReview(event)}
                     onReset={() => setShowForm(false)}
                   >
                     <textarea
@@ -326,12 +360,13 @@ function Book({ isbn, userData, setPage, setProfile }) {
                           options="book"
                           userData={userData}
                           setPage={setPage}
-                          key={item.id}
+                          key={`${item.id}-${item.content}`}
                           payload={CardDetails}
                           setProfile={setProfile}
                           bookmarks={bookmarks}
                           setBookmarks={setBookmarks}
                           setUserReviewed={setUserReviewed}
+                          userReviewed={userReviewed}
                         />
                       );
                     })
