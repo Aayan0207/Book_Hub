@@ -4,6 +4,10 @@
 .result_sale_info {
   display: flex;
   gap: 5px;
+  flex-direction: column;
+}
+.result_price{
+  margin-right:5px;
 }
 .book_menu {
   position: absolute;

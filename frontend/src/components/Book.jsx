@@ -4,7 +4,13 @@ import Spinner from "./spinner";
 import Card from "./Card";
 import getToken from "./getToken";
 
-function Book({ isbn, userData, setPage, setProfile }) {
+function Book({
+  isbn,
+  userData = null,
+  setPage,
+  setProfile,
+  setCheckoutItems,
+}) {
   if (!isbn?.trim().match(/^(?:\d{10}|\d{13})$/)) return <p>Invalid ISBN.</p>;
 
   const urlPrefix = "http://localhost:8000";
@@ -24,6 +30,14 @@ function Book({ isbn, userData, setPage, setProfile }) {
   const [userRating, setUserRating] = useState(0);
   const [starBar, setStarBar] = useState(0);
   const [showBookshelfDropdown, setShowBookshelfDropdown] = useState(false);
+  const [showPurchase, setShowPurchase] = useState(false);
+  const [inCart, setInCart] = useState(false);
+
+  useEffect(() => {
+    if (!showPurchase) return;
+    setCheckoutItems([saleData.id]);
+    setPage("checkout");
+  }, [showPurchase]);
 
   useEffect(() => {
     if (!reviewsData) return;
@@ -46,6 +60,20 @@ function Book({ isbn, userData, setPage, setProfile }) {
         .catch((error) => console.log(error));
     });
   }, [reviewsData]);
+
+  useEffect(() => {
+    if (!saleData || !userData?.userId) return;
+    fetch(`${urlPrefix}/in_cart`, {
+      method: "POST",
+      body: JSON.stringify({
+        id: userData.userId,
+        isbn: isbn,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => setInCart(data.status))
+      .catch((error) => console.log(error));
+  }, [isbn, saleData]);
 
   useEffect(() => {
     fetch(`${urlPrefix}/get_listing`, {
@@ -147,6 +175,22 @@ function Book({ isbn, userData, setPage, setProfile }) {
       })
       .catch((error) => console.log(error));
   }, [isbn, sortBy, refreshReviews]);
+
+  function updateCart() {
+    fetch(`${urlPrefix}/update_cart`, {
+      method: "POST",
+      body: JSON.stringify({
+        isbn: isbn,
+        id: userData?.userId,
+        listing_id: saleData.id,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setInCart(data.status);
+      })
+      .catch((error) => console.log(error));
+  }
 
   function updateBookshelf(action = null) {
     fetch(`${urlPrefix}/update_bookshelf`, {
@@ -355,14 +399,43 @@ function Book({ isbn, userData, setPage, setProfile }) {
               </p>
               {saleData?.stock > 0 ? (
                 <div className="result_sale_info">
-                  <p className="result_price">
-                    Price: {saleData.price} Credits
-                  </p>
-                  <p className="result_stock">
-                    (
-                    {saleData.stock > 1 ? `${saleData.stock} Copies` : `1 Copy`}{" "}
-                    Available at the Book Crate)
-                  </p>
+                  <div>
+                    <p className="result_price">
+                      Price: {saleData.price} Credits
+                    </p>
+                    <p className="result_stock">
+                      (
+                      {saleData.stock > 1
+                        ? `${saleData.stock} Copies`
+                        : `1 Copy`}{" "}
+                      Available at the Book Crate)
+                    </p>
+                  </div>
+                  {userData?.isUser && !userData?.isSuper && (
+                    <div>
+                      <button
+                        className="purchase_button btn btn-success"
+                        onClick={() => setShowPurchase(true)}
+                      >
+                        Purchase
+                      </button>
+                      {inCart ? (
+                        <button
+                          className="cart_button btn btn-info"
+                          onClick={() => updateCart()}
+                        >
+                          <i className="bi bi-cart-dash"></i> Remove From Cart
+                        </button>
+                      ) : (
+                        <button
+                          className="cart_button btn btn-warning"
+                          onClick={() => updateCart()}
+                        >
+                          <i className="bi bi-cart-plus"></i> Add to Cart
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
               ) : null}
               <p className="result_book_description">

@@ -16,7 +16,6 @@ function Card({
   checkoutItems = {},
   setPurchaseData = {},
   setUserReviewed = {},
-  userReviewed = {},
   options = null,
 }) {
   if (!payload || (options !== "book" && !payload.book.image.source)) return;
