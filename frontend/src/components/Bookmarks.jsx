@@ -164,6 +164,7 @@ function Bookmarks({ userData, setPage, setIsbn, setProfile }) {
         setBookmarks((prev) => {
           return { ...prev, [userId]: data.bookmark };
         });
+        setFound(null);
       })
       .catch((error) => console.log(error));
   }
@@ -190,7 +191,7 @@ function Bookmarks({ userData, setPage, setIsbn, setProfile }) {
             }}
             onSubmit={(event) => submitForm(event)}
           >
-            <hr/>
+            <hr />
             <div>
               <label htmlFor="id_username">Username:</label>
               <input
