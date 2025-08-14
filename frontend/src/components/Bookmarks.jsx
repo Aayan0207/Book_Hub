@@ -116,7 +116,7 @@ function Bookmarks({ userData, setPage, setIsbn, setProfile }) {
           method: "POST",
           body: JSON.stringify({
             user_id: userData?.userId,
-            profile_id: found?.userId,
+            profile_id: data.userId,
           }),
           headers: {
             "Content-Type": "application/json",
@@ -127,7 +127,7 @@ function Bookmarks({ userData, setPage, setIsbn, setProfile }) {
           .then((response) => response.json())
           .then((res) => {
             setBookmarks((prev) => {
-              return { ...prev, [found.userId]: res.bookmark };
+              return { ...prev, [data.userId]: res.bookmark };
             });
           })
           .catch((error) => console.log(error));
@@ -144,14 +144,14 @@ function Bookmarks({ userData, setPage, setIsbn, setProfile }) {
     setPayload(details);
   }
 
-  function handleBookmarkToggle() {
-    if (!userData || !found?.id) return;
+  function handleBookmarkToggle(userId) {
+    if (!userData || !userId) return;
 
     fetch(`${urlPrefix}/update_bookmark`, {
       method: "POST",
       body: JSON.stringify({
         user_id: userData.userId,
-        profile_id: found.id,
+        profile_id: userId,
       }),
       headers: {
         "Content-Type": "application/json",
@@ -162,7 +162,7 @@ function Bookmarks({ userData, setPage, setIsbn, setProfile }) {
       .then((response) => response.json())
       .then((data) => {
         setBookmarks((prev) => {
-          return { ...prev, [found.id]: data.bookmark };
+          return { ...prev, [userId]: data.bookmark };
         });
       })
       .catch((error) => console.log(error));
@@ -190,6 +190,7 @@ function Bookmarks({ userData, setPage, setIsbn, setProfile }) {
             }}
             onSubmit={(event) => submitForm(event)}
           >
+            <hr/>
             <div>
               <label htmlFor="id_username">Username:</label>
               <input
@@ -198,34 +199,37 @@ function Bookmarks({ userData, setPage, setIsbn, setProfile }) {
                 maxLength="255"
                 required={true}
                 id="id_username"
+                autoComplete="off"
               />
             </div>
-            <input
-              type="submit"
-              className="btn btn-success"
-              value="Search"
-              id="submit_search_button"
-            />
-            <input
-              type="reset"
-              className="btn btn-danger"
-              value="Done"
-              id="cancel_search_button"
-            />
+            <div>
+              <input
+                type="submit"
+                className="btn btn-success"
+                value="Search"
+                id="submit_search_button"
+              />
+              <input
+                type="reset"
+                className="btn btn-danger"
+                value="Done"
+                id="cancel_search_button"
+              />
+            </div>
             {found ? (
               <div id="user_found">
-                <p id="found_username">{found.username}</p>
-                {bookmarks[found.id] ? (
+                <p id="found_username">{found.user}</p>
+                {bookmarks[found.userId] ? (
                   <button
                     className="bookmark_button btn btn-warning"
-                    onClick={() => handleBookmarkToggle()}
+                    onClick={() => handleBookmarkToggle(found.userId)}
                   >
                     <i className="bi bi-bookmark-dash"></i> Remove Bookmark
                   </button>
                 ) : (
                   <button
                     className="bookmark_button btn btn-primary"
-                    onClick={() => handleBookmarkToggle()}
+                    onClick={() => handleBookmarkToggle(found.userId)}
                   >
                     <i className="bi bi-bookmark-plus"></i> Bookmark
                   </button>
