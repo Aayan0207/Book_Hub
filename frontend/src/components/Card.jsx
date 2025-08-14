@@ -273,6 +273,7 @@ function Card({
       .then((data) => {
         setContent(data.review.content);
         setShowForm(false);
+        setShowDropdown(false);
       })
       .catch((error) => console.log(error));
   }
@@ -1023,7 +1024,10 @@ function Card({
                     method="post"
                     id="user_review_form"
                     onSubmit={(event) => updateReview(event)}
-                    onReset={() => setShowForm(false)}
+                    onReset={() => {
+                      setShowForm(false);
+                      setShowDropdown(false);
+                    }}
                   >
                     <textarea
                       name="content"
@@ -1039,6 +1043,7 @@ function Card({
                       value="Give Review"
                       id="submit_review_button"
                     />
+                    &nbsp;
                     <input
                       type="reset"
                       className="btn btn-danger"

@@ -199,13 +199,13 @@ function Profile({
                     <div>
                       <input
                         type="submit"
-                        class="btn btn-success"
+                        className="btn btn-success"
                         value="Add"
                         id="submit_credits_button"
                       />
                       <input
                         type="reset"
-                        class="btn btn-danger"
+                        className="btn btn-danger"
                         value="Cancel"
                         id="cancel_credits_button"
                       />

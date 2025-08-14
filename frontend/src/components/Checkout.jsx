@@ -124,8 +124,8 @@ function Checkout({ userData, setIsbn, setPage, checkoutItems, setUserData }) {
     <>
       <div className="checkout">
         <h2 id="header">Checkout</h2>
-        <h2 class="user_credits">Your Credits: {userData.credits}</h2>
-        <h2 class="grand_total">Grand Total: {total} Credits</h2>
+        <h2 className="user_credits">Your Credits: {userData.credits}</h2>
+        <h2 className="grand_total">Grand Total: {total} Credits</h2>
         <hr />
         <div
           style={{
