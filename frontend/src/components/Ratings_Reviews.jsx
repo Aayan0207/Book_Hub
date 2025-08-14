@@ -33,8 +33,7 @@ function Ratings_Reviews({ userData, setPage, setIsbn, profileView = false }) {
   }, [token]);
 
   useEffect(() => {
-    if (!token) return;
-    if (batch === 1) return;
+    if (!token || batch === 1) return;
     fetch(`${urlPrefix}/get_user_reviews`, {
       method: "POST",
       body: JSON.stringify({
@@ -58,8 +57,7 @@ function Ratings_Reviews({ userData, setPage, setIsbn, profileView = false }) {
   }, [batch, token]);
 
   useEffect(() => {
-    if (!token) return;
-    if (!reviews) return;
+    if (!token || !reviews) return;
     reviews.forEach((review) => {
       fetch(`${urlPrefix}/book_result`, {
         method: "POST",

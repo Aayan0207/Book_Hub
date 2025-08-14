@@ -11,8 +11,7 @@ function Bookshelf({ userData, setPage, setIsbn }) {
   const [showMore, setShowMore] = useState(false);
 
   useEffect(() => {
-    if (!token) return;
-    if (!loadMore || batch === 1) return;
+    if (!token || !loadMore || batch === 1) return;
     fetch(`${urlPrefix}/get_bookshelf`, {
       method: "POST",
       body: JSON.stringify({
@@ -36,22 +35,6 @@ function Bookshelf({ userData, setPage, setIsbn }) {
       })
       .catch((error) => console.log(error));
   }, [batch, token]);
-
-  function chunkedArray(books) {
-    let chunks = [];
-    let chunk = [];
-    for (let i = 1; i < books.length + 1; i++) {
-      chunk.push(books[i - 1]);
-      if (i % 10 == 0) {
-        chunks.push(chunk);
-        chunk = [];
-      }
-    }
-    if (chunk.length > 0) {
-      chunks.push(chunk);
-    }
-    return chunks;
-  }
 
   useEffect(() => {
     if (!token) return;
@@ -77,6 +60,22 @@ function Bookshelf({ userData, setPage, setIsbn }) {
       })
       .catch((error) => console.log(error));
   }, [shelf, token]);
+
+  function chunkedArray(books) {
+    let chunks = [];
+    let chunk = [];
+    for (let i = 1; i < books.length + 1; i++) {
+      chunk.push(books[i - 1]);
+      if (i % 10 == 0) {
+        chunks.push(chunk);
+        chunk = [];
+      }
+    }
+    if (chunk.length > 0) {
+      chunks.push(chunk);
+    }
+    return chunks;
+  }
 
   return (
     <>

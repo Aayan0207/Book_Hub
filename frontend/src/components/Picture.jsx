@@ -16,8 +16,7 @@ function Picture({ isbn, setIsbn, setPage, cls }) {
   }, [viewBook]);
 
   useEffect(() => {
-    if (!token) return;
-    if (!isbn) return;
+    if (!token || !isbn) return;
     fetch(`${urlPrefix}/book_result`, {
       method: "POST",
       body: JSON.stringify({

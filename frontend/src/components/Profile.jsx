@@ -20,8 +20,8 @@ function Profile({
   const [showCreditsForm, setShowCreditsForm] = useState(false);
 
   useEffect(() => {
-    if (!token) return;
-    if (!userData?.isUser) return;
+    if (!token || !userData?.isUser) return;
+
     fetch(`${urlPrefix}/get_bookshelf`, {
       method: "POST",
       body: JSON.stringify({
@@ -39,11 +39,7 @@ function Profile({
       .then((data) => {
         setWant(data.bookshelf.slice(0, 3));
       });
-  }, [userData, token]);
 
-  useEffect(() => {
-    if (!token) return;
-    if (!userData?.isUser) return;
     fetch(`${urlPrefix}/get_bookshelf`, {
       method: "POST",
       body: JSON.stringify({
@@ -61,11 +57,7 @@ function Profile({
       .then((data) => {
         setCurrently(data.bookshelf.slice(0, 3));
       });
-  }, [userData, token]);
 
-  useEffect(() => {
-    if (!token) return;
-    if (!userData?.isUser) return;
     fetch(`${urlPrefix}/user_activity_info`, {
       method: "POST",
       body: JSON.stringify({

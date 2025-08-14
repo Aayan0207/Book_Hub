@@ -42,8 +42,7 @@ function Donations({ userData, setPage, setIsbn }) {
   }, [token]);
 
   useEffect(() => {
-    if (!token) return;
-    if (batch === 1) return;
+    if (!token || batch === 1) return;
     fetch(`${urlPrefix}/load_donations`, {
       method: "POST",
       body: JSON.stringify({
@@ -70,8 +69,7 @@ function Donations({ userData, setPage, setIsbn }) {
   }, [batch, token]);
 
   useEffect(() => {
-    if (!token) return;
-    if (!requests || requests.length === 0) return;
+    if (!token || !requests || requests.length === 0) return;
     requests.forEach((request) => {
       const isbn = request.book_isbn;
       fetch(`${urlPrefix}/book_result`, {

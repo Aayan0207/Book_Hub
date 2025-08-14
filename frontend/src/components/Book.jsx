@@ -49,8 +49,7 @@ function Book({
   }, [showPurchase]);
 
   useEffect(() => {
-    if (!token) return;
-    if (!reviewsData || !userData) return;
+    if (!token || !reviewsData || !userData) return;
     reviewsData.forEach((review) => {
       const reviewerId = review.user_id;
       if (reviewerId === userData?.userId) return;
@@ -77,8 +76,7 @@ function Book({
   }, [reviewsData, token]);
 
   useEffect(() => {
-    if (!token) return;
-    if (!saleData || !userData?.userId) return;
+    if (!token || !saleData || !userData?.userId) return;
     fetch(`${urlPrefix}/in_cart`, {
       method: "POST",
       body: JSON.stringify({
@@ -98,6 +96,7 @@ function Book({
 
   useEffect(() => {
     if (!token) return;
+
     if (saleData?.id) {
       fetch(`${urlPrefix}/get_listing`, {
         method: "POST",
@@ -189,8 +188,7 @@ function Book({
   }, [isbn, token, saleData, userData]);
 
   useEffect(() => {
-    if (!token) return;
-    if (batch === 1) return;
+    if (!token || batch === 1) return;
     fetch(`${urlPrefix}/get_book_reviews`, {
       method: "POST",
       body: JSON.stringify({

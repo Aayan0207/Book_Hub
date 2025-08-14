@@ -40,8 +40,7 @@ function Bookmarks({ userData, setPage, setIsbn, setProfile }) {
   }, [refresh, token]);
 
   useEffect(() => {
-    if (!reviews) return;
-    if (!token) return;
+    if (!token || !reviews) return;
     setReviewsData({});
     setBookmarks({});
     reviews.forEach((review) => {
@@ -88,8 +87,7 @@ function Bookmarks({ userData, setPage, setIsbn, setProfile }) {
   }, [reviews, token]);
 
   useEffect(() => {
-    if (!token) return;
-    if (!payload?.username) return;
+    if (!token || !payload?.username) return;
     setSame(false);
     setInvalid(false);
     setFound(null);

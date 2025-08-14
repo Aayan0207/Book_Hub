@@ -19,8 +19,7 @@ function Checkout({ userData, setIsbn, setPage, checkoutItems, setUserData }) {
   }, [showCart]);
 
   useEffect(() => {
-    if (!token) return;
-    if (!checkoutItems) return;
+    if (!token || !checkoutItems) return;
 
     setPurchaseData(Object.fromEntries(checkoutItems.map((item) => [item, 1])));
 
@@ -69,8 +68,11 @@ function Checkout({ userData, setIsbn, setPage, checkoutItems, setUserData }) {
   }, [checkoutItems, token]);
 
   useEffect(() => {
-    if (!token) return;
-    if (!purchaseData || Object.keys(checkoutItemsListingData).length === 0)
+    if (
+      !token ||
+      !purchaseData ||
+      Object.keys(checkoutItemsListingData).length === 0
+    )
       return;
     setTotal(() => {
       let tmp = 0;

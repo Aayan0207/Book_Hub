@@ -34,8 +34,7 @@ function Invoices({ userData, setPage, setIsbn }) {
   }, [userData, token]);
 
   useEffect(() => {
-    if (!token) return;
-    if (batch === 1) return;
+    if (!token || batch === 1) return;
     setShowSpinner(true);
     fetch(`${urlPrefix}/get_user_invoices`, {
       method: "POST",
@@ -63,8 +62,7 @@ function Invoices({ userData, setPage, setIsbn }) {
   }, [batch, token]);
 
   useEffect(() => {
-    if (!token) return;
-    if (!invoices) return;
+    if (!token || !invoices) return;
     invoices.forEach((invoice) => {
       const isbn = invoice.book_isbn;
       fetch(`${urlPrefix}/book_result`, {

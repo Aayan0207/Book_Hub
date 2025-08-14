@@ -48,8 +48,7 @@ function Card({
   const [purchasingQuantity, setPurchasingQuantity] = useState(1);
 
   useEffect(() => {
-    if (!token) return;
-    if (purchasingQuantity === 1) return;
+    if (!token || purchasingQuantity === 1) return;
     const sale_id = payload.book.sale_id;
     setPurchaseData((prev) => {
       return { ...prev, [sale_id]: parseInt(purchasingQuantity) };
@@ -57,8 +56,8 @@ function Card({
   }, [purchasingQuantity, token]);
 
   useEffect(() => {
-    if (!token) return;
     if (
+      !token ||
       !userData?.userId ||
       (options !== "crate" && options !== "cart") ||
       userData?.isSuper
@@ -82,8 +81,7 @@ function Card({
   }, [isbn, options, userData?.userId, token]);
 
   useEffect(() => {
-    if (!token) return;
-    if (!userData?.userId || options !== "shelf") return;
+    if (!token || !userData?.userId || options !== "shelf") return;
     fetch(`${urlPrefix}/get_user_rating`, {
       method: "POST",
       body: JSON.stringify({
@@ -105,8 +103,7 @@ function Card({
   }, [isbn, options, userData?.userId, token]);
 
   useEffect(() => {
-    if (!token) return;
-    if (!viewProfile || reviewer === userData?.user) return;
+    if (!token || !viewProfile || reviewer === userData?.user) return;
     fetch(`${urlPrefix}/user_exists`, {
       method: "POST",
       body: JSON.stringify({
@@ -127,8 +124,7 @@ function Card({
   }, [viewProfile, token]);
 
   useEffect(() => {
-    if (!token) return;
-    if (!userData?.isUser || options !== "shelf") return;
+    if (!token || !userData?.isUser || options !== "shelf") return;
     fetch(`${urlPrefix}/in_bookshelf`, {
       method: "POST",
       body: JSON.stringify({
@@ -149,8 +145,7 @@ function Card({
   }, [isbn, options, userData?.isUser, token]);
 
   useEffect(() => {
-    if (!token) return;
-    if (!userData || !payload.book.review) return;
+    if (!token || !userData || !payload.book.review) return;
     fetch(`${urlPrefix}/user_liked`, {
       method: "POST",
       body: JSON.stringify({
@@ -176,11 +171,11 @@ function Card({
   }, [viewBook]);
 
   useEffect(() => {
-    if (!token) return;
     if (
-      !payload.book.review &&
-      !payload.book.sale_id &&
-      !payload.book.info.ratings
+      !token ||
+      (!payload.book.review &&
+        !payload.book.sale_id &&
+        !payload.book.info.ratings)
     )
       return;
     fetch(`${urlPrefix}/get_book_rating`, {

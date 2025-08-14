@@ -68,8 +68,7 @@ function Book_Crate({ setPage, setIsbn, userData = null }) {
   }, [refreshListings, token]);
 
   useEffect(() => {
-    if (!token) return;
-    if (!listings.listings) return;
+    if (!token || !listings.listings) return;
     listings.listings.forEach((listing) => {
       fetch(`${urlPrefix}/book_result`, {
         method: "POST",
@@ -93,8 +92,7 @@ function Book_Crate({ setPage, setIsbn, userData = null }) {
   }, [listings, token]);
 
   useEffect(() => {
-    if (!token) return;
-    if (!payload) return;
+    if (!token || !payload) return;
     setListingsData({});
     fetch(`${urlPrefix}/load_listings`, {
       method: "POST",

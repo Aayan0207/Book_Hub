@@ -26,8 +26,7 @@ function Feed({ userData, setPage, setIsbn, setProfile }) {
   }, [refresh, token]);
 
   useEffect(() => {
-    if (!token) return;
-    if (!reviews) return;
+    if (!token || !reviews) return;
     setReviewsData({});
     reviews.forEach((review) => {
       const reviewerId = review.user_id;
