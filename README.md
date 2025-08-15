@@ -2,6 +2,10 @@
 
 ![Book Hub](frontend/public/assets/main/BookHub_Icon.png)
 
+## Video Demo
+
+[![Video Demo](https://img.youtube.com/vi/WSg5L1sNdI8/0.jpg)](https://youtu.be/WSg5L1sNdI8)
+
 ## About the Project
 
 Introducing Book Hub! A website primarily designed to pertain to the readers of a fictional library called The Book Hub, but it delves into much more depth than just being a website for the library, and has so much more to offer to its users.
